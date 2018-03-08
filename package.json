@@ -1,0 +1,16 @@
+{
+  "name": "roshambo2",
+  "version": "1.0.0",
+  "description": "Roshambo, improved",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Ramon van de Scheur",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "guid": "0.0.12",
+    "socket.io": "^2.0.4"
+  }
+}

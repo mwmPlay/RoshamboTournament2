@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Roshambo Tournament 2</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="index.css">
+	<script src="https://unpkg.com/vue"></script>
+</head>
+
+<body>
+	<div id="app">
+		<div class="playingField">
+			<div>
+				You are:
+			</div>
+			<div id="username">
+				{{username}}
+			</div>
+			<div>
+				Playing against:
+			</div>
+			<div id="otherUsername">
+				{{otherUsername}}
+			</div>
+			<div>
+				You played:
+			</div>
+			<div id="myHand">
+				{{myHand}}
+			</div>
+			<div>
+				Other played:
+			</div>
+			<div id="otherHand">
+				{{otherHand}}
+			</div>
+			<div>
+				Result of this hand:
+			</div>
+			<div id="handResult">
+				{{handResult}}
+			</div>
+			<div>
+				Score:
+			</div>
+			<div id="score">
+				{{myScore}} - {{otherScore}}
+			</div>
+		</div>
+		<div class="controls" v-if="username !== '' && otherUsername !== ''">
+			<div class="handButton" v-for="hand in hands">
+				<input type="button" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHand!==''" v-model="hand.name" @click="playHand(hand.name)">
+			</div>
+			<input type="button" v-if="handResult!=='' && myScore < maxScore && otherScore < maxScore" value="next round" @click="nextRound()">
+		</div>
+	</div>
+	
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+	<script src="index.js"></script>
+</body>
+</html>
