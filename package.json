@@ -1,5 +1,5 @@
 {
-  "name": "roshambo2",
+  "name": "roshamboTournament2",
   "version": "1.0.0",
   "description": "Roshambo, improved",
   "main": "index.js",
@@ -7,7 +7,6 @@
     "test": "test"
   },
   "author": "Ramon van de Scheur",
-  "license": "ISC",
   "dependencies": {
     "express": "^4.15.2",
     "guid": "0.0.12",
