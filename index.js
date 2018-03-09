@@ -33,8 +33,8 @@ http.listen(3000, function() {
 // user and session management
 var sessions = {};
 var sessionsByUsername = {};
-var player1 = false;
-var player2 = false;
+var player1 = null;
+var player2 = null;
 
 // socket event handlers
 io.on('connection', function(socket) {
@@ -46,10 +46,11 @@ io.on('connection', function(socket) {
 	
 	socket.on('authenticate', function(username) {
 		log('user authenticated: ' + username, socket);
-		var session = sessionsByUsername[username];
 		
-		if (session) {
+		if (sessionsByUsername[username]) {
 			log('authentication failed', socket);
+			
+			// a user with this name already exists, ask for a new name
 			socket.emit('authenticateFail');
 		} else {
 			var sessionId = Guid.create();
@@ -62,11 +63,21 @@ io.on('connection', function(socket) {
 			
 			socket.emit('authenticateSuccess', JSON.stringify(session));
 			
+			// while we do not have a bracket yet: first player to authenticate is player 1, 2nd is player 2 and the rest are spectators
 			if (!player1) {
 				player1 = session;
+				
+				socket.broadcast.emit('playerJoined', username);
 			} else if (!player2) {
 				player2 = session;
+				
+				// now we know both players' names
+				player2.otherUsername = player1.username;
+				player1.otherUsername = player2.username;
+				
+				// player 2 missed the original broadcast of the "player joined" signal of player 1, so send it again
 				socket.emit('playerJoined', player1.username);
+				
 				socket.broadcast.emit('playerJoined', username);
 			}
 		}
@@ -74,7 +85,42 @@ io.on('connection', function(socket) {
 	
 	socket.on('playHand', function(playedHandJson) {
 		log('play hand: ' + playedHandJson, socket);
-		socket.broadcast.emit('playHand', playedHandJson);
+		var playedHand = JSON.parse(playedHandJson);
+		
+		if (player1.username === playedHand.username) {
+			player1.myHand = playedHand.hand;
+			player2.otherHand = playedHand.hand;
+		} else if (player2.username === playedHand.username) {
+			player2.myHand = playedHand.hand;
+			player1.otherHand = playedHand.hand;
+		}
+		
+		// both players have played, time to emit the actual hands
+		if (player1.myHand && player2.myHand) {
+			playedHandJson = JSON.stringify({
+				username: player1.username,
+				otherUsername: player1.otherUsername,
+				hand: player1.myHand
+			});
+			
+			io.emit('playHand', playedHandJson);
+			
+			playedHandJson = JSON.stringify({
+				username: player2.username,
+				otherUsername: player2.otherUsername,
+				hand: player2.myHand
+			});
+			
+			io.emit('playHand', playedHandJson);
+			
+			/// reset player hands
+			player1.myHand = '';
+			player1.otherHand = '';
+			player2.myHand = '';
+			player2.otherHand = '';
+		} else {
+			socket.broadcast.emit('handChosen', playedHand.username);
+		}
 	});
 });
 

@@ -16,6 +16,8 @@ function log(message, socket) {
 	// init socket
 	var socket = io();
 	
+	var chosenText = 'Chosen, will be shown once you choose your hand';
+	
 	var app = new Vue({
 		el: '#app',
 		data: {
@@ -78,14 +80,14 @@ function log(message, socket) {
 					username: this.username,
 					otherUsername: this.otherUsername,
 					hand: hand
-				})
+				});
 				
 				socket.emit('playHand', playedHandJson);
 				
 				this.tryToDetermineWinner();
 			},
 			tryToDetermineWinner: function() {
-				if (this.myHand && this.otherHand) {
+				if (this.myHand && this.otherHand && this.otherHand !== chosenText) {
 					var resultVerb;
 					var resultText;
 					
@@ -116,10 +118,19 @@ function log(message, socket) {
 			},
 			nextRound: function() {
 				this.myHand = '';
-				this.otherHand = '';
+				
+				if (this.otherHand !== chosenText) {
+					this.otherHand = '';
+				}
+				
 				this.handResult = '';
 			}
 		}
+	});
+	
+	socket.on('handChosen', function(otherUsername) {
+		log('hand was chosen, but not yet played by other: ' + otherUsername, socket);
+		app.otherHand = chosenText;
 	});
 	
 	socket.on('playHand', function(playedHandJson) {
