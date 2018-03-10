@@ -32,6 +32,14 @@ function log(message, socket) {
 						scissors: {
 							text: 'crushes',
 							win: true
+						},
+						lizard: {
+							text: 'crushes',
+							win: true
+						},
+						spock: {
+							text: 'is vaporized by',
+							win: false
 						}
 					}
 				},
@@ -45,6 +53,14 @@ function log(message, socket) {
 						scissors: {
 							text: 'is cut by',
 							win: false
+						},
+						lizard: {
+							text: 'is eaten by',
+							win: false
+						},
+						spock: {
+							text: 'disproves',
+							win: true
 						}
 					}
 				},
@@ -52,12 +68,62 @@ function log(message, socket) {
 					name: 'scissors',
 					result: {
 						rock: {
-							text: 'is crushed by',
+							text: 'are crushed by',
 							win: false
 						},
 						paper: {
 							text: 'cut',
 							win: true
+						},
+						lizard: {
+							text: 'decapitate',
+							win: true
+						},
+						spock: {
+							text: 'are smashed by',
+							win: false
+						}
+					}
+				},
+				{
+					name: 'lizard',
+					result: {
+						rock: {
+							text: 'is crushed by',
+							win: false
+						},
+						paper: {
+							text: 'eats',
+							win: true
+						},
+						scissors: {
+							text: 'is decapitated by',
+							win: false
+						},
+						spock: {
+							text: 'poisons',
+							win: true
+						}
+					}
+				},
+				{
+					name: 'spock',
+					result: {
+						rock: {
+							text: 'vaporizes',
+							win: true
+						},
+						paper: {
+							text: 'is disproved by',
+							win: false
+						},
+						scissors: {
+							text: 'smashes',
+							win: true
+						},
+						lizard: {
+							text: 'is poisoned by',
+							win: false
 						}
 					}
 				}
@@ -72,6 +138,17 @@ function log(message, socket) {
 			otherUsername: ''
 		},
 		methods: {
+			handButtonTooltip: function (hand) {
+				var tooltip = '';
+				
+				for (var otherHand in hand.result) {
+					var result = hand.result[otherHand];
+					var resultVerb = (result.win ? 'win' : 'lose') + (hand.name.slice(-1) === 's' ? '' : 's');
+					tooltip += hand.name + ' ' + result.text + ' ' + otherHand + ' and ' + resultVerb + '\n';
+				}
+				
+				return tooltip;
+			},
 			playHand: function(hand) {
 				log('hand played by me: ' + hand, socket);
 				this.myHand = hand;

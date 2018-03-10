@@ -51,7 +51,7 @@
 		</div>
 		<div class="controls" v-if="username !== '' && otherUsername !== ''">
 			<div class="handButton" v-for="hand in hands">
-				<input type="button" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHand!==''" v-model="hand.name" @click="playHand(hand.name)">
+				<input type="button" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHand!==''" v-model="hand.name" @click="playHand(hand.name)" v-bind:title="handButtonTooltip(hand)">
 			</div>
 			<input type="button" v-if="handResult!=='' && myScore < maxScore && otherScore < maxScore" value="next round" @click="nextRound()">
 		</div>
