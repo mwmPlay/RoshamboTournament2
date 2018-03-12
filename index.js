@@ -150,6 +150,16 @@ io.on('connection', function(socket) {
 			socket.broadcast.emit('handChosen', playedHand.username);
 		}
 	});
+	
+	socket.on('newGame', function(username) {
+		var session = sessionsByUsername[username];
+		
+		if (session) {
+			session.playedHands.splice(0);
+		} else {
+			// emit error?
+		}
+	});
 });
 
 // exit logic

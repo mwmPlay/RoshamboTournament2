@@ -225,6 +225,10 @@ function log(message, socket) {
 			nextRound: function() {
 				// add a dummy hand
 				this.savePlayedHandToHistory('myHandName', '');
+			},
+			newGame: function() {
+				this.playedHands.splice(0);
+				socket.emit('newGame', this.username);
 			}
 		}
 	});

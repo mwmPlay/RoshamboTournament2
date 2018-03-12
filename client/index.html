@@ -54,6 +54,7 @@
 				<input type="button" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" v-model="hand.name" @click="playHand(hand.name)" v-bind:title="handButtonTooltip(hand)">
 			</div>
 			<input type="button" v-if="handResult(myHandName, otherHandName) !== '' && myScore < maxScore && otherScore < maxScore" value="next round" @click="nextRound()">
+			<input type="button" v-if="myScore === maxScore || otherScore === maxScore" value="new game" @click="newGame()">
 		</div>
 		<div class="historyTitle">
 			Previously played hands:
