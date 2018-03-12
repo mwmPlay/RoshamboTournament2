@@ -11,5 +11,10 @@
     "express": "^4.15.2",
     "guid": "0.0.12",
     "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.2",
+    "grunt-sass": "^2.1.0",
+    "load-grunt-tasks": "^3.5.2"
   }
 }
