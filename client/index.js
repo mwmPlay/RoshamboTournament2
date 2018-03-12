@@ -16,8 +16,6 @@ function log(message, socket) {
 	// init socket
 	var socket = io();
 	
-	var chosenText = 'Chosen, will be shown once you choose your hand';
-	
 	var app = new Vue({
 		el: '#app',
 		data: {
@@ -128,86 +126,112 @@ function log(message, socket) {
 					}
 				}
 			],
-			myHand: '',
-			otherHand: '',
-			handResult: '',
-			myScore: 0,
-			otherScore: 0,
+			playedHands: [],
 			maxScore: 3,
 			username: '',
 			otherUsername: ''
+		},
+		computed: {
+			myHandName: function () {
+				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].myHandName : '';
+			},
+			otherHandName: function () {
+				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHandName : '';
+			},
+			otherHasChosen: function () {
+				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
+			},
+			myScore: function () {
+				return this.calculateTotalScore(true);
+			},
+			otherScore: function () {
+				return this.calculateTotalScore(false);
+			}
 		},
 		methods: {
 			handButtonTooltip: function (hand) {
 				var tooltip = '';
 				
-				for (var otherHand in hand.result) {
-					var result = hand.result[otherHand];
-					var resultVerb = (result.win ? 'win' : 'lose') + (hand.name.slice(-1) === 's' ? '' : 's');
-					tooltip += hand.name + ' ' + result.text + ' ' + otherHand + ' and ' + resultVerb + '\n';
+				for (var otherHandName in hand.result) {
+					tooltip += this.handResult(hand.name, otherHandName) + '\n';
 				}
 				
 				return tooltip;
 			},
-			playHand: function(hand) {
-				log('hand played by me: ' + hand, socket);
-				this.myHand = hand;
+			handResult: function (myHandName, otherHandName) {
+				if (myHandName && otherHandName) {
+					var resultText;
+					var resultVerb;
+					
+					if (myHandName === otherHandName) {
+						var isPlural = myHandName.slice(-1) === 's';
+						
+						resultText = (isPlural ? 'are' : 'is') + ' the same as';
+						resultVerb = 'draw' + (isPlural ? '' : 's');
+					} else {
+						var hand = this.hands.find(function(elem) {
+							return elem.name === myHandName;
+						});
+						var result = hand.result[otherHandName];
+						resultText = result.text;
+						resultVerb = (result.win ? 'win' : 'lose') + (myHandName.slice(-1) === 's' ? '' : 's');
+					}
+					
+					return myHandName + ' ' + resultText + ' ' + otherHandName + ' and ' + resultVerb;
+				} else {
+					return '';
+				}
+			},
+			playHand: function(myHandName) {
+				log('hand played by me: ' + myHandName, socket);
+				
+				this.savePlayedHandToHistory('myHandName', myHandName);
 				
 				var playedHandJson = JSON.stringify({
 					username: this.username,
 					otherUsername: this.otherUsername,
-					hand: hand
+					myHandName: myHandName
 				});
 				
 				socket.emit('playHand', playedHandJson);
-				
-				this.tryToDetermineWinner();
 			},
-			tryToDetermineWinner: function() {
-				if (this.myHand && this.otherHand && this.otherHand !== chosenText) {
-					var resultVerb;
-					var resultText;
-					
-					if (this.myHand === this.otherHand) {
-						resultVerb = 'draw';
-						resultText = 'is the same as';
-					} else {
-						var myHand = this.myHand;
-						var hand = this.hands.find(function(elem) {
-							return elem.name === myHand;
-						});
-						
-						var otherHandResult = hand.result[this.otherHand];
-						
-						if (otherHandResult.win) {
-							resultVerb = 'win';
-							this.myScore++;
-						} else {
-							resultVerb = 'lose';
-							this.otherScore++;
-						}
-						
-						resultText = otherHandResult.text;
-					}
-					
-					this.handResult = this.myHand + ' ' + resultText + ' ' + this.otherHand + '. You ' + resultVerb + '!';
+			savePlayedHandToHistory: function (key, value) {
+				if (this.playedHands.length === 0 || (this.playedHands[this.playedHands.length - 1].myHandName !== '' && this.playedHands[this.playedHands.length - 1].otherHandName !== '')) {
+					this.playedHands.push({
+						myHandName: '',
+						otherHandName: '',
+						otherHasChosen: false
+					});
 				}
+				
+				this.playedHands[this.playedHands.length - 1][key] = value;
+			},
+			calculateTotalScore: function (won) {
+				var result = 0;
+				
+				this.playedHands.forEach(function (playedHand) {
+					if (playedHand.myHandName !== '' && playedHand.otherHandName !== '' && playedHand.myHandName !== playedHand.otherHandName) {
+						var myHand = app.hands.find(function(elem) {
+							return elem.name === playedHand.myHandName;
+						});
+						var handResult = myHand.result[playedHand.otherHandName];
+						
+						result += won === handResult.win ? 1 : 0;
+					}
+				});
+				
+				return result;
 			},
 			nextRound: function() {
-				this.myHand = '';
-				
-				if (this.otherHand !== chosenText) {
-					this.otherHand = '';
-				}
-				
-				this.handResult = '';
+				// add a dummy hand
+				this.savePlayedHandToHistory('myHandName', '');
 			}
 		}
 	});
 	
 	socket.on('handChosen', function(otherUsername) {
 		log('hand was chosen, but not yet played by other: ' + otherUsername, socket);
-		app.otherHand = chosenText;
+		app.savePlayedHandToHistory('otherHasChosen', true);
 	});
 	
 	socket.on('playHand', function(playedHandJson) {
@@ -215,8 +239,7 @@ function log(message, socket) {
 		var playedHand = JSON.parse(playedHandJson);
 		
 		if (playedHand.username === app.otherUsername && playedHand.otherUsername === app.username) {
-			app.otherHand = playedHand.hand;
-			app.tryToDetermineWinner();
+			app.savePlayedHandToHistory('otherHandName', playedHand.myHandName);
 		}
 	});
 	
@@ -225,14 +248,7 @@ function log(message, socket) {
 		var session = JSON.parse(sessionJson);
 		app.username = session.username;
 		app.otherUsername = session.otherUsername;
-		app.myHand = session.myHand;
-		app.otherHand = session.otherHand;
-		
-		// todo: use another way (computed property) to determine realtime
-		app.handResult = session.handResult;
-		
-		app.myScore = session.myScore;
-		app.otherScore = session.otherScore;
+		// TODO
 	});
 	
 	socket.on('authenticateSuccess', function(sessionJson) {

@@ -27,20 +27,20 @@
 			<div>
 				You played:
 			</div>
-			<div id="myHand">
-				{{myHand}}
+			<div id="myHandName">
+				{{myHandName}}
 			</div>
 			<div>
 				Other played:
 			</div>
-			<div id="otherHand">
-				{{otherHand}}
+			<div id="otherHandName">
+				{{otherHandName}}<span v-if="otherHasChosen && otherHandName === ''">The other player has chosen a hand, it will be shown once you choose your hand</span>
 			</div>
 			<div>
 				Result of this hand:
 			</div>
 			<div id="handResult">
-				{{handResult}}
+				{{handResult(myHandName, otherHandName)}}
 			</div>
 			<div>
 				Score:
@@ -51,9 +51,17 @@
 		</div>
 		<div class="controls" v-if="username !== '' && otherUsername !== ''">
 			<div class="handButton" v-for="hand in hands">
-				<input type="button" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHand!==''" v-model="hand.name" @click="playHand(hand.name)" v-bind:title="handButtonTooltip(hand)">
+				<input type="button" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" v-model="hand.name" @click="playHand(hand.name)" v-bind:title="handButtonTooltip(hand)">
 			</div>
-			<input type="button" v-if="handResult!=='' && myScore < maxScore && otherScore < maxScore" value="next round" @click="nextRound()">
+			<input type="button" v-if="handResult(myHandName, otherHandName) !== '' && myScore < maxScore && otherScore < maxScore" value="next round" @click="nextRound()">
+		</div>
+		<div class="historyTitle">
+			Previously played hands:
+		</div>
+		<div class="history">
+			<div v-for="(playedHand, index) in playedHands">
+				Round {{index + 1}}: {{handResult(playedHand.myHandName, playedHand.otherHandName)}}
+			</div>
 		</div>
 	</div>
 	

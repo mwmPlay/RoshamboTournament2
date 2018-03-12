@@ -36,6 +36,18 @@ var sessionsByUsername = {};
 var player1 = null;
 var player2 = null;
 
+function savePlayedHandToHistory(playedHands, key, value) {
+	if (playedHands.length === 0 || (playedHands[playedHands.length - 1].myHandName !== '' && playedHands[playedHands.length - 1].otherHandName !== '')) {
+		playedHands.push({
+			myHandName: '',
+			otherHandName: '',
+			otherHasChosen: false
+		});
+	}
+	
+	playedHands[playedHands.length - 1][key] = value;
+}
+
 // socket event handlers
 io.on('connection', function(socket) {
 	log('a user connected', socket);
@@ -56,7 +68,8 @@ io.on('connection', function(socket) {
 			var sessionId = Guid.create();
 			var session = {
 				id: sessionId,
-				username: username
+				username: username,
+				playedHands: []
 			};
 			sessions[sessionId] = session;
 			sessionsByUsername[username] = session;
@@ -87,20 +100,24 @@ io.on('connection', function(socket) {
 		log('play hand: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);
 		
-		if (player1.username === playedHand.username) {
-			player1.myHand = playedHand.hand;
-			player2.otherHand = playedHand.hand;
-		} else if (player2.username === playedHand.username) {
-			player2.myHand = playedHand.hand;
-			player1.otherHand = playedHand.hand;
+		if (playedHand.username === player1.username && playedHand.otherUsername === player2.username) {
+			savePlayedHandToHistory(player1.playedHands, 'myHandName', playedHand.myHandName);
+			savePlayedHandToHistory(player2.playedHands, 'otherHandName', playedHand.myHandName);
+		} else if (playedHand.username === player2.username && playedHand.otherUsername === player1.username) {
+			savePlayedHandToHistory(player2.playedHands, 'myHandName', playedHand.myHandName);
+			savePlayedHandToHistory(player1.playedHands, 'otherHandName', playedHand.myHandName);
 		}
 		
-		// both players have played, time to emit the actual hands
-		if (player1.myHand && player2.myHand) {
+		var player1sHandName = player1.playedHands[player1.playedHands.length - 1].myHandName;
+		var player2sHandName = player2.playedHands[player2.playedHands.length - 1].myHandName;
+		
+		if (player1sHandName && player2sHandName) {
+			// both players have played, time to emit the actual hands
+			
 			playedHandJson = JSON.stringify({
 				username: player1.username,
 				otherUsername: player1.otherUsername,
-				hand: player1.myHand
+				myHandName: player1sHandName
 			});
 			
 			io.emit('playHand', playedHandJson);
@@ -108,17 +125,17 @@ io.on('connection', function(socket) {
 			playedHandJson = JSON.stringify({
 				username: player2.username,
 				otherUsername: player2.otherUsername,
-				hand: player2.myHand
+				myHandName: player2sHandName
 			});
 			
 			io.emit('playHand', playedHandJson);
-			
-			/// reset player hands
-			player1.myHand = '';
-			player1.otherHand = '';
-			player2.myHand = '';
-			player2.otherHand = '';
 		} else {
+			if (playedHand.username === player1.username && playedHand.otherUsername === player2.username) {
+				savePlayedHandToHistory(player2.playedHands, 'otherHasChosen', true);
+			} else if (playedHand.username === player2.username && playedHand.otherUsername === player1.username) {
+				savePlayedHandToHistory(player1.playedHands, 'otherHasChosen', true);
+			}
+			
 			socket.broadcast.emit('handChosen', playedHand.username);
 		}
 	});
