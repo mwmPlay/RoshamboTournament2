@@ -63,7 +63,7 @@ io.on('connection', function(socket) {
 			log('authentication failed', socket);
 			
 			// a user with this name already exists, ask for a new name
-			socket.emit('authenticateFail');
+			socket.emit('authenticateFail', 'That name is already used by someone else. Choose a different name.');
 		} else {
 			var sessionId = Guid.create();
 			var session = {
@@ -93,6 +93,17 @@ io.on('connection', function(socket) {
 				
 				socket.broadcast.emit('playerJoined', username);
 			}
+		}
+	});
+	
+	socket.on('resumeSession', function(sessionId) {
+		log('resume session: ' + sessionId, socket);
+		var session = sessions[sessionId];
+		
+		if (session) {
+			socket.emit('resumeSession', JSON.stringify(session));
+		} else {
+			socket.emit('authenticateFail', 'Your session could not be found. Choose a name to start a new session.');
 		}
 	});
 	

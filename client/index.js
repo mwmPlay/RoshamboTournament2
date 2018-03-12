@@ -248,7 +248,10 @@ function log(message, socket) {
 		var session = JSON.parse(sessionJson);
 		app.username = session.username;
 		app.otherUsername = session.otherUsername;
-		// TODO
+		
+		session.playedHands.forEach(function(playedHand) {
+			app.playedHands.push(playedHand);
+		});
 	});
 	
 	socket.on('authenticateSuccess', function(sessionJson) {
@@ -266,8 +269,8 @@ function log(message, socket) {
 		}
 	});
 	
-	socket.on('authenticateFail', function() {
-		var username = prompt('That name is already used by someone else. Choose a different name.');
+	socket.on('authenticateFail', function(message) {
+		var username = prompt(message);
 		socket.emit('authenticate', username);
 	});
 	
