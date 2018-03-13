@@ -185,7 +185,7 @@ function log(message, socket) {
 			playHand: function(myHandName) {
 				log('hand played by me: ' + myHandName, socket);
 				
-				this.savePlayedHandToHistory('myHandName', myHandName);
+				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', myHandName);
 				
 				var playedHandJson = JSON.stringify({
 					username: this.username,
@@ -194,17 +194,6 @@ function log(message, socket) {
 				});
 				
 				socket.emit('playHand', playedHandJson);
-			},
-			savePlayedHandToHistory: function (key, value) {
-				if (this.playedHands.length === 0 || (this.playedHands[this.playedHands.length - 1].myHandName !== '' && this.playedHands[this.playedHands.length - 1].otherHandName !== '')) {
-					this.playedHands.push({
-						myHandName: '',
-						otherHandName: '',
-						otherHasChosen: false
-					});
-				}
-				
-				this.playedHands[this.playedHands.length - 1][key] = value;
 			},
 			calculateTotalScore: function (won) {
 				var result = 0;
@@ -224,7 +213,7 @@ function log(message, socket) {
 			},
 			nextRound: function() {
 				// add a dummy hand
-				this.savePlayedHandToHistory('myHandName', '');
+				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', '');
 			},
 			newGame: function() {
 				this.playedHands.splice(0);
@@ -235,7 +224,7 @@ function log(message, socket) {
 	
 	socket.on('handChosen', function(otherUsername) {
 		log('hand was chosen, but not yet played by other: ' + otherUsername, socket);
-		app.savePlayedHandToHistory('otherHasChosen', true);
+		logic.savePlayedHandToHistory(app.playedHands, 'otherHasChosen', true);
 	});
 	
 	socket.on('playHand', function(playedHandJson) {
@@ -243,7 +232,7 @@ function log(message, socket) {
 		var playedHand = JSON.parse(playedHandJson);
 		
 		if (playedHand.username === app.otherUsername && playedHand.otherUsername === app.username) {
-			app.savePlayedHandToHistory('otherHandName', playedHand.myHandName);
+			logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
 		}
 	});
 	
