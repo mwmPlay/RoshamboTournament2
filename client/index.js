@@ -1,4 +1,3 @@
-
 var hands = [
 	{
 		name: 'rock',
@@ -113,8 +112,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	soundEffects.backgroundMusic = backgroundMusic;
     backgroundMusic.play();
 });
-
-
 
 // clone any object, severing all references within
 function clone(object) {
@@ -373,7 +370,8 @@ function log(message, socket) {
 			playedHands: [],
 			maxScore: 3,
 			username: '',
-			otherUsername: ''
+			otherUsername: '',
+			otherUsers: []
 		},
 		computed: {
 			myHandName: function () {
@@ -476,6 +474,18 @@ function log(message, socket) {
 			},
 			addHandToDeck: function(player, type){
 				this[player].hands.push(hands[type]);
+			},
+			resumeSession: function(session) {
+				this.username = session.username;
+				this.otherUsername = session.otherUsername;
+				
+				session.playedHands.forEach(function(playedHand) {
+					app.playedHands.push(playedHand);
+				});
+				
+				session.otherUsers.forEach(function(otherUser) {
+					app.otherUsers.push(otherUser);
+				});
 			}
 		}
 	});
@@ -497,19 +507,14 @@ function log(message, socket) {
 	socket.on('resumeSession', function(sessionJson) {
 		log('resuming session: ' + sessionJson, socket);
 		var session = JSON.parse(sessionJson);
-		app.username = session.username;
-		app.otherUsername = session.otherUsername;
-		
-		session.playedHands.forEach(function(playedHand) {
-			app.playedHands.push(playedHand);
-		});
+		app.resumeSession(session);
 	});
 	
 	socket.on('authenticateSuccess', function(sessionJson) {
 		log('successfully authenticated: ' + sessionJson, socket);
 		var session = JSON.parse(sessionJson);
 		document.cookie = 'sessionId=' + session.id;
-		app.username = session.username;
+		app.resumeSession(session);
 	});
 	
 	socket.on('playerJoined', function(otherUsername) {
@@ -518,6 +523,10 @@ function log(message, socket) {
 		if (app.otherUsername === '') {
 			app.otherUsername = otherUsername;
 		}
+		
+		app.otherUsers.push({
+			name: otherUsername
+		});
 	});
 	
 	socket.on('authenticateFail', function(message) {

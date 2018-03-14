@@ -110,6 +110,14 @@
 					Round {{index + 1}}: {{handResult(playedHand.myHandName, playedHand.otherHandName)}}
 				</p>
 			</div>
+			<div class="lobbyTitle">
+				Other players:
+			</div>
+			<div class="lobby">
+				<div class="otherUser" v-for="otherUser in otherUsers">
+					{{otherUser.name}}
+				</div>
+			</div>
 		</div>
 	</div>
 
