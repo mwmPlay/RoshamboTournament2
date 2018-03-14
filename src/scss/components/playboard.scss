@@ -1,12 +1,6 @@
 @mixin deckStyling(){
     display: flex;
-    background:
-radial-gradient(#3a4c3a 15%, transparent 16%) 0 0,
-radial-gradient(#3a4c3a 15%, transparent 16%) 8px 8px,
-radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
-radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
-background-color:#366836;
-background-size:16px 16px;
+	background-size:16px 16px;
     align-items: center;
     justify-content: space-around;
     border: 1px solid #333;
@@ -20,41 +14,114 @@ background-size:16px 16px;
 	flex-direction: row; 
 	background: url(https://i.pinimg.com/originals/81/d3/e0/81d3e0ab582cbf6725c13ccab7d90bca.jpg);
     background-repeat: repeat-x;
+}
 
-	#playboard {
-        height: 100%;
-        width: 100%;
-        padding: 20px;
-		display: flex;
-		flex-direction: column;
-        justify-content: space-between;
-    } 
-    
-    .playingField {
-        p {
-            margin-bottom: 5px;
-            font-size: 20px;
-        }
-    }
+#playboard {
+	height: 100%;
+	width: 100%;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	box-shadow: 2px 0 10px #000;
+	
+	background: -webkit-linear-gradient(0deg, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 0), rgb(255, 153, 0);
+	background: -moz-linear-gradient(90deg, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 0), rgb(255, 153, 0);
+	background: linear-gradient(90deg, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 0), rgb(255, 153, 0);
+	background-position: auto auto;
+	-webkit-background-origin: padding-box;
+	background-origin: padding-box;
+	-webkit-background-clip: border-box;
+	background-clip: border-box;
+	-webkit-background-size: 50px auto;
+	background-size: 50px auto;
+} 
 
-	.enemyplayerside,
-	.thisplayerside {
-		height: 250px;
-		justify-content: space-between;	
-		display: flex;
+.playingField {    
+	width: 100%;
+	@include flexCenter;
+
+	> div {
+		width: $hand-width;
+
+		#myHandName,
+		#otherHandName {
+			height: $hand-height;
+    		width: $hand-width;
+			border-radius: 8px;
+			border: 0;
+			background: rgba(0, 0, 0, 0.3);
+			box-shadow: inset 0 0 2px #333;
+			transition: 0.2s all;
+			cursor: pointer;
+
+			&:hover {
+				box-shadow: inset 0 0 10px #333;
+			}
+		}
+
+		.showdown-box {
+			height: $hand-height;
+			@include flexCenter;
+
+			p {
+				font-size: 18px;
+			}
+		}
 	}
 
-	.board-mid {
-		@include flexCenter;
+	.resultShowdown {
+		width: 500px;
+		padding: 0 20px;
+
+		p {
+			text-align: center;
+		}
 	}
 
-	.handsdeck {
-		width: 800px;
-        @include deckStyling;
+	.thisPlayerShowdown {
+		p {
+			text-align: center;
+			margin-bottom: 10px;
+		}
 	}
 
-	.spelldeck {
-		width: 300px;
-        @include deckStyling;
+	.enemyPlayerShowdown {
+		p {
+			text-align: center;
+			margin-bottom: 10px;
+		}
 	}
+}
+
+.enemyplayerside,
+.thisplayerside {
+	height: 300px;
+	justify-content: space-between;	
+	display: flex;
+}
+
+.board-mid {
+	@include flexCenter;
+}
+
+.handsdeck {
+	width: 800px;
+	flex: 1;
+	margin-right: 20px;
+	background:
+	radial-gradient(#3a4c3a 15%, transparent 16%) 0 0,
+	radial-gradient(#3a4c3a 15%, transparent 16%) 8px 8px,
+	radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+	radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+	background-color:#366836;
+	@include deckStyling;
+}
+
+.spelldeck {
+	width: 350px;
+	background: radial-gradient(#3e3030 15%, transparent 16%) 0 0, radial-gradient(#800d0d 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
+	background-color: #9a1c1c;
+
+	@include deckStyling;
 }

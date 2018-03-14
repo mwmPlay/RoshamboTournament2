@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700);
 @keyframes fadeIn {
   0% {
     opacity: 0; }
@@ -28,6 +29,13 @@
     box-shadow: 0 0 40px red; }
   100% {
     box-shadow: 0 0 -10px red; } }
+@keyframes maintainedGlow {
+  0% {
+    box-shadow: 0 0 -10px red; }
+  40% {
+    box-shadow: 0 0 40px red; }
+  100% {
+    box-shadow: 0 0 40px red; } }
 @keyframes slideUp {
   from {
     bottom: -180px; }
@@ -427,6 +435,13 @@ body {
 p {
   font-family: georgia;
   margin: 0; }
+  p.specialText {
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 1px #000;
+    color: #fff; }
 
 svg.small {
   width: 0.5em !important; }
@@ -435,37 +450,148 @@ svg.small {
   display: flex;
   border: 1px solid #333;
   border-radius: 8px;
-  height: 200px;
-  width: 130px;
+  height: 195px;
+  width: 140px;
   flex-direction: column;
   border: 1px solid #333;
-  background: #b10c0c;
+  background: #42788c;
   transition: 0.4s all;
+  box-shadow: 0 0 2px #000;
   position: relative; }
+  .hand[rotate="1"] {
+    transform: rotate(1deg); }
+    .hand[rotate="1"]:hover {
+      transform: rotate(1deg) scale(1.05); }
+  .hand[rotate="-1"] {
+    transform: rotate(-1deg); }
+    .hand[rotate="-1"]:hover {
+      transform: rotate(-1deg) scale(1.05); }
+  .hand[rotate="2"] {
+    transform: rotate(2deg); }
+    .hand[rotate="2"]:hover {
+      transform: rotate(2deg) scale(1.05); }
+  .hand[rotate="-2"] {
+    transform: rotate(-2deg); }
+    .hand[rotate="-2"]:hover {
+      transform: rotate(-2deg) scale(1.05); }
+  .hand[rotate="3"] {
+    transform: rotate(3deg); }
+    .hand[rotate="3"]:hover {
+      transform: rotate(3deg) scale(1.05); }
+  .hand[rotate="-3"] {
+    transform: rotate(-3deg); }
+    .hand[rotate="-3"]:hover {
+      transform: rotate(-3deg) scale(1.05); }
+  .hand[rotate="4"] {
+    transform: rotate(4deg); }
+    .hand[rotate="4"]:hover {
+      transform: rotate(4deg) scale(1.05); }
+  .hand[rotate="-4"] {
+    transform: rotate(-4deg); }
+    .hand[rotate="-4"]:hover {
+      transform: rotate(-4deg) scale(1.05); }
+  .hand[rotate="5"] {
+    transform: rotate(5deg); }
+    .hand[rotate="5"]:hover {
+      transform: rotate(5deg) scale(1.05); }
+  .hand[rotate="-5"] {
+    transform: rotate(-5deg); }
+    .hand[rotate="-5"]:hover {
+      transform: rotate(-5deg) scale(1.05); }
+  .hand[rotate="6"] {
+    transform: rotate(6deg); }
+    .hand[rotate="6"]:hover {
+      transform: rotate(6deg) scale(1.05); }
+  .hand[rotate="-6"] {
+    transform: rotate(-6deg); }
+    .hand[rotate="-6"]:hover {
+      transform: rotate(-6deg) scale(1.05); }
+  .hand[rotate="7"] {
+    transform: rotate(7deg); }
+    .hand[rotate="7"]:hover {
+      transform: rotate(7deg) scale(1.05); }
+  .hand[rotate="-7"] {
+    transform: rotate(-7deg); }
+    .hand[rotate="-7"]:hover {
+      transform: rotate(-7deg) scale(1.05); }
+  .hand[rotate="8"] {
+    transform: rotate(8deg); }
+    .hand[rotate="8"]:hover {
+      transform: rotate(8deg) scale(1.05); }
+  .hand[rotate="-8"] {
+    transform: rotate(-8deg); }
+    .hand[rotate="-8"]:hover {
+      transform: rotate(-8deg) scale(1.05); }
+  .hand[rotate="9"] {
+    transform: rotate(9deg); }
+    .hand[rotate="9"]:hover {
+      transform: rotate(9deg) scale(1.05); }
+  .hand[rotate="-9"] {
+    transform: rotate(-9deg); }
+    .hand[rotate="-9"]:hover {
+      transform: rotate(-9deg) scale(1.05); }
+  .hand[rotate="10"] {
+    transform: rotate(10deg); }
+    .hand[rotate="10"]:hover {
+      transform: rotate(10deg) scale(1.05); }
+  .hand[rotate="-10"] {
+    transform: rotate(-10deg); }
+    .hand[rotate="-10"]:hover {
+      transform: rotate(-10deg) scale(1.05); }
   .hand.top {
     animation: slideDown 500ms; }
   .hand.bottom {
     animation: slideUp 500ms; }
+  .hand:after {
+    background: rgba(84, 104, 110, 0.4);
+    width: 140px;
+    height: 195px;
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    transition: background 0.3s cubic-bezier(0.33, 0.66, 0.66, 1); }
   .hand .is-selected {
     animation: glow 100ms infinite; }
   .hand .title-section {
-    height: 50px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center; }
+    .hand .title-section p {
+      font-family: 'Roboto', sans-serif;
+      font-size: 11px;
+      line-height: 1px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-transform: uppercase; }
   .hand .icon-section {
-    border: 1px solid #333;
-    margin: 0 15px;
-    background: #f1f1f1;
-    height: 200px;
-    border: 1px solid #333;
+    width: 100%;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center; }
-    .hand .icon-section svg {
-      color: #2b2b2b; }
+    .hand .icon-section .icon {
+      background-size: 90%;
+      border-radius: 50%;
+      background-position: center;
+      width: 100px;
+      height: 100px;
+      background-repeat: no-repeat;
+      border: 1px solid #333;
+      background-color: #3f7081; }
+  .hand[type=rock] .icon {
+    background-image: url("media/rock.png"); }
+  .hand[type=spock] .icon {
+    background-image: url("media/spock.png"); }
+  .hand[type=lizard] .icon {
+    background-image: url("media/lizard.png"); }
+  .hand[type=scissors] .icon {
+    background-image: url("media/scissors.png"); }
+  .hand[type=paper] .icon {
+    background-image: url("media/paper.png"); }
   .hand .information-section {
-    height: 100%;
     padding: 5px 15px; }
     .hand .information-section h2 {
       margin: 0;
@@ -478,6 +604,8 @@ svg.small {
     cursor: pointer;
     box-shadow: 0 0 20px #000;
     transform: scale(1.05); }
+    .hand:hover .icon {
+      animation: maintainedGlow 1s forwards; }
 
 #rps {
   width: 100%;
@@ -486,45 +614,99 @@ svg.small {
   flex-direction: row;
   background: url(https://i.pinimg.com/originals/81/d3/e0/81d3e0ab582cbf6725c13ccab7d90bca.jpg);
   background-repeat: repeat-x; }
-  #rps #playboard {
-    height: 100%;
-    width: 100%;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; }
-  #rps .playingField p {
-    margin-bottom: 5px;
-    font-size: 20px; }
-  #rps .enemyplayerside,
-  #rps .thisplayerside {
-    height: 250px;
-    justify-content: space-between;
-    display: flex; }
-  #rps .board-mid {
-    display: flex;
-    align-items: center;
-    justify-content: center; }
-  #rps .handsdeck {
-    width: 800px;
-    display: flex;
-    background: radial-gradient(#3a4c3a 15%, transparent 16%) 0 0, radial-gradient(#3a4c3a 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
-    background-color: #366836;
-    background-size: 16px 16px;
-    align-items: center;
-    justify-content: space-around;
-    border: 1px solid #333;
-    box-shadow: 0 0 2px #333; }
-  #rps .spelldeck {
-    width: 300px;
-    display: flex;
-    background: radial-gradient(#3a4c3a 15%, transparent 16%) 0 0, radial-gradient(#3a4c3a 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
-    background-color: #366836;
-    background-size: 16px 16px;
-    align-items: center;
-    justify-content: space-around;
-    border: 1px solid #333;
-    box-shadow: 0 0 2px #333; }
+
+#playboard {
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 2px 0 10px #000;
+  background: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.2) 50%, transparent 50%, transparent 0), #ff9900;
+  background: -moz-linear-gradient(90deg, rgba(255, 255, 255, 0.2) 50%, transparent 50%, transparent 0), #ff9900;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 50%, transparent 50%, transparent 0), #ff9900;
+  background-position: auto auto;
+  -webkit-background-origin: padding-box;
+  background-origin: padding-box;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-background-size: 50px auto;
+  background-size: 50px auto; }
+
+.playingField {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+  .playingField > div {
+    width: 140px; }
+    .playingField > div #myHandName,
+    .playingField > div #otherHandName {
+      height: 195px;
+      width: 140px;
+      border-radius: 8px;
+      border: 0;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: inset 0 0 2px #333;
+      transition: 0.2s all;
+      cursor: pointer; }
+      .playingField > div #myHandName:hover,
+      .playingField > div #otherHandName:hover {
+        box-shadow: inset 0 0 10px #333; }
+    .playingField > div .showdown-box {
+      height: 195px;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .playingField > div .showdown-box p {
+        font-size: 18px; }
+  .playingField .resultShowdown {
+    width: 500px;
+    padding: 0 20px; }
+    .playingField .resultShowdown p {
+      text-align: center; }
+  .playingField .thisPlayerShowdown p {
+    text-align: center;
+    margin-bottom: 10px; }
+  .playingField .enemyPlayerShowdown p {
+    text-align: center;
+    margin-bottom: 10px; }
+
+.enemyplayerside,
+.thisplayerside {
+  height: 300px;
+  justify-content: space-between;
+  display: flex; }
+
+.board-mid {
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+
+.handsdeck {
+  width: 800px;
+  flex: 1;
+  margin-right: 20px;
+  background: radial-gradient(#3a4c3a 15%, transparent 16%) 0 0, radial-gradient(#3a4c3a 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
+  background-color: #366836;
+  display: flex;
+  background-size: 16px 16px;
+  align-items: center;
+  justify-content: space-around;
+  border: 1px solid #333;
+  box-shadow: 0 0 2px #333; }
+
+.spelldeck {
+  width: 350px;
+  background: radial-gradient(#3e3030 15%, transparent 16%) 0 0, radial-gradient(#800d0d 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
+  background-color: #9a1c1c;
+  display: flex;
+  background-size: 16px 16px;
+  align-items: center;
+  justify-content: space-around;
+  border: 1px solid #333;
+  box-shadow: 0 0 2px #333; }
 
 .information-pane {
   flex: 0 0 350px;

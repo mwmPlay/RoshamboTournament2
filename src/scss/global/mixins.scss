@@ -54,6 +54,12 @@
     100% { box-shadow: 0 0 -10px red; }
 }
 
+@keyframes maintainedGlow {
+    0% { box-shadow: 0 0 -10px red; }
+    40% { box-shadow: 0 0 40px red; }
+    100% { box-shadow: 0 0 40px red; }
+}
+
 @keyframes slideUp {
     from {bottom: -180px;}
     to {bottom: 0;}

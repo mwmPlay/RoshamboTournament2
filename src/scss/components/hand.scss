@@ -2,14 +2,33 @@
     display: flex;
     border: 1px solid #333;
     border-radius: 8px;
-    height: 200px;
-    width: 130px;
+    height: $hand-height;
+    width: $hand-width;
     flex-direction: column;
     border: 1px solid #333;
-    background: #b10c0c;
+    background: #42788c; 
     transition: 0.4s all;
+    box-shadow: 0 0 2px #000;
     position: relative;
 
+    @for $i from 1 through 10 {
+        &[rotate="#{$i}"] {
+            transform: rotate(#{$i}deg);
+
+            &:hover {
+                transform: rotate(#{$i}deg) scale(1.05);
+            }
+        }
+
+        &[rotate="-#{$i}"] {
+            transform: rotate(-#{$i}deg);
+
+            &:hover {
+                transform: rotate(-#{$i}deg) scale(1.05);
+            }
+        }
+    }
+   
     &.top {
         animation: slideDown 500ms;
     }
@@ -17,30 +36,74 @@
         animation: slideUp 500ms;
     }
 
+    &:after {
+        background: rgba(84,104,110,0.4);
+        width: $hand-width;
+        height: $hand-height;
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        left: 0;
+        transition: background .3s cubic-bezier(.33,.66,.66,1);
+    }
+
     .is-selected {
         animation: glow 100ms infinite;
     }
 
     .title-section {
-        height: 50px;
-        @include flexCenter;
-    }
-
-	.icon-section {
-        border: 1px solid #333;
-        margin: 0 15px;
-        background: #f1f1f1; 
-        height: 200px;
-		border: 1px solid #333;
+        height: 30px;
         @include flexCenter;
 
-        svg {         
-	        color: #2b2b2b;
+        p {
+            font-family: 'Roboto', sans-serif;
+            font-size: 11px;
+            line-height: 1px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-transform: uppercase;
         }
     }
 
+	.icon-section {
+        width: 100%;
+        height: 100px;
+        @include flexCenter;
+        
+        .icon {
+            background-size: 90%;
+            border-radius: 50%;
+            background-position: center;
+            width: 100px;
+            height: 100px;
+            background-repeat: no-repeat;
+            border: 1px solid #333;
+            background-color: #3f7081; 
+        }
+    }
+
+    &[type=rock] .icon {
+        background-image: url('media/rock.png');
+    }
+
+    &[type=spock] .icon {
+        background-image: url('media/spock.png');
+    }
+
+    &[type=lizard] .icon {
+        background-image: url('media/lizard.png');
+    }
+
+    &[type=scissors] .icon {
+        background-image: url('media/scissors.png');
+    }
+
+    &[type=paper] .icon {
+        background-image: url('media/paper.png');
+    }
+
 	.information-section {
-        height: 100%;  
         padding: 5px 15px;
   
         h2 {
@@ -61,5 +124,9 @@
         cursor: pointer;
         box-shadow: 0 0 20px #000;
         transform: scale(1.05);
+
+        .icon {
+            animation: maintainedGlow 1s forwards; 
+        }
     }
 }

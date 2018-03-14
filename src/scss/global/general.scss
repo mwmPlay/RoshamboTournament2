@@ -1,3 +1,5 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700);
+
 *,
 *:after,
 *:before {
@@ -18,6 +20,15 @@ body {
 p {
 	font-family: georgia;
 	margin: 0;
+
+	&.specialText {
+		font-family: 'Roboto', sans-serif;
+		font-weight: bold;
+		letter-spacing: 2px;
+		text-transform: uppercase;
+		text-shadow: 1px 1px 1px #000;
+		color: #fff;
+	}
 }
 
 svg {

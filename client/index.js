@@ -1,117 +1,35 @@
-
-var hands = [
-	{
-		name: 'rock',
-		result: {
-			paper: {
-				text: 'is covered by',
-				win: false
-			},
-			scissors: {
-				text: 'crushes',
-				win: true
-			},
-			lizard: {
-				text: 'crushes',
-				win: true
-			},
-			spock: {
-				text: 'is vaporized by',
-				win: false
-			}
-		}
-	},
-	{
-		name: 'paper',
-		result: {
-			rock: {
-				text: 'covers',
-				win: true
-			},
-			scissors: {
-				text: 'is cut by',
-				win: false
-			},
-			lizard: {
-				text: 'is eaten by',
-				win: false
-			},
-			spock: {
-				text: 'disproves',
-				win: true
-			}
-		}
-	},
-	{
-		name: 'scissors',
-		result: {
-			rock: {
-				text: 'are crushed by',
-				win: false
-			},
-			paper: {
-				text: 'cut',
-				win: true
-			},
-			lizard: {
-				text: 'decapitate',
-				win: true
-			},
-			spock: {
-				text: 'are smashed by',
-				win: false
-			}
-		}
-	},
-	{
-		name: 'lizard',
-		result: {
-			rock: {
-				text: 'is crushed by',
-				win: false
-			},
-			paper: {
-				text: 'eats',
-				win: true
-			},
-			scissors: {
-				text: 'is decapitated by',
-				win: false
-			},
-			spock: {
-				text: 'poisons',
-				win: true
-			}
-		}
-	},
-	{
-		name: 'spock',
-		result: {
-			rock: {
-				text: 'vaporizes',
-				win: true
-			},
-			paper: {
-				text: 'is disproved by',
-				win: false
-			},
-			scissors: {
-				text: 'smashes',
-				win: true
-			},
-			lizard: {
-				text: 'is poisoned by',
-				win: false
-			}
-		}
-	}
-];
 var soundEffects = {};
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 	var backgroundMusic = document.getElementById("background-music");
 	soundEffects.backgroundMusic = backgroundMusic;
-    backgroundMusic.play();
+   // backgroundMusic.play();
+
+   $('.handsdeck').on('mouseenter', '.hand[type="scissors"]', function(){
+		var scissorsSound = document.getElementById("scissors-sound");
+		soundEffects.scissorsSound = scissorsSound;
+	//	scissorsSound.play();
+	})
+	.on('mouseenter', '.hand[type="rock"]', function(){
+		var rockSound = document.getElementById("rock-sound");
+		soundEffects.rockSound = rockSound;
+	//	rockSound.play();
+	})
+	.on('mouseenter', '.hand[type="paper"]', function(){
+		var paperSound = document.getElementById("paper-sound");
+		soundEffects.paperSound = paperSound;
+	//	paperSound.play();
+	})
+	.on('mouseenter', '.hand[type="spock"]', function(){
+		var spockSound = document.getElementById("spock-sound");
+		soundEffects.spockSound = spockSound;
+	//	spockSound.play();
+	})
+	.on('mouseenter', '.hand[type="lizard"]', function(){
+		var lizardSound = document.getElementById("lizard-sound");
+		soundEffects.lizardSound = lizardSound;
+	//	lizardSound.play();
+	});
 });
 
 
@@ -373,7 +291,114 @@ function log(message, socket) {
 			playedHands: [],
 			maxScore: 3,
 			username: '',
-			otherUsername: ''
+			otherUsername: '',
+			handPrototypes: [ 
+				{
+					name: 'rock',
+					result: {
+						paper: {
+							text: 'is covered by',
+							win: false
+						},
+						scissors: {
+							text: 'crushes',
+							win: true
+						},
+						lizard: {
+							text: 'crushes',
+							win: true
+						},
+						spock: {
+							text: 'is vaporized by',
+							win: false
+						}
+					}
+				},
+				{
+					name: 'paper',
+					result: {
+						rock: {
+							text: 'covers',
+							win: true
+						},
+						scissors: {
+							text: 'is cut by',
+							win: false
+						},
+						lizard: {
+							text: 'is eaten by',
+							win: false
+						},
+						spock: {
+							text: 'disproves',
+							win: true
+						}
+					}
+				},
+				{
+					name: 'scissors',
+					result: {
+						rock: {
+							text: 'are crushed by',
+							win: false
+						},
+						paper: {
+							text: 'cut',
+							win: true
+						},
+						lizard: {
+							text: 'decapitate',
+							win: true
+						},
+						spock: {
+							text: 'are smashed by',
+							win: false
+						}
+					}
+				},
+				{
+					name: 'lizard',
+					result: {
+						rock: {
+							text: 'is crushed by',
+							win: false
+						},
+						paper: {
+							text: 'eats',
+							win: true
+						},
+						scissors: {
+							text: 'is decapitated by',
+							win: false
+						},
+						spock: {
+							text: 'poisons',
+							win: true
+						}
+					}
+				},
+				{
+					name: 'spock',
+					result: {
+						rock: {
+							text: 'vaporizes',
+							win: true
+						},
+						paper: {
+							text: 'is disproved by',
+							win: false
+						},
+						scissors: {
+							text: 'smashes',
+							win: true
+						},
+						lizard: {
+							text: 'is poisoned by',
+							win: false
+						}
+					}
+				}
+			]
 		},
 		computed: {
 			myHandName: function () {
@@ -393,6 +418,10 @@ function log(message, socket) {
 			}
 		},
 		methods: {
+			randomRotationDegree: function () {
+				var modifier = Math.random() > 0.5 ? -1 : 1;
+				return Math.floor(Math.random() * (5)) * modifier;
+			},
 			handButtonTooltip: function (hand) {
 				var tooltip = '';
 				
@@ -413,7 +442,7 @@ function log(message, socket) {
 						resultText = (isPlural ? 'are' : 'is') + ' the same as';
 						resultVerb = 'draw' + (isPlural ? '' : 's');
 					} else {
-						var hand = hands.find(function(elem) {
+						var hand = this.handPrototypes.find(function(elem) {
 							return elem.name === myHandName;
 						});
 						var result = hand.result[otherHandName];
@@ -452,10 +481,11 @@ function log(message, socket) {
 			},
 			calculateTotalScore: function (won) {
 				var result = 0;
+				var _this = this;
 				
 				this.playedHands.forEach(function (playedHand) {
 					if (playedHand.myHandName !== '' && playedHand.otherHandName !== '' && playedHand.myHandName !== playedHand.otherHandName) {
-						var myHand = hands.find(function(elem) {
+						var myHand = _this.handPrototypes.find(function(elem) {
 							return elem.name === playedHand.myHandName;
 						});
 						var handResult = myHand.result[playedHand.otherHandName];
@@ -486,7 +516,7 @@ function log(message, socket) {
 				this.addHandToDeck('thisPlayer', 'lizard');
 			},
 			addHandToDeck: function(player, type){
-				this[player].hands.push(hands[type]);
+				this[player].hands.push(this.hands[type]);
 			}
 		}
 	});

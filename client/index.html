@@ -13,12 +13,14 @@
 		<div id="playboard">
 			<div class="enemyplayerside">
 				<div class="handsdeck">
-					<div class="hand top" v-for="hand in enemyPlayer.hands">
+					<div v-bind:type="hand.name" class="hand top" v-for="hand in enemyPlayer.hands" v-bind:rotate="randomRotationDegree()">
 						<div class="title-section">
-							<p>{{hand.name}}</p>
+							<p class="specialText">{{hand.name}}</p>
 						</div>
 						<div class="icon-section">
-							<i v-bind:type="hand.name" v-bind:class="'fa-3x far fa-hand-'+hand.name"></i>
+							<div class="icon">
+
+							</div>
 						</div>
 						<div class="information-section">
 						</div>
@@ -31,35 +33,68 @@
 			<div class="board-mid">
 
 				<div class="playingField">
-					<p>
-						You played:
-					</p>
-					<p id="myHandName">
-						{{myHandName}}
-					</p>
-					<p>
-						Other played:
-					</p>
-					<p id="otherHandName">
-						{{otherHandName}}<span v-if="otherHasChosen && otherHandName === ''">The other player has chosen a hand, it will be shown once you choose your hand</span>
-					</p>
-					<p>
-						Result of this hand:
-					</p>
-					<p id="handResult">
-						{{handResult(myHandName, otherHandName)}}
-					</p>
+					<div class="thisPlayerShowdown">
+						<p class="specialText">
+							You played:
+						</p>
+						<div id="myHandName">
+							<div v-if="myHandName != ''" v-bind:type="myHandName" class="hand top">
+								<div class="title-section">
+									<p class="specialText">{{myHandName}}</p>
+								</div>
+								<div class="icon-section">
+									<div class="icon">
+		
+									</div>
+								</div>
+								<div class="information-section">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="resultShowdown">
+						<p class="specialText">
+							Result of this hand:
+						</p>
+						<div class="showdown-box">
+							<p class="specialText" id="handResult">
+								{{handResult(myHandName, otherHandName)}}
+							</p>
+							<p  class="specialText" v-if="otherHasChosen && otherHandName === ''">The other player has chosen a hand, it will be shown once you choose your hand</p>
+						</div>
+					</div>
+					<div class="enemyPlayerShowdown">
+						<p class="specialText">
+							Other played:
+						</p>
+						<div id="otherHandName">
+							<div v-if="otherHandName != ''" v-bind:type="otherHandName" class="hand top">
+								<div class="title-section">
+									<p class="specialText">{{otherHandName}}</p>
+								</div>
+								<div class="icon-section">
+									<div class="icon">
+		
+									</div>
+								</div>
+								<div class="information-section">
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 
 			<div class="thisplayerside">
 				<div class="handsdeck">
-					<div class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" v-bind:title="handButtonTooltip(hand)" @click="playHand(hand.name, handIndex)" v-for="(hand, handIndex) in thisPlayer.hands">
+					<div v-bind:type="hand.name" class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" v-bind:title="handButtonTooltip(hand)" @click="playHand(hand.name, handIndex)" v-for="(hand, handIndex) in thisPlayer.hands"  v-bind:rotate="randomRotationDegree()">
 						<div class="title-section">
-							<p>{{hand.name}}</p>
+							<p class="specialText">{{hand.name}}</p>
 						</div>
 						<div class="icon-section">
-							<i v-bind:type="hand.name" v-bind:class="'fa-3x far fa-hand-'+hand.name"></i>
+							<div class="icon">
+							
+							</div>
 						</div>
 						<div class="information-section">
 							
@@ -113,7 +148,10 @@
 		</div>
 	</div>
 
-	
+	<script
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 	<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
@@ -121,6 +159,21 @@
 </body>
 </html>
 
-<audio controls preload="auto" id="background-music">
+<audio controls loop preload="auto" id="background-music">
 	<source src="media/Gran Batalla.mp3" type="audio/mpeg">
+</audio>
+<audio controls preload="auto" id="scissors-sound">
+	<source src="media/scissors.mp3" type="audio/mpeg">
+</audio>
+<audio controls preload="auto" id="rock-sound">
+	<source src="media/rock.mp3" type="audio/mpeg">
+</audio>
+<audio controls preload="auto" id="paper-sound">
+	<source src="media/paper.mp3" type="audio/mpeg">
+</audio>
+<audio controls preload="auto" id="spock-sound">
+	<source src="media/spock.mp3" type="audio/mpeg">
+</audio>
+<audio controls preload="auto" id="lizard-sound">
+	<source src="media/lizard.mp3" type="audio/mpeg">
 </audio>
