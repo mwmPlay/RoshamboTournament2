@@ -58,12 +58,27 @@ io.on('connection', function(socket) {
 			// a user with this name already exists, ask for a new name
 			socket.emit('authenticateFail', 'That name is already used by someone else. Choose a different name.');
 		} else {
+			// build a new session
 			var sessionId = Guid.create();
 			var session = {
 				id: sessionId,
 				username: username,
-				playedHands: []
+				playedHands: [],
+				otherUsers: []
 			};
+			
+			for (existingUsername in sessionsByUsername) {
+				// put existing users in new session
+				session.otherUsers.push({
+					name: existingUsername
+				});
+				
+				// and add this new user to the existing sessions
+				sessionsByUsername[existingUsername].otherUsers.push({
+					name: username
+				});
+			}
+			
 			sessions[sessionId] = session;
 			sessionsByUsername[username] = session;
 			
@@ -73,19 +88,15 @@ io.on('connection', function(socket) {
 			if (!player1) {
 				player1 = session;
 				
-				socket.broadcast.emit('playerJoined', username);
 			} else if (!player2) {
 				player2 = session;
 				
 				// now we know both players' names
 				player2.otherUsername = player1.username;
 				player1.otherUsername = player2.username;
-				
-				// player 2 missed the original broadcast of the "player joined" signal of player 1, so send it again
-				socket.emit('playerJoined', player1.username);
-				
-				socket.broadcast.emit('playerJoined', username);
 			}
+			
+			socket.broadcast.emit('playerJoined', username);
 		}
 	});
 	
