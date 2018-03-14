@@ -1,0 +1,65 @@
+.hand {
+    display: flex;
+    border: 1px solid #333;
+    border-radius: 8px;
+    height: 200px;
+    width: 130px;
+    flex-direction: column;
+    border: 1px solid #333;
+    background: #b10c0c;
+    transition: 0.4s all;
+    position: relative;
+
+    &.top {
+        animation: slideDown 500ms;
+    }
+    &.bottom {
+        animation: slideUp 500ms;
+    }
+
+    .is-selected {
+        animation: glow 100ms infinite;
+    }
+
+    .title-section {
+        height: 50px;
+        @include flexCenter;
+    }
+
+	.icon-section {
+        border: 1px solid #333;
+        margin: 0 15px;
+        background: #f1f1f1; 
+        height: 200px;
+		border: 1px solid #333;
+        @include flexCenter;
+
+        svg {         
+	        color: #2b2b2b;
+        }
+    }
+
+	.information-section {
+        height: 100%;  
+        padding: 5px 15px;
+  
+        h2 {
+            margin: 0;
+            font-size: 12px;
+        }
+
+        label {
+            font-size: 10px;
+        }
+
+        .icons {     
+            height: 12px;
+        }
+    }
+
+    &:hover {
+        cursor: pointer;
+        box-shadow: 0 0 20px #000;
+        transform: scale(1.05);
+    }
+}

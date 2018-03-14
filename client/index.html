@@ -4,71 +4,123 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Roshambo Tournament 2</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="index.css">
 	<script src="https://unpkg.com/vue"></script>
 </head>
 
 <body>
-	<div id="app">
-		<div class="playingField">
-			<div>
-				You are:
+	<div id="rps">
+		<div id="playboard">
+			<div class="enemyplayerside">
+				<div class="handsdeck">
+					<div class="hand top" v-for="hand in enemyPlayer.hands">
+						<div class="title-section">
+							<p>{{hand.name}}</p>
+						</div>
+						<div class="icon-section">
+							<i v-bind:type="hand.name" v-bind:class="'fa-3x far fa-hand-'+hand.name"></i>
+						</div>
+						<div class="information-section">
+						</div>
+					</div>
+				</div>
+				<div class="spelldeck">
+			
+				</div>
 			</div>
-			<div id="username">
-				{{username}}
+			<div class="board-mid">
+
+				<div class="playingField">
+					<p>
+						You played:
+					</p>
+					<p id="myHandName">
+						{{myHandName}}
+					</p>
+					<p>
+						Other played:
+					</p>
+					<p id="otherHandName">
+						{{otherHandName}}<span v-if="otherHasChosen && otherHandName === ''">The other player has chosen a hand, it will be shown once you choose your hand</span>
+					</p>
+					<p>
+						Result of this hand:
+					</p>
+					<p id="handResult">
+						{{handResult(myHandName, otherHandName)}}
+					</p>
+				</div>
 			</div>
-			<div>
-				Playing against:
-			</div>
-			<div id="otherUsername">
-				{{otherUsername}}
-			</div>
-			<div>
-				You played:
-			</div>
-			<div id="myHandName">
-				{{myHandName}}
-			</div>
-			<div>
-				Other played:
-			</div>
-			<div id="otherHandName">
-				{{otherHandName}}<span v-if="otherHasChosen && otherHandName === ''">The other player has chosen a hand, it will be shown once you choose your hand</span>
-			</div>
-			<div>
-				Result of this hand:
-			</div>
-			<div id="handResult">
-				{{handResult(myHandName, otherHandName)}}
-			</div>
-			<div>
-				Score:
-			</div>
-			<div id="score">
-				{{myScore}} - {{otherScore}}
+
+			<div class="thisplayerside">
+				<div class="handsdeck">
+					<div class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" v-bind:title="handButtonTooltip(hand)" @click="playHand(hand.name, handIndex)" v-for="(hand, handIndex) in thisPlayer.hands">
+						<div class="title-section">
+							<p>{{hand.name}}</p>
+						</div>
+						<div class="icon-section">
+							<i v-bind:type="hand.name" v-bind:class="'fa-3x far fa-hand-'+hand.name"></i>
+						</div>
+						<div class="information-section">
+							
+						</div>
+					</div>
+				</div>
+				<div class="spelldeck">
+			
+				</div>
 			</div>
 		</div>
-		<div class="controls" v-if="username !== '' && otherUsername !== ''">
-			<div class="handButton" v-for="hand in hands">
-				<input type="button" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" v-model="hand.name" @click="playHand(hand.name)" v-bind:title="handButtonTooltip(hand)">
+		<div class="information-pane">
+			<div class="toolbar">				
+				<div class="controls" v-if="username !== '' && otherUsername !== ''">
+					<input type="button" v-if="handResult(myHandName, otherHandName) !== '' && myScore < maxScore && otherScore < maxScore" value="next round" @click="nextRound()">
+					<input type="button" v-if="myScore === maxScore || otherScore === maxScore" value="new game" @click="newGame()">
+				</div>
 			</div>
-			<input type="button" v-if="handResult(myHandName, otherHandName) !== '' && myScore < maxScore && otherScore < maxScore" value="next round" @click="nextRound()">
-			<input type="button" v-if="myScore === maxScore || otherScore === maxScore" value="new game" @click="newGame()">
-		</div>
-		<div class="historyTitle">
-			Previously played hands:
-		</div>
-		<div class="history">
-			<div v-for="(playedHand, index) in playedHands">
-				Round {{index + 1}}: {{handResult(playedHand.myHandName, playedHand.otherHandName)}}
+			<div class="player-info">
+				<div class="player-container">
+					<p>
+						You are:
+					</p>
+					<p class="userName">
+						{{username}}
+					</p>
+				</div>
+				<div class="enemyplayer-container">
+					<p>
+						Playing against:
+					</p>
+					<p class="userName">
+						{{otherUsername}}
+					</p>
+				</div>
+				<div class="score-container">
+					<p>
+						Score:
+					</p>
+					<p id="score">
+						{{myScore}} - {{otherScore}}
+					</p>
+				</div>
+			</div>
+
+			<div class="history">
+				<p v-for="(playedHand, index) in playedHands">
+					Round {{index + 1}}: {{handResult(playedHand.myHandName, playedHand.otherHandName)}}
+				</p>
 			</div>
 		</div>
 	</div>
+
 	
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
-	<script src="shared/logic.js"></script>
+	<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
 	<script src="index.js"></script>
 </body>
 </html>
+
+<audio controls preload="auto" id="background-music">
+	<source src="media/Gran Batalla.mp3" type="audio/mpeg">
+</audio>

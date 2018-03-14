@@ -1,0 +1,65 @@
+@mixin centerElementOnScreen() {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@mixin flexCenter(){
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 100%;
+    }
+}
+
+@keyframes fadeInDelay {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 100%;
+    }
+}
+
+@keyframes bounceIn {
+    0%{
+        transform: scale(0.3) translate3d(0,0,0);
+    }
+    50%{
+        transform: scale(1.1);
+    }
+    80%{
+        transform: scale(0.89);
+    }
+    100%{
+        transform: scale(1) translate3d(0,0,0);
+    }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 -10px red; }
+    40% { box-shadow: 0 0 40px red; }
+    60% { box-shadow: 0 0 40px red; }
+    100% { box-shadow: 0 0 -10px red; }
+}
+
+@keyframes slideUp {
+    from {bottom: -180px;}
+    to {bottom: 0;}
+}
+
+@keyframes slideDown {
+    from {top: -180px;}
+    to {top: 0;}
+}

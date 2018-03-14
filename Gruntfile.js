@@ -1,28 +1,27 @@
 module.exports = function(grunt) {
-	require('load-grunt-tasks')(grunt);
-	
-	// Project configuration.
+    grunt.loadNpmTasks('grunt-contrib-sass');
+	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+
 	grunt.initConfig({
+	    pkg: grunt.file.readJSON('package.json'),
 		sass: {
-			options: {
-				sourceMap: true
-			},
 			dist: {
-				files: [
-					{
-						//{'client/index.css': 'src/index.scss'}
-						// Set to true for recursive search
-						expand: true,
-						cwd: 'src/',
-						src: ['**/*.scss'],
-						dest: 'client/',
-						ext: '.css'
-					}
-				]
+				files: {
+				    'client/index.css': [
+						'src/scss/main.scss'
+				    ]
+				}
+			}
+		},
+		watch : {
+			css: {
+			    files: [
+					'src/**/*.scss'
+			    ],
+			    tasks: ['sass']
 			}
 		}
-	});
-
-	// Default task(s).
-	grunt.registerTask('default', ['sass']);
+	})
+	grunt.registerTask('default', 'watch');
 };

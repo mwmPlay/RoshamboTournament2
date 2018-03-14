@@ -1,3 +1,121 @@
+
+var hands = [
+	{
+		name: 'rock',
+		result: {
+			paper: {
+				text: 'is covered by',
+				win: false
+			},
+			scissors: {
+				text: 'crushes',
+				win: true
+			},
+			lizard: {
+				text: 'crushes',
+				win: true
+			},
+			spock: {
+				text: 'is vaporized by',
+				win: false
+			}
+		}
+	},
+	{
+		name: 'paper',
+		result: {
+			rock: {
+				text: 'covers',
+				win: true
+			},
+			scissors: {
+				text: 'is cut by',
+				win: false
+			},
+			lizard: {
+				text: 'is eaten by',
+				win: false
+			},
+			spock: {
+				text: 'disproves',
+				win: true
+			}
+		}
+	},
+	{
+		name: 'scissors',
+		result: {
+			rock: {
+				text: 'are crushed by',
+				win: false
+			},
+			paper: {
+				text: 'cut',
+				win: true
+			},
+			lizard: {
+				text: 'decapitate',
+				win: true
+			},
+			spock: {
+				text: 'are smashed by',
+				win: false
+			}
+		}
+	},
+	{
+		name: 'lizard',
+		result: {
+			rock: {
+				text: 'is crushed by',
+				win: false
+			},
+			paper: {
+				text: 'eats',
+				win: true
+			},
+			scissors: {
+				text: 'is decapitated by',
+				win: false
+			},
+			spock: {
+				text: 'poisons',
+				win: true
+			}
+		}
+	},
+	{
+		name: 'spock',
+		result: {
+			rock: {
+				text: 'vaporizes',
+				win: true
+			},
+			paper: {
+				text: 'is disproved by',
+				win: false
+			},
+			scissors: {
+				text: 'smashes',
+				win: true
+			},
+			lizard: {
+				text: 'is poisoned by',
+				win: false
+			}
+		}
+	}
+];
+var soundEffects = {};
+
+document.addEventListener("DOMContentLoaded", function(event) { 
+	var backgroundMusic = document.getElementById("background-music");
+	soundEffects.backgroundMusic = backgroundMusic;
+    backgroundMusic.play();
+});
+
+
+
 // clone any object, severing all references within
 function clone(object) {
 	return JSON.parse(JSON.stringify(object));
@@ -17,115 +135,241 @@ function log(message, socket) {
 	var socket = io();
 	
 	var app = new Vue({
-		el: '#app',
+		el: '#rps',
 		data: {
-			hands : [
-				{
-					name: 'rock',
-					result: {
-						paper: {
-							text: 'is covered by',
-							win: false
-						},
-						scissors: {
-							text: 'crushes',
-							win: true
-						},
-						lizard: {
-							text: 'crushes',
-							win: true
-						},
-						spock: {
-							text: 'is vaporized by',
-							win: false
+			enemyPlayer: {
+				hands: [ // Deze objecten moeten eigenlijk leeg zijn en dan gevuld worden bij initialize
+					{
+						name: 'rock',
+						id: 1,
+						result: {
+							paper: {
+								text: 'is covered by',
+								win: false
+							},
+							scissors: {
+								text: 'crushes',
+								win: true
+							},
+							lizard: {
+								text: 'crushes',
+								win: true
+							},
+							spock: {
+								text: 'is vaporized by',
+								win: false
+							}
+						}
+					},
+					{
+						name: 'paper',
+						id: 2,
+						result: {
+							rock: {
+								text: 'covers',
+								win: true
+							},
+							scissors: {
+								text: 'is cut by',
+								win: false
+							},
+							lizard: {
+								text: 'is eaten by',
+								win: false
+							},
+							spock: {
+								text: 'disproves',
+								win: true
+							}
+						}
+					},
+					{
+						name: 'scissors',
+						id: 3,
+						result: {
+							rock: {
+								text: 'are crushed by',
+								win: false
+							},
+							paper: {
+								text: 'cut',
+								win: true
+							},
+							lizard: {
+								text: 'decapitate',
+								win: true
+							},
+							spock: {
+								text: 'are smashed by',
+								win: false
+							}
+						}
+					},
+					{
+						name: 'lizard',
+						id: 4,
+						result: {
+							rock: {
+								text: 'is crushed by',
+								win: false
+							},
+							paper: {
+								text: 'eats',
+								win: true
+							},
+							scissors: {
+								text: 'is decapitated by',
+								win: false
+							},
+							spock: {
+								text: 'poisons',
+								win: true
+							}
+						}
+					},
+					{
+						name: 'spock',
+						id: 5,
+						result: {
+							rock: {
+								text: 'vaporizes',
+								win: true
+							},
+							paper: {
+								text: 'is disproved by',
+								win: false
+							},
+							scissors: {
+								text: 'smashes',
+								win: true
+							},
+							lizard: {
+								text: 'is poisoned by',
+								win: false
+							}
 						}
 					}
-				},
-				{
-					name: 'paper',
-					result: {
-						rock: {
-							text: 'covers',
-							win: true
-						},
-						scissors: {
-							text: 'is cut by',
-							win: false
-						},
-						lizard: {
-							text: 'is eaten by',
-							win: false
-						},
-						spock: {
-							text: 'disproves',
-							win: true
+				]
+			},
+			thisPlayer: {
+				hands: [
+					{
+						name: 'rock',
+						id: 1,
+						isSelected: false,
+						result: {
+							paper: {
+								text: 'is covered by',
+								win: false
+							},
+							scissors: {
+								text: 'crushes',
+								win: true
+							},
+							lizard: {
+								text: 'crushes',
+								win: true
+							},
+							spock: {
+								text: 'is vaporized by',
+								win: false
+							}
+						}
+					},
+					{
+						name: 'paper',
+						id: 2,
+						isSelected: false,
+						result: {
+							rock: {
+								text: 'covers',
+								win: true
+							},
+							scissors: {
+								text: 'is cut by',
+								win: false
+							},
+							lizard: {
+								text: 'is eaten by',
+								win: false
+							},
+							spock: {
+								text: 'disproves',
+								win: true
+							}
+						}
+					},
+					{
+						name: 'scissors',
+						id: 3,
+						isSelected: false,
+						result: {
+							rock: {
+								text: 'are crushed by',
+								win: false
+							},
+							paper: {
+								text: 'cut',
+								win: true
+							},
+							lizard: {
+								text: 'decapitate',
+								win: true
+							},
+							spock: {
+								text: 'are smashed by',
+								win: false
+							}
+						}
+					},
+					{
+						name: 'lizard',
+						id: 4,
+						isSelected: false,
+						result: {
+							rock: {
+								text: 'is crushed by',
+								win: false
+							},
+							paper: {
+								text: 'eats',
+								win: true
+							},
+							scissors: {
+								text: 'is decapitated by',
+								win: false
+							},
+							spock: {
+								text: 'poisons',
+								win: true
+							}
+						}
+					},
+					{
+						name: 'spock',
+						id: 5,
+						isSelected: false,
+						result: {
+							rock: {
+								text: 'vaporizes',
+								win: true
+							},
+							paper: {
+								text: 'is disproved by',
+								win: false
+							},
+							scissors: {
+								text: 'smashes',
+								win: true
+							},
+							lizard: {
+								text: 'is poisoned by',
+								win: false
+							}
 						}
 					}
-				},
-				{
-					name: 'scissors',
-					result: {
-						rock: {
-							text: 'are crushed by',
-							win: false
-						},
-						paper: {
-							text: 'cut',
-							win: true
-						},
-						lizard: {
-							text: 'decapitate',
-							win: true
-						},
-						spock: {
-							text: 'are smashed by',
-							win: false
-						}
-					}
-				},
-				{
-					name: 'lizard',
-					result: {
-						rock: {
-							text: 'is crushed by',
-							win: false
-						},
-						paper: {
-							text: 'eats',
-							win: true
-						},
-						scissors: {
-							text: 'is decapitated by',
-							win: false
-						},
-						spock: {
-							text: 'poisons',
-							win: true
-						}
-					}
-				},
-				{
-					name: 'spock',
-					result: {
-						rock: {
-							text: 'vaporizes',
-							win: true
-						},
-						paper: {
-							text: 'is disproved by',
-							win: false
-						},
-						scissors: {
-							text: 'smashes',
-							win: true
-						},
-						lizard: {
-							text: 'is poisoned by',
-							win: false
-						}
-					}
-				}
-			],
+				]
+			},
 			playedHands: [],
 			maxScore: 3,
 			username: '',
@@ -169,7 +413,7 @@ function log(message, socket) {
 						resultText = (isPlural ? 'are' : 'is') + ' the same as';
 						resultVerb = 'draw' + (isPlural ? '' : 's');
 					} else {
-						var hand = this.hands.find(function(elem) {
+						var hand = hands.find(function(elem) {
 							return elem.name === myHandName;
 						});
 						var result = hand.result[otherHandName];
@@ -182,10 +426,10 @@ function log(message, socket) {
 					return '';
 				}
 			},
-			playHand: function(myHandName) {
+			playHand: function(myHandName, handIndex) {
 				log('hand played by me: ' + myHandName, socket);
 				
-				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', myHandName);
+				this.savePlayedHandToHistory('myHandName', myHandName);
 				
 				var playedHandJson = JSON.stringify({
 					username: this.username,
@@ -195,12 +439,23 @@ function log(message, socket) {
 				
 				socket.emit('playHand', playedHandJson);
 			},
+			savePlayedHandToHistory: function (key, value) {
+				if (this.playedHands.length === 0 || (this.playedHands[this.playedHands.length - 1].myHandName !== '' && this.playedHands[this.playedHands.length - 1].otherHandName !== '')) {
+					this.playedHands.push({
+						myHandName: '',
+						otherHandName: '',
+						otherHasChosen: false
+					});
+				}
+				
+				this.playedHands[this.playedHands.length - 1][key] = value;
+			},
 			calculateTotalScore: function (won) {
 				var result = 0;
 				
 				this.playedHands.forEach(function (playedHand) {
 					if (playedHand.myHandName !== '' && playedHand.otherHandName !== '' && playedHand.myHandName !== playedHand.otherHandName) {
-						var myHand = app.hands.find(function(elem) {
+						var myHand = hands.find(function(elem) {
 							return elem.name === playedHand.myHandName;
 						});
 						var handResult = myHand.result[playedHand.otherHandName];
@@ -213,18 +468,32 @@ function log(message, socket) {
 			},
 			nextRound: function() {
 				// add a dummy hand
-				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', '');
+				this.savePlayedHandToHistory('myHandName', '');
 			},
 			newGame: function() {
 				this.playedHands.splice(0);
 				socket.emit('newGame', this.username);
+
+				this.addHandToDeck('enemyPlayer', 'rock');
+				this.addHandToDeck('enemyPlayer', 'paper');
+				this.addHandToDeck('enemyPlayer', 'scissors');
+				this.addHandToDeck('enemyPlayer', 'spock');
+				this.addHandToDeck('enemyPlayer', 'lizard');
+				this.addHandToDeck('thisPlayer', 'rock');
+				this.addHandToDeck('thisPlayer', 'paper');
+				this.addHandToDeck('thisPlayer', 'scissors');
+				this.addHandToDeck('thisPlayer', 'spock');
+				this.addHandToDeck('thisPlayer', 'lizard');
+			},
+			addHandToDeck: function(player, type){
+				this[player].hands.push(hands[type]);
 			}
 		}
 	});
 	
 	socket.on('handChosen', function(otherUsername) {
 		log('hand was chosen, but not yet played by other: ' + otherUsername, socket);
-		logic.savePlayedHandToHistory(app.playedHands, 'otherHasChosen', true);
+		app.savePlayedHandToHistory('otherHasChosen', true);
 	});
 	
 	socket.on('playHand', function(playedHandJson) {
@@ -232,7 +501,7 @@ function log(message, socket) {
 		var playedHand = JSON.parse(playedHandJson);
 		
 		if (playedHand.username === app.otherUsername && playedHand.otherUsername === app.username) {
-			logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
+			app.savePlayedHandToHistory('otherHandName', playedHand.myHandName);
 		}
 	});
 	

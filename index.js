@@ -4,11 +4,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-// guids for sessions
 var Guid = require('guid');
-
-// the business logic shared between clients and server
-var logic = require('./shared/logic.js');
 
 // log4node
 function log(message, socket) {
@@ -26,9 +22,8 @@ app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/client/index.html');
 });
 
-// serve all stuff in client and shared as static files
+// serve all stuff in client as static files
 app.use(express.static('client'));
-app.use('/shared', express.static('shared'));
 
 // the port we will be listening to
 http.listen(3000, function() {
@@ -40,6 +35,18 @@ var sessions = {};
 var sessionsByUsername = {};
 var player1 = null;
 var player2 = null;
+
+function savePlayedHandToHistory(playedHands, key, value) {
+	if (playedHands.length === 0 || (playedHands[playedHands.length - 1].myHandName !== '' && playedHands[playedHands.length - 1].otherHandName !== '')) {
+		playedHands.push({
+			myHandName: '',
+			otherHandName: '',
+			otherHasChosen: false
+		});
+	}
+	
+	playedHands[playedHands.length - 1][key] = value;
+}
 
 // socket event handlers
 io.on('connection', function(socket) {
@@ -105,11 +112,11 @@ io.on('connection', function(socket) {
 		var playedHand = JSON.parse(playedHandJson);
 		
 		if (playedHand.username === player1.username && playedHand.otherUsername === player2.username) {
-			logic.savePlayedHandToHistory(player1.playedHands, 'myHandName', playedHand.myHandName);
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherHandName', playedHand.myHandName);
+			savePlayedHandToHistory(player1.playedHands, 'myHandName', playedHand.myHandName);
+			savePlayedHandToHistory(player2.playedHands, 'otherHandName', playedHand.myHandName);
 		} else if (playedHand.username === player2.username && playedHand.otherUsername === player1.username) {
-			logic.savePlayedHandToHistory(player2.playedHands, 'myHandName', playedHand.myHandName);
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherHandName', playedHand.myHandName);
+			savePlayedHandToHistory(player2.playedHands, 'myHandName', playedHand.myHandName);
+			savePlayedHandToHistory(player1.playedHands, 'otherHandName', playedHand.myHandName);
 		}
 		
 		var player1sHandName = player1.playedHands[player1.playedHands.length - 1].myHandName;
@@ -135,9 +142,9 @@ io.on('connection', function(socket) {
 			io.emit('playHand', playedHandJson);
 		} else {
 			if (playedHand.username === player1.username && playedHand.otherUsername === player2.username) {
-				logic.savePlayedHandToHistory(player2.playedHands, 'otherHasChosen', true);
+				savePlayedHandToHistory(player2.playedHands, 'otherHasChosen', true);
 			} else if (playedHand.username === player2.username && playedHand.otherUsername === player1.username) {
-				logic.savePlayedHandToHistory(player1.playedHands, 'otherHasChosen', true);
+				savePlayedHandToHistory(player1.playedHands, 'otherHasChosen', true);
 			}
 			
 			socket.broadcast.emit('handChosen', playedHand.username);
