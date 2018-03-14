@@ -3,6 +3,7 @@
     opacity: 0; }
   100% {
     opacity: 100%; } }
+
 @keyframes fadeInDelay {
   0% {
     opacity: 0; }
@@ -10,6 +11,7 @@
     opacity: 0; }
   100% {
     opacity: 100%; } }
+
 @keyframes bounceIn {
   0% {
     transform: scale(0.3) translate3d(0, 0, 0); }
@@ -19,6 +21,7 @@
     transform: scale(0.89); }
   100% {
     transform: scale(1) translate3d(0, 0, 0); } }
+
 @keyframes glow {
   0% {
     box-shadow: 0 0 -10px red; }
@@ -28,16 +31,19 @@
     box-shadow: 0 0 40px red; }
   100% {
     box-shadow: 0 0 -10px red; } }
+
 @keyframes slideUp {
   from {
     bottom: -180px; }
   to {
     bottom: 0; } }
+
 @keyframes slideDown {
   from {
     top: -180px; }
   to {
     top: 0; } }
+
 /*! normalize.css v6.0.0 | MIT License | github.com/necolas/normalize.css */
 /* Document
    ========================================================================== */
@@ -539,9 +545,9 @@ svg.small {
     display: flex;
     flex-wrap: wrap;
     /*  p {
-          color: #dedede;
-          text-shadow: 0 0 2px #000;
-      }*/ }
+            color: #dedede;
+            text-shadow: 0 0 2px #000;
+        }*/ }
     .information-pane .player-info .player-container {
       width: calc(50% - 5px);
       padding: 10px;
