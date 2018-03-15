@@ -260,10 +260,6 @@ function log(message, socket) {
 				
 				return result;
 			},
-			nextRound: function() {
-				// add a dummy hand
-				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', '');
-			},
 			newGame: function() {
 				this.playedHands.splice(0); 
 				socket.emit('newGame', this.username);

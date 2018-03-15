@@ -109,7 +109,6 @@
 		<div class="information-pane">
 			<div class="toolbar">				
 				<div class="controls" v-if="username !== '' && otherUsername !== ''">
-					<a href="#" v-if="handResult(myHandName, otherHandName) !== '' && myScore < maxScore && otherScore < maxScore" data-icon="♛" class="button pink shield glass" @click="nextRound()">Next Round </a>
 					<a href="#" data-icon="♚" type="button" v-if="myScore === maxScore || otherScore === maxScore" @click="newGame()" class="button orange shield glossy">New Game</a>
 				</div>
 			</div>
