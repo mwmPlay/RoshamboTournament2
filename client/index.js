@@ -1,9 +1,16 @@
 var soundEffects = {};
 
 document.addEventListener("DOMContentLoaded", function(event) { 
-	var backgroundMusic = document.getElementById("background-music");
+	var carddeal = document.getElementById("carddeal-sound");
+	soundEffects.carddeal = carddeal;
+	var carddeal2 = document.getElementById("carddeal-sound2");
+	soundEffects.carddeal2 = carddeal2;
+	var shuffling = document.getElementById("shuffling-sound");
+	soundEffects.shuffling = shuffling;
+
+/*	var backgroundMusic = document.getElementById("background-music");
 	soundEffects.backgroundMusic = backgroundMusic;
-   // backgroundMusic.play();
+    backgroundMusic.play();
 
    $('.handsdeck').on('mouseenter', '.hand[type="scissors"]', function(){
 		var scissorsSound = document.getElementById("scissors-sound");
@@ -29,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		var lizardSound = document.getElementById("lizard-sound");
 		soundEffects.lizardSound = lizardSound;
 		lizardSound.play();
-	});
+	});*/
 });
 
 // clone any object, severing all references within
@@ -54,245 +61,18 @@ function log(message, socket) {
 		el: '#rps',
 		data: {
 			enemyPlayer: {
-				hands: [ // Deze objecten moeten eigenlijk leeg zijn en dan gevuld worden bij initialize
-					{
-						name: 'rock',
-						id: 1,
-						result: {
-							paper: {
-								text: 'is covered by',
-								win: false
-							},
-							scissors: {
-								text: 'crushes',
-								win: true
-							},
-							lizard: {
-								text: 'crushes',
-								win: true
-							},
-							spock: {
-								text: 'is vaporized by',
-								win: false
-							}
-						}
-					},
-					{
-						name: 'paper',
-						id: 2,
-						result: {
-							rock: {
-								text: 'covers',
-								win: true
-							},
-							scissors: {
-								text: 'is cut by',
-								win: false
-							},
-							lizard: {
-								text: 'is eaten by',
-								win: false
-							},
-							spock: {
-								text: 'disproves',
-								win: true
-							}
-						}
-					},
-					{
-						name: 'scissors',
-						id: 3,
-						result: {
-							rock: {
-								text: 'are crushed by',
-								win: false
-							},
-							paper: {
-								text: 'cut',
-								win: true
-							},
-							lizard: {
-								text: 'decapitate',
-								win: true
-							},
-							spock: {
-								text: 'are smashed by',
-								win: false
-							}
-						}
-					},
-					{
-						name: 'lizard',
-						id: 4,
-						result: {
-							rock: {
-								text: 'is crushed by',
-								win: false
-							},
-							paper: {
-								text: 'eats',
-								win: true
-							},
-							scissors: {
-								text: 'is decapitated by',
-								win: false
-							},
-							spock: {
-								text: 'poisons',
-								win: true
-							}
-						}
-					},
-					{
-						name: 'spock',
-						id: 5,
-						result: {
-							rock: {
-								text: 'vaporizes',
-								win: true
-							},
-							paper: {
-								text: 'is disproved by',
-								win: false
-							},
-							scissors: {
-								text: 'smashes',
-								win: true
-							},
-							lizard: {
-								text: 'is poisoned by',
-								win: false
-							}
-						}
-					}
-				]
+				hands: []
 			},
 			thisPlayer: {
-				hands: [
-					{
-						name: 'rock',
-						id: 1,
-						isSelected: false,
-						result: {
-							paper: {
-								text: 'is covered by',
-								win: false
-							},
-							scissors: {
-								text: 'crushes',
-								win: true
-							},
-							lizard: {
-								text: 'crushes',
-								win: true
-							},
-							spock: {
-								text: 'is vaporized by',
-								win: false
-							}
-						}
-					},
-					{
-						name: 'paper',
-						id: 2,
-						isSelected: false,
-						result: {
-							rock: {
-								text: 'covers',
-								win: true
-							},
-							scissors: {
-								text: 'is cut by',
-								win: false
-							},
-							lizard: {
-								text: 'is eaten by',
-								win: false
-							},
-							spock: {
-								text: 'disproves',
-								win: true
-							}
-						}
-					},
-					{
-						name: 'scissors',
-						id: 3,
-						isSelected: false,
-						result: {
-							rock: {
-								text: 'are crushed by',
-								win: false
-							},
-							paper: {
-								text: 'cut',
-								win: true
-							},
-							lizard: {
-								text: 'decapitate',
-								win: true
-							},
-							spock: {
-								text: 'are smashed by',
-								win: false
-							}
-						}
-					},
-					{
-						name: 'lizard',
-						id: 4,
-						isSelected: false,
-						result: {
-							rock: {
-								text: 'is crushed by',
-								win: false
-							},
-							paper: {
-								text: 'eats',
-								win: true
-							},
-							scissors: {
-								text: 'is decapitated by',
-								win: false
-							},
-							spock: {
-								text: 'poisons',
-								win: true
-							}
-						}
-					},
-					{
-						name: 'spock',
-						id: 5,
-						isSelected: false,
-						result: {
-							rock: {
-								text: 'vaporizes',
-								win: true
-							},
-							paper: {
-								text: 'is disproved by',
-								win: false
-							},
-							scissors: {
-								text: 'smashes',
-								win: true
-							},
-							lizard: {
-								text: 'is poisoned by',
-								win: false
-							}
-						}
-					}
-				]
+				hands: []
 			},
 			playedHands: [],
 			maxScore: 3,
 			username: '',
 			otherUsername: '',
 			otherUsers: [],
-			handPrototypes: [ 
-				{
+			handPrototypes: {
+				rock: {
 					name: 'rock',
 					result: {
 						paper: {
@@ -313,7 +93,7 @@ function log(message, socket) {
 						}
 					}
 				},
-				{
+				paper: {
 					name: 'paper',
 					result: {
 						rock: {
@@ -334,7 +114,7 @@ function log(message, socket) {
 						}
 					}
 				},
-				{
+				scissors: {
 					name: 'scissors',
 					result: {
 						rock: {
@@ -355,7 +135,7 @@ function log(message, socket) {
 						}
 					}
 				},
-				{
+				lizard: {
 					name: 'lizard',
 					result: {
 						rock: {
@@ -376,7 +156,7 @@ function log(message, socket) {
 						}
 					}
 				},
-				{
+				spock: {
 					name: 'spock',
 					result: {
 						rock: {
@@ -397,7 +177,7 @@ function log(message, socket) {
 						}
 					}
 				}
-			]
+			}
 		},
 		computed: {
 			myHandName: function () {
@@ -441,9 +221,7 @@ function log(message, socket) {
 						resultText = (isPlural ? 'are' : 'is') + ' the same as';
 						resultVerb = 'draw' + (isPlural ? '' : 's');
 					} else {
-						var hand = this.handPrototypes.find(function(elem) {
-							return elem.name === myHandName;
-						});
+						var hand = this.handPrototypes[myHandName];
 						var result = hand.result[otherHandName];
 						resultText = result.text;
 						resultVerb = (result.win ? 'win' : 'lose') + (myHandName.slice(-1) === 's' ? '' : 's');
@@ -473,9 +251,7 @@ function log(message, socket) {
 				
 				this.playedHands.forEach(function (playedHand) {
 					if (playedHand.myHandName !== '' && playedHand.otherHandName !== '' && playedHand.myHandName !== playedHand.otherHandName) {
-						var myHand = _this.handPrototypes.find(function(elem) {
-							return elem.name === playedHand.myHandName;
-						});
+						var myHand = _this.handPrototypes[playedHand.myHandName];
 						var handResult = myHand.result[playedHand.otherHandName];
 						
 						result += won === handResult.win ? 1 : 0;
@@ -490,21 +266,13 @@ function log(message, socket) {
 			},
 			newGame: function() {
 				this.playedHands.splice(0);
-				socket.emit('newGame', this.username);
-
-				this.addHandToDeck('enemyPlayer', 'rock');
-				this.addHandToDeck('enemyPlayer', 'paper');
-				this.addHandToDeck('enemyPlayer', 'scissors');
-				this.addHandToDeck('enemyPlayer', 'spock');
-				this.addHandToDeck('enemyPlayer', 'lizard');
-				this.addHandToDeck('thisPlayer', 'rock');
-				this.addHandToDeck('thisPlayer', 'paper');
-				this.addHandToDeck('thisPlayer', 'scissors');
-				this.addHandToDeck('thisPlayer', 'spock');
-				this.addHandToDeck('thisPlayer', 'lizard');
+				socket.emit('newGame', this.username);				
 			},
 			addHandToDeck: function(player, type){
-				this[player].hands.push(this.hands[type]);
+				var cardSound = new Audio('media/carddeal.wav');
+				cardSound.play();
+
+				this[player].hands.push(this.handPrototypes[type]);
 			},
 			resumeSession: function(session) {
 				this.username = session.username;
@@ -517,6 +285,36 @@ function log(message, socket) {
 				session.otherUsers.forEach(function(otherUser) {
 					app.otherUsers.push(otherUser);
 				});
+
+				this.drawHands();
+			},
+			drawHands: function(){
+				var i = 3;
+				var _this = this;
+				var dealCardInterval = 300;
+
+				soundEffects.shuffling.play();
+
+				for(var handKey in this.handPrototypes) {
+					setTimeout(function(handKey) {
+						_this.addHandToDeck('enemyPlayer', handKey);
+					},
+					i*dealCardInterval,
+					handKey);
+
+					i++;
+				}
+
+				for(var handKey in this.handPrototypes) {
+					setTimeout(function(handKey) {
+						_this.addHandToDeck('thisPlayer', handKey);
+					}, 
+					i*dealCardInterval,
+					handKey);
+					
+					i++;
+				}
+
 			}
 		}
 	});

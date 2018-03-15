@@ -6,7 +6,10 @@
 
     .toolbar {
         height: 94px;
-        margin-bottom: 5px;
+        margin-bottom: 5px;    
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 
     .player-info {
@@ -20,7 +23,7 @@
             margin: 0 5px 10px 0;
             background: #d8d8d8;
         }
-
+ 
         .enemyplayer-container {
             width: calc(50% - 5px);
             padding: 10px;

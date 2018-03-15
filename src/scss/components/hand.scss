@@ -9,7 +9,8 @@
     background: #42788c; 
     transition: 0.4s all;
     box-shadow: 0 0 2px #000;
-    position: relative;
+    position: absolute;
+    z-index: 3;
 
     @for $i from 1 through 10 {
         &[rotate="#{$i}"] {
@@ -29,23 +30,14 @@
         }
     }
    
-    &.top {
+   /* &.top {
         animation: slideDown 500ms;
     }
     &.bottom {
         animation: slideUp 500ms;
-    }
+    }*/
 
-    &:after {
-        background: rgba(84,104,110,0.4);
-        width: $hand-width;
-        height: $hand-height;
-        position: absolute;
-        z-index: 10;
-        top: 0;
-        left: 0;
-        transition: background .3s cubic-bezier(.33,.66,.66,1);
-    }
+    animation: cardDealed 500ms;
 
     .is-selected {
         animation: glow 100ms infinite;

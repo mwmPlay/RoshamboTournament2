@@ -69,3 +69,13 @@
     from {top: -180px;}
     to {top: 0;}
 }
+
+@keyframes cardDealed {
+    from {
+        left: 300px;
+        top: 1000px;
+    }
+    to {
+        top: 50px;
+    }
+}

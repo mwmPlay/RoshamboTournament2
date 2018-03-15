@@ -17,13 +17,14 @@
 }
 
 #playboard {
-	height: 100%;
+	height: calc(100% - 40px);
 	width: 100%;
 	padding: 20px;
+	margin: 20px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	box-shadow: 2px 0 10px #000;
+	box-shadow: 0 0 10px #000;
 	
 	background: -webkit-linear-gradient(0deg, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 0), rgb(255, 153, 0);
 	background: -moz-linear-gradient(90deg, rgba(255,255,255,0.2) 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 0), rgb(255, 153, 0);
@@ -54,6 +55,8 @@
 			box-shadow: inset 0 0 2px #333;
 			transition: 0.2s all;
 			cursor: pointer;
+			position: relative;
+			z-index: 4;
 
 			&:hover {
 				box-shadow: inset 0 0 10px #333;
@@ -71,7 +74,7 @@
 	}
 
 	.resultShowdown {
-		width: 500px;
+		width: 600px;
 		padding: 0 20px;
 
 		p {
@@ -108,18 +111,32 @@
 .handsdeck {
 	width: 800px;
 	flex: 1;
+	position: relative;
 	margin-right: 20px;
 	background:
-	radial-gradient(#3a4c3a 15%, transparent 16%) 0 0,
-	radial-gradient(#3a4c3a 15%, transparent 16%) 8px 8px,
-	radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
-	radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+		radial-gradient(#3a4c3a 15%, transparent 16%) 0 0,
+		radial-gradient(#3a4c3a 15%, transparent 16%) 8px 8px,
+		radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+		radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
 	background-color:#366836;
+	border-radius: 10px;
 	@include deckStyling;
+
+	> .hand {
+		top: 50px;
+
+		@for $i from 1 through 10 {
+			&:nth-of-type(#{$i}) {
+				left: 150 * ($i - 1) + 50 + px;
+			}
+		}
+	}
 }
 
 .spelldeck {
 	width: 350px;
+	position: relative;
+	border-radius: 10px;
 	background: radial-gradient(#3e3030 15%, transparent 16%) 0 0, radial-gradient(#800d0d 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
 	background-color: #9a1c1c;
 

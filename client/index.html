@@ -109,8 +109,8 @@
 		<div class="information-pane">
 			<div class="toolbar">				
 				<div class="controls" v-if="username !== '' && otherUsername !== ''">
-					<input type="button" v-if="handResult(myHandName, otherHandName) !== '' && myScore < maxScore && otherScore < maxScore" value="next round" @click="nextRound()">
-					<input type="button" v-if="myScore === maxScore || otherScore === maxScore" value="new game" @click="newGame()">
+					<a href="#" v-if="handResult(myHandName, otherHandName) !== '' && myScore < maxScore && otherScore < maxScore" data-icon="♛" class="button pink shield glass" @click="nextRound()">Next Round </a>
+					<a href="#" data-icon="♚" type="button" v-if="myScore === maxScore || otherScore === maxScore" @click="newGame()" class="button orange shield glossy">New Game</a>
 				</div>
 			</div>
 			<div class="player-info">
@@ -185,4 +185,11 @@
 </audio>
 <audio controls preload="auto" id="lizard-sound">
 	<source src="media/lizard.mp3" type="audio/mpeg">
+</audio>
+
+<audio controls preload="auto" id="shuffling-sound">
+	<source src="media/shuffling.mp3" type="audio/mpeg">
+</audio>
+<audio controls preload="auto" id="carddeal-sound">
+	<source src="media/carddeal.wav" type="audio/wav">
 </audio>
