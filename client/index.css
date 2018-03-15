@@ -759,6 +759,11 @@ svg.small {
     display: flex;
     justify-content: space-between;
     align-items: flex-start; }
+    .information-pane .toolbar .controls {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between; }
   .information-pane .player-info {
     margin-bottom: auto;
     display: flex;

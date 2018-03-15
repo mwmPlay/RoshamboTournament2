@@ -265,8 +265,8 @@ function log(message, socket) {
 				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', '');
 			},
 			newGame: function() {
-				this.playedHands.splice(0);
-				socket.emit('newGame', this.username);				
+				this.playedHands.splice(0); 
+				socket.emit('newGame', this.username);
 			},
 			addHandToDeck: function(player, type){
 				var cardSound = new Audio('media/carddeal.wav');
@@ -349,7 +349,7 @@ function log(message, socket) {
 	socket.on('playerJoined', function(otherUsername) {
 		log('player has joined: ' + otherUsername, socket);
 		
-		if (app.otherUsername === '') {
+		if (!app.otherUsername) {
 			app.otherUsername = otherUsername;
 		}
 		
