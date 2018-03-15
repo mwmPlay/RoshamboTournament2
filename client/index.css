@@ -57,9 +57,11 @@
 
 @keyframes cardDealed {
   from {
+    transform: rotate(-110deg);
     left: 300px;
     top: 1000px; }
   to {
+    transform: rotate(0deg);
     top: 50px; } }
 
 /*! normalize.css v6.0.0 | MIT License | github.com/necolas/normalize.css */
