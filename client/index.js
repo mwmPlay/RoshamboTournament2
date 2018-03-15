@@ -491,7 +491,7 @@ function log(message, socket) {
 			newGame: function() {
 				this.playedHands.splice(0);
 				socket.emit('newGame', this.username);
-
+				
 				this.addHandToDeck('enemyPlayer', 'rock');
 				this.addHandToDeck('enemyPlayer', 'paper');
 				this.addHandToDeck('enemyPlayer', 'scissors');
@@ -551,7 +551,7 @@ function log(message, socket) {
 	socket.on('playerJoined', function(otherUsername) {
 		log('player has joined: ' + otherUsername, socket);
 		
-		if (app.otherUsername === '') {
+		if (!app.otherUsername) {
 			app.otherUsername = otherUsername;
 		}
 		

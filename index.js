@@ -82,8 +82,6 @@ io.on('connection', function(socket) {
 			sessions[sessionId] = session;
 			sessionsByUsername[username] = session;
 			
-			socket.emit('authenticateSuccess', JSON.stringify(session));
-			
 			// while we do not have a bracket yet: first player to authenticate is player 1, 2nd is player 2 and the rest are spectators
 			if (!player1) {
 				player1 = session;
@@ -96,6 +94,10 @@ io.on('connection', function(socket) {
 				player1.otherUsername = player2.username;
 			}
 			
+			// send success to the authenticating client
+			socket.emit('authenticateSuccess', JSON.stringify(session));
+			
+			// and announce the join to the others
 			socket.broadcast.emit('playerJoined', username);
 		}
 	});
@@ -117,17 +119,20 @@ io.on('connection', function(socket) {
 		
 		if (playedHand.username === player1.username && playedHand.otherUsername === player2.username) {
 			logic.savePlayedHandToHistory(player1.playedHands, 'myHandName', playedHand.myHandName);
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherHandName', playedHand.myHandName);
+			logic.savePlayedHandToHistory(player2.playedHands, 'otherHasChosen', true);
 		} else if (playedHand.username === player2.username && playedHand.otherUsername === player1.username) {
 			logic.savePlayedHandToHistory(player2.playedHands, 'myHandName', playedHand.myHandName);
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherHandName', playedHand.myHandName);
+			logic.savePlayedHandToHistory(player1.playedHands, 'otherHasChosen', true);
 		}
 		
 		var player1sHandName = player1.playedHands[player1.playedHands.length - 1].myHandName;
 		var player2sHandName = player2.playedHands[player2.playedHands.length - 1].myHandName;
 		
 		if (player1sHandName && player2sHandName) {
-			// both players have played, time to emit the actual hands
+			// both players have played, time to emit the actual hands and store them in the sessions
+			
+			logic.savePlayedHandToHistory(player1.playedHands, 'otherHandName', player2sHandName);
+			logic.savePlayedHandToHistory(player2.playedHands, 'otherHandName', player1sHandName);
 			
 			playedHandJson = JSON.stringify({
 				username: player1.username,
