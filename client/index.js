@@ -271,8 +271,10 @@ function log(message, socket) {
 			addHandToDeck: function(player, type){
 				var cardSound = new Audio('media/carddeal.wav');
 				cardSound.play();
+				
+				var newCardObj = this.handPrototypes[type];
 
-				this[player].hands.push(this.handPrototypes[type]);
+				this[player].hands.push(newCardObj);
 			},
 			resumeSession: function(session) {
 				this.username = session.username;

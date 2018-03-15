@@ -27,13 +27,13 @@
 
 @keyframes glow {
   0% {
-    box-shadow: 0 0 -10px red; }
-  40% {
-    box-shadow: 0 0 40px red; }
+    box-shadow: 0 0 -10px #0000d8; }
+  50% {
+    box-shadow: 0 0 20px #0000d8; }
   60% {
-    box-shadow: 0 0 40px red; }
+    box-shadow: 0 0 20px #0000d8; }
   100% {
-    box-shadow: 0 0 -10px red; } }
+    box-shadow: 0 0 -10px #0000d8; } }
 
 @keyframes maintainedGlow {
   0% {
@@ -801,15 +801,45 @@ svg.small {
       font-size: 30px; }
   .information-pane .history {
     height: 250px;
-    overflow: auto;
-    background: #dedede;
     border-radius: 3px;
-    border: 2px solid #333;
-    padding: 10px; }
-    .information-pane .history p {
-      font-size: 12px;
-      color: #333;
-      margin: 2px 0; }
+    display: flex;
+    width: 100%;
+    flex-direction: column; }
+    .information-pane .history .history-overview {
+      margin-top: 10px;
+      border: 2px solid #333;
+      overflow: auto;
+      background: #dedede;
+      height: 250px;
+      padding: 10px;
+      width: 100%; }
+      .information-pane .history .history-overview p {
+        font-size: 12px;
+        color: #333;
+        margin: 2px 0; }
+  .information-pane .lobby {
+    margin-top: 20px;
+    width: 100%;
+    height: 200px;
+    flex-direction: column;
+    display: flex; }
+    .information-pane .lobby ul {
+      overflow: auto;
+      background: #dedede;
+      border-radius: 3px;
+      border: 2px solid #333;
+      padding: 10px;
+      width: 100%;
+      height: 100%;
+      margin-bottom: 0; }
+    .information-pane .lobby li {
+      font-size: 15px; }
+      .information-pane .lobby li svg {
+        cursor: pointer;
+        margin-left: 5px;
+        transition: all 0.2s; }
+        .information-pane .lobby li svg:hover {
+          color: red; }
 
 /* -------------- THE button -------------- */
 .button {
@@ -1193,5 +1223,20 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
     padding-left: 2em; } }
 
 /* Damn, this became a fat baby..  */
+.spellcoin {
+  width: 100px;
+  height: 100px;
+  border: 3px solid #333;
+  border-radius: 50%;
+  animation: glow 8s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+  .spellcoin .inner {
+    border: 1px solid #333;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 0 2px #000; }
 
 /*# sourceMappingURL=index.css.map */
