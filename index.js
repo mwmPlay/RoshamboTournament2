@@ -50,14 +50,21 @@ io.on('connection', function(socket) {
 	});
 	
 	socket.on('authenticate', function(username) {
-		log('user authenticated: ' + username, socket);
+		log('user authentication attempted: ' + username, socket);
 		
-		if (sessionsByUsername[username]) {
-			log('authentication failed', socket);
+		if (!username || username.match(/^\s*$/) !== null) {
+			log('authentication failed: invalid name: ' + username, socket);
+			
+			// invalid name, ask for a new name
+			socket.emit('authenticateFail', 'That name is not valid. Choose a different name.');
+		} else if (sessionsByUsername[username]) {
+			log('authentication failed: already in use', socket);
 			
 			// a user with this name already exists, ask for a new name
 			socket.emit('authenticateFail', 'That name is already used by someone else. Choose a different name.');
 		} else {
+			log('authentication succeeded', socket);
+			
 			// build a new session
 			var sessionId = Guid.create();
 			var session = {
