@@ -1,0 +1,162 @@
+@mixin towerStyling {
+    background: #fff;
+  //   background: linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0, linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0, linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px, linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px, #a0a0a0;
+    background-size: 5px 10px;
+}
+
+.towel {
+    width: 160px;
+    border-radius: 11px;
+    height: 45px;
+    border: 3px solid #333;
+    position: relative;
+    transition: all 1s;
+    cursor: pointer;
+    animation: glow 8s infinite;
+
+    @include flexCenter;
+    @include towerStyling;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    &:active {
+        height: 120px;
+
+        .towel-start {
+            top: 0;
+        }
+
+        .towel-twirl-right {
+            right: 0;
+            opacity: 0; 
+            transition: .1s; 
+        }
+
+        .towel-twirl-left {
+            left: 0;
+            opacity: 0; 
+            transition: .1s; 
+        }
+
+        .emblem {
+            opacity: 0;
+            transition: .1s; 
+        }
+
+        .explanation {
+            opacity: 1;
+            transition: .4s 1s;
+        }
+    }
+
+    .explanation {
+        opacity: 0;
+        font-size: 10px;
+        color: #333;
+        position: absolute;
+        padding: 5px 10px 5px 5px;
+        transition: .4s;
+        padding: 0 20px;
+
+        h4 {
+            font-family: Lobster;
+            margin: 0;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        p {
+            font-family: Lobster;    
+            font-size: 11px;
+            margin-top: 3px;
+            letter-spacing: 0.1px;
+        }
+    }
+
+    .emblem {
+        position: absolute;
+        background: darkred;
+        border-radius: 50%;
+        border: 2px solid #333;
+        width: 22px;
+        height: 22px;
+        z-index: 2;
+        transition: .4s 1s;
+        position: relative;
+        
+        svg {
+            position: absolute;
+            color: #3c0000;
+            left: 3px;
+            top: 3px;
+            font-size: 11px;
+        }
+    }
+
+    .towel-twirl-left {
+        @include towerStyling;
+        width: 30px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        border-radius: 50%;
+        position: absolute;
+        left: -10px;
+        border-left: 3px solid #333;
+        align-items: center;
+        justify-content: center;
+        background-size: 5px 10px;
+        transition: .4s 1s; 
+    }
+
+    .towel-twirl-right {
+        @include towerStyling;
+        width: 30px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        border-radius: 50%;
+        position: absolute;
+        right: -10px;
+        border-right: 3px solid #333;
+        align-items: center;
+        justify-content: center;
+        transition: .4s 1s; 
+    }
+
+    .towel-start {
+        transition: all 1s;
+        width: 100%;
+        position: absolute;
+        top: 20px;
+        height: 15px;
+        border-bottom: 2px solid #333;
+        border-radius: 50%;
+    }
+
+    &:before {
+        content: '';
+        bottom: -8px;
+        width: 100%;
+        height: 20px;
+        position: absolute;
+        border-bottom: 3px solid #333;
+        border-bottom-left-radius: 50%;
+        border-bottom-right-radius: 50%;
+        @include towerStyling;
+    } 
+
+    &:after {
+        content: '';
+        top: -8px;
+        width: 100%;
+        height: 20px;
+        position: absolute;
+        border-top: 3px solid #333;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+        @include towerStyling;
+    }
+}

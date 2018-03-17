@@ -47,11 +47,12 @@
     }
 }
 
+$glowColor: #e6c523;
 @keyframes glow {
-    0% { box-shadow: 0 0 -10px #0000d8; }
-    50% { box-shadow: 0 0 20px #0000d8; }
-    60% { box-shadow: 0 0 20px #0000d8; }
-    100% { box-shadow: 0 0 -10px #0000d8; }
+    0% { box-shadow: 0 0 0px $glowColor; }
+    50% { box-shadow: 0 0 20px $glowColor; }
+    60% { box-shadow: 0 0 30px $glowColor; }
+    100% { box-shadow: 0 0 0px $glowColor; }
 }
 
 @keyframes maintainedGlow {

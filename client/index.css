@@ -1,4 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,700);
+@import url(https://fonts.googleapis.com/css?family=Lobster:400,500,700);
 @import url(http://fonts.googleapis.com/css?family=Droid+Sans:bold+Lobster);
 @import url(http://fonts.googleapis.com/css?family=Lobster);
 @keyframes fadeIn {
@@ -27,13 +28,13 @@
 
 @keyframes glow {
   0% {
-    box-shadow: 0 0 -10px #0000d8; }
+    box-shadow: 0 0 0px #e6c523; }
   50% {
-    box-shadow: 0 0 20px #0000d8; }
+    box-shadow: 0 0 20px #e6c523; }
   60% {
-    box-shadow: 0 0 20px #0000d8; }
+    box-shadow: 0 0 30px #e6c523; }
   100% {
-    box-shadow: 0 0 -10px #0000d8; } }
+    box-shadow: 0 0 0px #e6c523; } }
 
 @keyframes maintainedGlow {
   0% {
@@ -438,7 +439,8 @@ template {
 *,
 *:after,
 *:before {
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  user-select: none; }
 
 html,
 body {
@@ -806,7 +808,7 @@ svg.small {
     width: 100%;
     flex-direction: column; }
     .information-pane .history .history-overview {
-      margin-top: 10px;
+      margin-top: 5px;
       border: 2px solid #333;
       overflow: auto;
       background: #dedede;
@@ -831,6 +833,7 @@ svg.small {
       padding: 10px;
       width: 100%;
       height: 100%;
+      margin-top: 5px;
       margin-bottom: 0; }
     .information-pane .lobby li {
       font-size: 15px; }
@@ -1223,20 +1226,132 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
     padding-left: 2em; } }
 
 /* Damn, this became a fat baby..  */
-.spellcoin {
-  width: 100px;
-  height: 100px;
+.towel {
+  width: 160px;
+  border-radius: 11px;
+  height: 45px;
   border: 3px solid #333;
-  border-radius: 50%;
+  position: relative;
+  transition: all 1s;
+  cursor: pointer;
   animation: glow 8s infinite;
   display: flex;
   align-items: center;
-  justify-content: center; }
-  .spellcoin .inner {
-    border: 1px solid #333;
+  justify-content: center;
+  background: #fff;
+  background-size: 5px 10px; }
+  .towel:hover {
+    transform: scale(1.1); }
+  .towel:active {
+    height: 120px; }
+    .towel:active .towel-start {
+      top: 0; }
+    .towel:active .towel-twirl-right {
+      right: 0;
+      opacity: 0;
+      transition: .1s; }
+    .towel:active .towel-twirl-left {
+      left: 0;
+      opacity: 0;
+      transition: .1s; }
+    .towel:active .emblem {
+      opacity: 0;
+      transition: .1s; }
+    .towel:active .explanation {
+      opacity: 1;
+      transition: .4s 1s; }
+  .towel .explanation {
+    opacity: 0;
+    font-size: 10px;
+    color: #333;
+    position: absolute;
+    padding: 5px 10px 5px 5px;
+    transition: .4s;
+    padding: 0 20px; }
+    .towel .explanation h4 {
+      font-family: Lobster;
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.5px; }
+    .towel .explanation p {
+      font-family: Lobster;
+      font-size: 11px;
+      margin-top: 3px;
+      letter-spacing: 0.1px; }
+  .towel .emblem {
+    position: absolute;
+    background: darkred;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    box-shadow: 0 0 2px #000; }
+    border: 2px solid #333;
+    width: 22px;
+    height: 22px;
+    z-index: 2;
+    transition: .4s 1s;
+    position: relative; }
+    .towel .emblem svg {
+      position: absolute;
+      color: #3c0000;
+      left: 3px;
+      top: 3px;
+      font-size: 11px; }
+  .towel .towel-twirl-left {
+    background: #fff;
+    background-size: 5px 10px;
+    width: 30px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    border-radius: 50%;
+    position: absolute;
+    left: -10px;
+    border-left: 3px solid #333;
+    align-items: center;
+    justify-content: center;
+    background-size: 5px 10px;
+    transition: .4s 1s; }
+  .towel .towel-twirl-right {
+    background: #fff;
+    background-size: 5px 10px;
+    width: 30px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    border-radius: 50%;
+    position: absolute;
+    right: -10px;
+    border-right: 3px solid #333;
+    align-items: center;
+    justify-content: center;
+    transition: .4s 1s; }
+  .towel .towel-start {
+    transition: all 1s;
+    width: 100%;
+    position: absolute;
+    top: 20px;
+    height: 15px;
+    border-bottom: 2px solid #333;
+    border-radius: 50%; }
+  .towel:before {
+    content: '';
+    bottom: -8px;
+    width: 100%;
+    height: 20px;
+    position: absolute;
+    border-bottom: 3px solid #333;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    background: #fff;
+    background-size: 5px 10px; }
+  .towel:after {
+    content: '';
+    top: -8px;
+    width: 100%;
+    height: 20px;
+    position: absolute;
+    border-top: 3px solid #333;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    background: #fff;
+    background-size: 5px 10px; }
 
 /*# sourceMappingURL=index.css.map */
