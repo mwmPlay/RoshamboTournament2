@@ -12,6 +12,10 @@
     position: absolute;
     z-index: 3;
 
+    * {
+        pointer-events: none;
+    }
+
     @for $i from 1 through 10 {
         &[rotate="#{$i}"] {
             transform: rotate(#{$i}deg);
@@ -97,6 +101,8 @@
 
 	.information-section {
         padding: 5px 15px;
+        display: flex;
+        position: relative;
   
         h2 {
             margin: 0;
@@ -110,6 +116,69 @@
         .icons {     
             height: 12px;
         }
+
+        .health,
+        .freeze {
+            position: absolute;
+            top: -30px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            width: 35px;
+            height: 35px;
+            background: white;
+            @include flexCenter;
+
+            svg {
+                position: absolute;
+                color: red;
+            }
+
+            p {
+                position: absolute;
+            }
+        }
+
+        .health {
+            left: 10px;
+
+            svg {
+                color: rgba(206, 31, 31, 0.9);
+                font-size: 23px;
+                margin-top: 2px;
+            }
+        }
+
+        .freeze {
+            right: 10px;
+
+            svg {
+                color: #3232ff;
+                font-size: 25px;
+            }
+        }
+    }
+
+    .damage-info {
+        position: absolute;
+        margin-top: 4px;
+        margin-left: 8px;
+        opacity: 0;
+        top: 15px;
+        transition: 0.3s ease-out;
+        
+        p {    
+            font-family: roboto;
+            color: white;
+            font-size: 10px;
+            text-transform: capitalize;
+        }
+    }
+
+    .towel {
+        left: -10px;
+        top: 35px;
+        position: absolute;
+        transform: scale(0.6);
     }
 
     &:hover {
@@ -119,6 +188,11 @@
 
         .icon {
             animation: maintainedGlow 1s forwards; 
+        }
+
+        .damage-info {
+            opacity: 1;
+            top: 7px;
         }
     }
 }

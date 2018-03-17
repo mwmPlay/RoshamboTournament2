@@ -470,7 +470,7 @@ svg.small {
   display: flex;
   border: 1px solid #333;
   border-radius: 8px;
-  height: 195px;
+  height: 200px;
   width: 140px;
   flex-direction: column;
   border: 1px solid #333;
@@ -486,6 +486,8 @@ svg.small {
         animation: slideUp 500ms;
     }*/
   animation: cardDealed 500ms; }
+  .hand * {
+    pointer-events: none; }
   .hand[rotate="1"] {
     transform: rotate(1deg); }
     .hand[rotate="1"]:hover {
@@ -607,7 +609,9 @@ svg.small {
   .hand[type=paper] .icon {
     background-image: url("media/paper.png"); }
   .hand .information-section {
-    padding: 5px 15px; }
+    padding: 5px 15px;
+    display: flex;
+    position: relative; }
     .hand .information-section h2 {
       margin: 0;
       font-size: 12px; }
@@ -615,12 +619,62 @@ svg.small {
       font-size: 10px; }
     .hand .information-section .icons {
       height: 12px; }
+    .hand .information-section .health,
+    .hand .information-section .freeze {
+      position: absolute;
+      top: -30px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      width: 35px;
+      height: 35px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .hand .information-section .health svg,
+      .hand .information-section .freeze svg {
+        position: absolute;
+        color: red; }
+      .hand .information-section .health p,
+      .hand .information-section .freeze p {
+        position: absolute; }
+    .hand .information-section .health {
+      left: 10px; }
+      .hand .information-section .health svg {
+        color: rgba(206, 31, 31, 0.9);
+        font-size: 23px;
+        margin-top: 2px; }
+    .hand .information-section .freeze {
+      right: 10px; }
+      .hand .information-section .freeze svg {
+        color: #3232ff;
+        font-size: 25px; }
+  .hand .damage-info {
+    position: absolute;
+    margin-top: 4px;
+    margin-left: 8px;
+    opacity: 0;
+    top: 15px;
+    transition: 0.3s ease-out; }
+    .hand .damage-info p {
+      font-family: roboto;
+      color: white;
+      font-size: 10px;
+      text-transform: capitalize; }
+  .hand .towel {
+    left: -10px;
+    top: 35px;
+    position: absolute;
+    transform: scale(0.6); }
   .hand:hover {
     cursor: pointer;
     box-shadow: 0 0 20px #000;
     transform: scale(1.05); }
     .hand:hover .icon {
       animation: maintainedGlow 1s forwards; }
+    .hand:hover .damage-info {
+      opacity: 1;
+      top: 7px; }
 
 #rps {
   width: 100%;
@@ -659,7 +713,7 @@ svg.small {
     width: 140px; }
     .playingField > div #myHandName,
     .playingField > div #otherHandName {
-      height: 195px;
+      height: 200px;
       width: 140px;
       border-radius: 8px;
       border: 0;
@@ -673,7 +727,7 @@ svg.small {
       .playingField > div #otherHandName:hover {
         box-shadow: inset 0 0 10px #333; }
     .playingField > div .showdown-box {
-      height: 195px;
+      height: 200px;
       display: flex;
       align-items: center;
       justify-content: center; }
@@ -745,6 +799,9 @@ svg.small {
   border-radius: 10px;
   background: radial-gradient(#3e3030 15%, transparent 16%) 0 0, radial-gradient(#800d0d 15%, transparent 16%) 8px 8px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px;
   background-color: #9a1c1c;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 20px 0;
   display: flex;
   background-size: 16px 16px;
   align-items: center;
@@ -842,7 +899,7 @@ svg.small {
         margin-left: 5px;
         transition: all 0.2s; }
         .information-pane .lobby li svg:hover {
-          color: red; }
+          color: darkred; }
 
 /* -------------- THE button -------------- */
 .button {
@@ -1232,7 +1289,7 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
   height: 45px;
   border: 3px solid #333;
   position: relative;
-  transition: all 1s;
+  transition: all .6s;
   cursor: pointer;
   animation: glow 8s infinite;
   display: flex;
@@ -1259,7 +1316,7 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
       transition: .1s; }
     .towel:active .explanation {
       opacity: 1;
-      transition: .4s 1s; }
+      transition: .4s .6s; }
   .towel .explanation {
     opacity: 0;
     font-size: 10px;
@@ -1267,7 +1324,7 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
     position: absolute;
     padding: 5px 10px 5px 5px;
     transition: .4s;
-    padding: 0 20px; }
+    padding: 0 20px 0 25px; }
     .towel .explanation h4 {
       font-family: Lobster;
       margin: 0;
@@ -1286,12 +1343,12 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
     width: 22px;
     height: 22px;
     z-index: 2;
-    transition: .4s 1s;
+    transition: .4s .6s;
     position: relative; }
     .towel .emblem svg {
       position: absolute;
       color: #3c0000;
-      left: 3px;
+      left: 4px;
       top: 3px;
       font-size: 11px; }
   .towel .towel-twirl-left {
@@ -1308,7 +1365,7 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
     align-items: center;
     justify-content: center;
     background-size: 5px 10px;
-    transition: .4s 1s; }
+    transition: .4s .6s; }
   .towel .towel-twirl-right {
     background: #fff;
     background-size: 5px 10px;
@@ -1322,7 +1379,7 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
     border-right: 3px solid #333;
     align-items: center;
     justify-content: center;
-    transition: .4s 1s; }
+    transition: .4s .6s; }
   .towel .towel-start {
     transition: all 1s;
     width: 100%;

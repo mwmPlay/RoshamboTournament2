@@ -44,6 +44,15 @@ function clone(object) {
 	return JSON.parse(JSON.stringify(object));
 }
 
+function pickRandomProperty(obj) {
+    var result;
+    var count = 0;
+    for (var prop in obj)
+        if (Math.random() < 1/++count)
+           result = prop;
+    return result;
+}
+
 function log(message, socket) {
 	if(socket) {
 		// prepend with socket id
@@ -51,6 +60,20 @@ function log(message, socket) {
 	}
 	
 	console.log(message);
+}
+
+function allowDrop(ev) {
+	ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.appendChild(document.getElementById(data));
 }
 
 (function() {
@@ -61,120 +84,198 @@ function log(message, socket) {
 		el: '#rps',
 		data: {
 			enemyPlayer: {
-				hands: []
+				hands: [],
+				towels: []
 			},
 			thisPlayer: {
-				hands: []
+				hands: [],
+				towels: []
 			},
 			playedHands: [],
 			maxScore: 3,
+			towelId: 0,
+			handId: 0,
 			username: '',
 			player1Name: '',
 			player2Name: '',
+			initialTowelAmount: 3,
 			otherUsers: [],
+			towelPrototypes: {
+				impendingdoom: {
+					name: 'Towel of impending doom',
+					description: "This towel's fabric is so irritating that it does 3 damage to an hand it's thrown at.",
+					emblemIcon: "fab fa-hotjar"
+				},
+				unfathomabledarkness: {
+					name: 'Towel of unfathomable darkness',
+					description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
+					emblemIcon: "fas fa-adjust"
+				},
+				unproportionatebludgeoning: {
+					name: 'Unproportionate bludgeoning',
+					description: "This towel is so heavy that when wrapped around an hand it deals extra damage.",
+					emblemIcon: "fas fa-stop"
+				},
+				magnificentalleviation: {
+					name: 'Towel of magnificent alleviation',
+					description: "This towel had aloë vera spilled on it and now it has healing properties.",
+					emblemIcon: "fas fa-heart"
+				}
+			},
+
 			handPrototypes: {
 				rock: {
 					name: 'rock',
+					health: 7,
+					freeze: 0,
 					result: {
 						paper: {
+							name: 'paper',
 							text: 'is covered by',
-							win: false
+							win: false,
+							damage: 0
 						},
 						scissors: {
+							name: 'scissors',
 							text: 'crushes',
-							win: true
+							win: true,
+							damage: 3
 						},
 						lizard: {
+							name: 'lizard',
 							text: 'crushes',
-							win: true
+							win: true,
+							damage: 3
 						},
 						spock: {
+							name: 'spock',
 							text: 'is vaporized by',
-							win: false
+							win: false,
+							damage: 0
 						}
 					}
 				},
 				paper: {
 					name: 'paper',
+					health: 5,
+					freeze: 0,
 					result: {
 						rock: {
+							name: 'rock',
 							text: 'covers',
-							win: true
+							win: true,
+							damage: 3
 						},
 						scissors: {
+							name: 'scissors',
 							text: 'is cut by',
-							win: false
+							win: false,
+							damage: 0
 						},
 						lizard: {
+							name: 'lizard',
 							text: 'is eaten by',
-							win: false
+							win: false,
+							damage: 0
 						},
 						spock: {
+							name: 'spock',
 							text: 'disproves',
-							win: true
+							win: true,
+							damage: 3
 						}
 					}
 				},
 				scissors: {
 					name: 'scissors',
+					health: 5,
+					freeze: 0,
 					result: {
 						rock: {
+							name: 'rock',
 							text: 'are crushed by',
-							win: false
+							win: false,
+							damage: 1
 						},
 						paper: {
+							name: 'paper',
 							text: 'cut',
-							win: true
+							win: true,
+							damage: 3
 						},
 						lizard: {
+							name: 'lizard',
 							text: 'decapitate',
-							win: true
+							win: true,
+							damage: 3
 						},
 						spock: {
+							name: 'spock',
 							text: 'are smashed by',
-							win: false
+							win: false,
+							damage: 1
 						}
 					}
 				},
 				lizard: {
 					name: 'lizard',
+					health: 5,
+					freeze: 0,
 					result: {
 						rock: {
+							name: 'rock',
 							text: 'is crushed by',
-							win: false
+							win: false,
+							damage: 0
 						},
 						paper: {
+							name: 'paper',
 							text: 'eats',
-							win: true
+							win: true,
+							damage: 3
 						},
 						scissors: {
+							name: 'scissors',
 							text: 'is decapitated by',
-							win: false
+							win: false,
+							damage: 0
 						},
 						spock: {
+							name: 'spock',
 							text: 'poisons',
-							win: true
+							win: true,
+							damage: 3
 						}
 					}
 				},
 				spock: {
 					name: 'spock',
+					health: 5,
+					freeze: 0,
 					result: {
 						rock: {
+							name: 'rock',
 							text: 'vaporizes',
-							win: true
+							win: true,
+							damage: 3
 						},
 						paper: {
+							name: 'paper',
 							text: 'is disproved by',
-							win: false
+							win: false,
+							damage: 0
 						},
 						scissors: {
+							name: 'scissors',
 							text: 'smashes',
-							win: true
+							win: true,
+							damage: 3
 						},
 						lizard: {
+							name: 'lizard',
 							text: 'is poisoned by',
-							win: false
+							win: false,
+							damage: 0
 						}
 					}
 				}
@@ -269,9 +370,18 @@ function log(message, socket) {
 				var cardSound = new Audio('media/carddeal.wav');
 				cardSound.play();
 				
-				var newCardObj = this.handPrototypes[type];
+				var hand = this.handPrototypes[type];
+				hand.id = this.handId;
 
-				this[player].hands.push(newCardObj);
+				this[player].hands.push(hand);
+				this.handId++;
+			},
+			addTowelToDeck: function(player, type){
+				var towel = this.towelPrototypes[type];
+				towel.id = this.towelId;
+
+				this[player].towels.push(towel);
+				this.towelId++;
 			},
 			resumeSession: function(session) {
 				this.username = session.username;
@@ -287,6 +397,21 @@ function log(message, socket) {
 				});
 				
 				this.drawHands();
+				this.drawTowels();
+			},
+			drawTowels: function(){
+				if (this.username !== this.player1Name) {
+					// only draw hands if I am actually playing
+					return;
+				}
+
+				for(var i = 0; i < this.initialTowelAmount; i++) {
+					var randomEnemyTowel = pickRandomProperty(this.towelPrototypes);
+					this.addTowelToDeck('enemyPlayer', randomEnemyTowel);
+
+					var randomTowel = pickRandomProperty(this.towelPrototypes);
+					this.addTowelToDeck('thisPlayer', randomTowel);
+				}
 			},
 			drawHands: function(){
 				if (this.username !== this.player1Name) {
@@ -335,7 +460,7 @@ function log(message, socket) {
 	socket.on('playHand', function(playedHandJson) {
 		log('hand was played by other: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);
-		
+
 		if (playedHand.username === app.player2Name && playedHand.otherUsername === app.player1Name) {
 			// save hand if it is from my opponent to me (this is also when I am a spectator and the hand is from player 2)
 			logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
