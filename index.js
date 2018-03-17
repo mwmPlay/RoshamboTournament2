@@ -50,21 +50,30 @@ io.on('connection', function(socket) {
 	});
 	
 	socket.on('authenticate', function(username) {
-		log('user authenticated: ' + username, socket);
+		log('user authentication attempted: ' + username, socket);
 		
-		if (sessionsByUsername[username]) {
-			log('authentication failed', socket);
+		if (!username || username.match(/^\s*$/) !== null) {
+			log('authentication failed: invalid name: ' + username, socket);
+			
+			// invalid name, ask for a new name
+			socket.emit('authenticateFail', 'That name is not valid. Choose a different name.');
+		} else if (sessionsByUsername[username]) {
+			log('authentication failed: already in use', socket);
 			
 			// a user with this name already exists, ask for a new name
 			socket.emit('authenticateFail', 'That name is already used by someone else. Choose a different name.');
 		} else {
+			log('authentication succeeded', socket);
+			
 			// build a new session
 			var sessionId = Guid.create();
 			var session = {
 				id: sessionId,
 				username: username,
 				playedHands: [],
-				otherUsers: []
+				otherUsers: [],
+				player1Name: player1 && player2 ? player1.username : '',
+				player2Name: player1 && player2 ? player2.username : ''
 			};
 			
 			for (existingUsername in sessionsByUsername) {
@@ -82,23 +91,30 @@ io.on('connection', function(socket) {
 			sessions[sessionId] = session;
 			sessionsByUsername[username] = session;
 			
-			// while we do not have a bracket yet: first player to authenticate is player 1, 2nd is player 2 and the rest are spectators
-			if (!player1) {
-				player1 = session;
-				
-			} else if (!player2) {
-				player2 = session;
-				
-				// now we know both players' names
-				player2.otherUsername = player1.username;
-				player1.otherUsername = player2.username;
-			}
-			
 			// send success to the authenticating client
 			socket.emit('authenticateSuccess', JSON.stringify(session));
 			
 			// and announce the join to the others
 			socket.broadcast.emit('playerJoined', username);
+			
+			// while we do not have a bracket yet: first player to authenticate is player 1, 2nd is player 2 and the rest are spectators
+			if (!player1) {
+				player1 = session;
+			} else if (!player2) {
+				player2 = session;
+				
+				// now we know both players' names, everyone should know this
+				log('game started: ' + player1.username + ' vs ' + player2.username, socket);
+				
+				for (existingUsername in sessionsByUsername) {
+					logic.savePlayerNamesToSession(sessionsByUsername[existingUsername], player1.username, player2.username)
+				}
+				
+				io.emit('gameStarted', JSON.stringify({
+					player1Name: player1.username,
+					player2Name: player2.username
+				}));
+			}
 		}
 	});
 	
@@ -136,7 +152,7 @@ io.on('connection', function(socket) {
 			
 			playedHandJson = JSON.stringify({
 				username: player1.username,
-				otherUsername: player1.otherUsername,
+				otherUsername: player2.username,
 				myHandName: player1sHandName
 			});
 			
@@ -144,7 +160,7 @@ io.on('connection', function(socket) {
 			
 			playedHandJson = JSON.stringify({
 				username: player2.username,
-				otherUsername: player2.otherUsername,
+				otherUsername: player1.username,
 				myHandName: player2sHandName
 			});
 			

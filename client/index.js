@@ -69,7 +69,8 @@ function log(message, socket) {
 			playedHands: [],
 			maxScore: 3,
 			username: '',
-			otherUsername: '',
+			player1Name: '',
+			player2Name: '',
 			otherUsers: [],
 			handPrototypes: {
 				rock: {
@@ -238,8 +239,8 @@ function log(message, socket) {
 				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', myHandName);
 				
 				var playedHandJson = JSON.stringify({
-					username: this.username,
-					otherUsername: this.otherUsername,
+					username: this.player1Name,
+					otherUsername: this.player2Name,
 					myHandName: myHandName
 				});
 				
@@ -274,7 +275,8 @@ function log(message, socket) {
 			},
 			resumeSession: function(session) {
 				this.username = session.username;
-				this.otherUsername = session.otherUsername;
+				this.player1Name = session.player1Name;
+				this.player2Name = session.player2Name;
 				
 				session.playedHands.forEach(function(playedHand) {
 					app.playedHands.push(playedHand);
@@ -283,10 +285,15 @@ function log(message, socket) {
 				session.otherUsers.forEach(function(otherUser) {
 					app.otherUsers.push(otherUser);
 				});
-
+				
 				this.drawHands();
 			},
 			drawHands: function(){
+				if (this.username !== this.player1Name) {
+					// only draw hands if I am actually playing
+					return;
+				}
+				
 				var i = 3;
 				var _this = this;
 				var dealCardInterval = 300;
@@ -317,17 +324,24 @@ function log(message, socket) {
 		}
 	});
 	
-	socket.on('handChosen', function(otherUsername) {
-		log('hand was chosen, but not yet played by other: ' + otherUsername, socket);
-		logic.savePlayedHandToHistory(app.playedHands, 'otherHasChosen', true);
+	socket.on('handChosen', function(player2Name) {
+		log('hand was chosen, but not yet played by other: ' + player2Name, socket);
+		if (player2Name === app.player2Name || app.username !== app.player1Name) {
+			// show chosen message if the player is my opponent or if I am a spectator
+			logic.savePlayedHandToHistory(app.playedHands, 'otherHasChosen', true);
+		}
 	});
 	
 	socket.on('playHand', function(playedHandJson) {
 		log('hand was played by other: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);
 		
-		if (playedHand.username === app.otherUsername && playedHand.otherUsername === app.username) {
+		if (playedHand.username === app.player2Name && playedHand.otherUsername === app.player1Name) {
+			// save hand if it is from my opponent to me (this is also when I am a spectator and the hand is from player 2)
 			logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
+		} else if (app.username !== app.player1Name) {
+			// or if I am a spectator of the match (and the hand is from player 1)
+			logic.savePlayedHandToHistory(app.playedHands, 'myHandName', playedHand.myHandName);
 		}
 	});
 	
@@ -344,16 +358,19 @@ function log(message, socket) {
 		app.resumeSession(session);
 	});
 	
-	socket.on('playerJoined', function(otherUsername) {
-		log('player has joined: ' + otherUsername, socket);
-		
-		if (!app.otherUsername) {
-			app.otherUsername = otherUsername;
-		}
+	socket.on('playerJoined', function(username) {
+		log('player has joined: ' + username, socket);
 		
 		app.otherUsers.push({
-			name: otherUsername
+			name: username
 		});
+	});
+	
+	socket.on('gameStarted', function(partialSessionJson) {
+		log('gameStarted: ' + partialSessionJson, socket);
+		var partialSession = JSON.parse(partialSessionJson);
+		logic.savePlayerNamesToSession(app, partialSession.player1Name, partialSession.player2Name);
+		app.drawHands();
 	});
 	
 	socket.on('authenticateFail', function(message) {

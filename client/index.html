@@ -34,8 +34,11 @@
 
 				<div class="playingField">
 					<div class="thisPlayerShowdown">
-						<p class="specialText">
+						<p class="specialText" v-if="username === player1Name">
 							You played:
+						</p>
+						<p class="specialText" v-if="username !== player1Name">
+							{{player1Name}} played:
 						</p>
 						<div id="myHandName">
 							<div v-if="myHandName != ''" v-bind:type="myHandName" class="hand top">
@@ -60,12 +63,13 @@
 							<p class="specialText" id="handResult">
 								{{handResult(myHandName, otherHandName)}}
 							</p>
-							<p  class="specialText" v-if="otherHasChosen && otherHandName === ''">The other player has chosen a hand, it will be shown once you choose your hand</p>
+							<p  class="specialText" v-if="otherHasChosen && otherHandName === '' && username === player1Name">The other player has chosen a hand, it will be shown once you choose your hand</p>
+							<p  class="specialText" v-if="otherHasChosen && otherHandName === '' && username !== player1Name">One player has chosen a hand, it will be shown once the other player has chosen as well</p>
 						</div>
 					</div>
 					<div class="enemyPlayerShowdown">
 						<p class="specialText">
-							Other played:
+							{{player2Name}} played:
 						</p>
 						<div id="otherHandName">
 							<div v-if="otherHandName != ''" v-bind:type="otherHandName" class="hand top">
@@ -150,18 +154,21 @@
 			</div>
 		</div>
 		<div class="information-pane">
-			<div class="toolbar">				
-				<div class="controls" v-if="username !== '' && otherUsername !== ''">
+			<div class="toolbar">
+				<div class="controls" v-if="username === player1Name">
 					<a href="#" data-icon="♚" type="button" v-if="myScore === maxScore || otherScore === maxScore" @click="newGame()" class="button orange shield glossy">New Game</a>
 				</div>
 			</div>
 			<div class="player-info">
 				<div class="player-container">
-					<p>
+					<p v-if="username === player1Name">
 						You are:
 					</p>
+					<p v-if="username !== player1Name">
+						This is:
+					</p>
 					<p class="userName">
-						{{username}}
+						{{player1Name}}
 					</p>
 				</div>
 				<div class="enemyplayer-container">
@@ -169,7 +176,7 @@
 						Playing against:
 					</p>
 					<p class="userName">
-						{{otherUsername}}
+						{{player2Name}}
 					</p>
 				</div>
 				<div class="score-container">
