@@ -38,6 +38,7 @@ http.listen(3000, function() {
 // user and session management
 var sessions = {};
 var sessionsByUsername = {};
+var sessionsBySocketId = {};
 var player1 = null;
 var player2 = null;
 
@@ -47,6 +48,25 @@ io.on('connection', function(socket) {
 	
 	socket.on('disconnect', function() {
 		log('user disconnected', socket);
+		
+		var session = sessionsBySocketId[socket.id];
+		
+		if (session) {
+			log('disconnected user found: ' + session.username, socket);
+			
+			// remove session from all otherUsers arrays
+			for (existingUsername in sessionsByUsername) {
+				logic.removeFromOtherUsers(sessionsByUsername[existingUsername].otherUsers, session.username);
+			}
+			
+			// also remove this session from the indexes so it can be used again
+			delete sessions[session.sessionId];
+			delete sessionsByUsername[session.username];
+			delete sessionsBySocketId[session.socketId];
+			
+			// and emit disconnect to others
+			socket.broadcast.emit('playerDisconnected', session.username);
+		}
 	});
 	
 	socket.on('authenticate', function(username) {
@@ -70,6 +90,8 @@ io.on('connection', function(socket) {
 			var session = {
 				id: sessionId,
 				username: username,
+				socketId: socket.id,
+				challengedBy: '',
 				playedHands: [],
 				otherUsers: [],
 				player1Name: player1 && player2 ? player1.username : '',
@@ -88,33 +110,16 @@ io.on('connection', function(socket) {
 				});
 			}
 			
+			// store in our 3 indexes (for fast lookup)
 			sessions[sessionId] = session;
 			sessionsByUsername[username] = session;
+			sessionsBySocketId[socket.id] = session;
 			
 			// send success to the authenticating client
 			socket.emit('authenticateSuccess', JSON.stringify(session));
 			
 			// and announce the join to the others
 			socket.broadcast.emit('playerJoined', username);
-			
-			// while we do not have a bracket yet: first player to authenticate is player 1, 2nd is player 2 and the rest are spectators
-			if (!player1) {
-				player1 = session;
-			} else if (!player2) {
-				player2 = session;
-				
-				// now we know both players' names, everyone should know this
-				log('game started: ' + player1.username + ' vs ' + player2.username, socket);
-				
-				for (existingUsername in sessionsByUsername) {
-					logic.savePlayerNamesToSession(sessionsByUsername[existingUsername], player1.username, player2.username)
-				}
-				
-				io.emit('gameStarted', JSON.stringify({
-					player1Name: player1.username,
-					player2Name: player2.username
-				}));
-			}
 		}
 	});
 	
@@ -123,7 +128,11 @@ io.on('connection', function(socket) {
 		var session = sessions[sessionId];
 		
 		if (session) {
+			session.socketId = socket.id;
 			socket.emit('resumeSession', JSON.stringify(session));
+			
+			// and announce the re-join to the others
+			socket.broadcast.emit('playerJoined', session.username);
 		} else {
 			socket.emit('authenticateFail', 'Your session could not be found. Choose a name to start a new session.');
 		}
@@ -176,11 +185,69 @@ io.on('connection', function(socket) {
 		}
 	});
 	
-	socket.on('newGame', function(username) {
-		var session = sessionsByUsername[username];
+	socket.on('challengeUser', function(username) {
+		log('user challenged: ' + username, socket);
 		
-		if (session) {
-			session.playedHands.splice(0);
+		var session = sessionsBySocketId[socket.id];
+		var otherSession = sessionsByUsername[username];
+		
+		if (session && otherSession) {
+			// save challenge in other user's session
+			otherSession.challengedBy = session.username;
+			
+			// emit challenge to other user
+			socket.to(otherSession.socketId).emit('challengedByUser', session.username);
+		} else {
+			// emit error?
+		}
+	});
+	
+	socket.on('challengeAccepted', function(username) {
+		log('challenge accepted: ' + username, socket);
+		
+		var session = sessionsBySocketId[socket.id];
+		var otherSession = sessionsByUsername[username];
+		
+		if (session && otherSession) {
+			// the original challenger is player 1
+			player1 = otherSession;
+			
+			// the accepter is player 2
+			player2 = session;
+			
+			// start the game!
+			log('game started: ' + player1.username + ' vs ' + player2.username, socket);
+			
+			for (existingUsername in sessionsByUsername) {
+				// clear any previously played hands
+				sessionsByUsername[existingUsername].playedHands.splice(0);
+				
+				// we know both players' names now, everyone should know this, so store it in their sessions
+				logic.savePlayerNamesToSession(sessionsByUsername[existingUsername], player1.username, player2.username)
+			}
+			
+			// and send it to everyone
+			io.emit('gameStarted', JSON.stringify({
+				player1Name: player1.username,
+				player2Name: player2.username
+			}));
+		} else {
+			// emit error?
+		}
+	});
+	
+	socket.on('challengeRejected', function(username) {
+		log('challenge rejected: ' + username, socket);
+		
+		var session = sessionsBySocketId[socket.id];
+		var otherSession = sessionsByUsername[username];
+		
+		if (session && otherSession) {
+			// remove challenge in current user's session
+			session.challengedBy = '';
+			
+			// emit rejection to other user
+			socket.to(otherSession.socketId).emit('challengeRejected', username);
 		} else {
 			// emit error?
 		}

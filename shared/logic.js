@@ -12,7 +12,7 @@
 		playedHands[playedHands.length - 1][key] = value;
 	};
 	
-	exports.savePlayerNamesToSession = function (session, player1Name, player2Name) {
+	exports.savePlayerNamesToSession = function(session, player1Name, player2Name) {
 		if (session.username === player2Name) {
 			// player 2 sees things upside down
 			session.player1Name = player2Name;
@@ -22,5 +22,15 @@
 			session.player1Name = player1Name;
 			session.player2Name = player2Name;
 		}
-	}
+	};
+	
+	exports.removeFromOtherUsers = function(otherUsers, username) {
+		var otherUserIndex = otherUsers.findIndex(function(otherUser) {
+			return otherUser.name === username;
+		});
+		
+		if (otherUserIndex > -1) {
+			otherUsers.splice(otherUserIndex, 1);
+		}
+	};
 }(typeof exports === 'undefined' ? this.logic = {} : exports));

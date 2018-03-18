@@ -96,6 +96,7 @@ function drop(ev) {
 			towelId: 0,
 			handId: 0,
 			username: '',
+			challengedBy: '',
 			player1Name: '',
 			player2Name: '',
 			initialTowelAmount: 3,
@@ -296,6 +297,12 @@ function drop(ev) {
 			},
 			otherScore: function () {
 				return this.calculateTotalScore(false);
+			},
+			gameInProgress: function() {
+				return !(!this.player1Name || !this.player2Name);
+			},
+			thisUserIsPlaying: function() {
+				return this.username === this.player1Name;
 			}
 		},
 		methods: {
@@ -362,9 +369,15 @@ function drop(ev) {
 				
 				return result;
 			},
-			newGame: function() {
-				this.playedHands.splice(0); 
-				socket.emit('newGame', this.username);
+			challengeUser: function(username) {
+				socket.emit('challengeUser', username);
+			},
+			acceptChallenge: function() {
+				socket.emit('challengeAccepted', this.challengedBy);
+			},
+			rejectChallenge: function() {
+				this.challengedBy = '';
+				socket.emit('challengeRejected', this.challengedBy);
 			},
 			addHandToDeck: function(player, type){
 				var cardSound = new Audio('media/carddeal.wav');
@@ -491,11 +504,27 @@ function drop(ev) {
 		});
 	});
 	
+	socket.on('playerDisconnected', function(username) {
+		log('player has disconnected: ' + username, socket);
+		logic.removeFromOtherUsers(app.otherUsers, username);
+	});
+	
+	socket.on('challengedByUser', function(username) {
+		log('challenged by user: ' + username, socket);
+		app.challengedBy = username;
+	});
+	
+	socket.on('challengeRejected', function(username) {
+		alert(username + ' has rejected your challenge :(');
+	});
+	
 	socket.on('gameStarted', function(partialSessionJson) {
 		log('gameStarted: ' + partialSessionJson, socket);
 		var partialSession = JSON.parse(partialSessionJson);
 		logic.savePlayerNamesToSession(app, partialSession.player1Name, partialSession.player2Name);
+		app.playedHands.splice(0);
 		app.drawHands();
+		app.drawTowels();
 	});
 	
 	socket.on('authenticateFail', function(message) {
