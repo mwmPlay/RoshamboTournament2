@@ -104,7 +104,7 @@ function drop(ev) {
 			towelPrototypes: {
 				impendingdoom: {
 					name: 'Towel of impending doom',
-					description: "This towel's fabric is so irritating that it does 3 damage to an hand it's thrown at.",
+					description: "This towel's fabric is so irritating that it does 3 damage to a hand it's thrown at.",
 					emblemIcon: "fab fa-hotjar"
 				},
 				unfathomabledarkness: {
@@ -114,7 +114,7 @@ function drop(ev) {
 				},
 				unproportionatebludgeoning: {
 					name: 'Unproportionate bludgeoning',
-					description: "This towel is so heavy that when wrapped around an hand it deals extra damage.",
+					description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
 					emblemIcon: "fas fa-stop"
 				},
 				magnificentalleviation: {

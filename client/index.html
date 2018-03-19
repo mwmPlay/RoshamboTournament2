@@ -193,30 +193,22 @@
 			</div>
 			<div class="player-info">
 				<div class="player-container">
-					<p v-if="thisUserIsPlaying">
-						You are:
-					</p>
-					<p v-if="!thisUserIsPlaying">
-						This is:
-					</p>
-					<p class="userName">
+					<div class="avatar">
+
+					</div>
+					<p class="userName specialText">
 						{{player1Name}}
 					</p>
 				</div>
-				<div class="enemyplayer-container">
-					<p>
-						Playing against:
-					</p>
-					<p class="userName">
-						{{player2Name}}
-					</p>
+				<div class="versus specialText">
+					VS
 				</div>
-				<div class="score-container">
-					<p>
-						Score:
-					</p>
-					<p id="score">
-						{{myScore}} - {{otherScore}}
+				<div class="enemyplayer-container">
+					<div class="avatar">
+						
+					</div>
+					<p class="userName specialText">
+						{{player2Name}}
 					</p>
 				</div>
 			</div>

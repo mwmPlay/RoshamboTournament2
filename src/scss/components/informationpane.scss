@@ -1,6 +1,7 @@
 .information-pane {
     flex: 0 0 350px;
     padding: 20px;
+    padding-left: 0; 
     display: flex;
     flex-direction: column;
 
@@ -23,25 +24,54 @@
         margin-bottom: auto;
         display: flex;
         flex-wrap: wrap;
+        position: relative;
+        background: rgba(0, 0, 0, 0.3);
+        color: black;
+        height: 200px;
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            border-radius: 3px;
+            box-shadow: 0 0 2px #000;
+            border: 2px solid #333;
+            background: #dedede;
+            top: -5px;
+            background: url(http://bestnycacupuncturist.com/wp-content/uploads/2016/11/anonymous-avatar-sm.jpg);
+            background-size: cover;
+        }
 
         .player-container {
             width: calc(50% - 5px);
             padding: 10px;
-            margin: 0 5px 10px 0;
-            background: #d8d8d8;
+            margin: 14px 2px;
+            position: relative;
+
+            .avatar {
+                left: 15px;
+            }
+
+            .userName,
+            .avatar {
+                transform: rotate(3deg);
+            }
         }
  
         .enemyplayer-container {
             width: calc(50% - 5px);
             padding: 10px;
-            margin: 0 0 10px 5px;
-            background: #d8d8d8;
-        }
+            margin: 14px 2px;
 
-      /*  p {
-            color: #dedede;
-            text-shadow: 0 0 2px #000;
-        }*/
+            .avatar {
+                right: -5px;
+            }
+
+            .userName,
+            .avatar {
+                transform: rotate(-3deg);    
+            }
+        }
 
         .score-container {
             @include flexCenter;
@@ -55,6 +85,13 @@
             font-size: 20px;
             margin-top: 3px;
             font-weight: bold;
+            text-align: center;         
+            font-size: 12px;
+            padding: 10px 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background: #9a1c1c;
+            border: 1px solid #480909;
         }
 
         #score {
@@ -63,9 +100,26 @@
         }
     }
 
+    .versus {
+        box-shadow: 2px 2px 4px #000;
+        height: 50px;
+        width: 50px;
+        background: #ffad33;
+        border-radius: 50%;
+        font-size: 20px;
+        position: absolute;
+        transform: rotate(-20deg);
+        left: calc(50% - 25px);    
+        top: 100px;
+        font-weight: bold;
+        color: #9a1c1c;
+        border: 2px solid #9a1c1c;
+        z-index: 3;
+        @include flexCenter;
+    }
+
     .history {    
         height: 250px;
-        border-radius: 3px;
         display: flex; 
         width: 100%;
         flex-direction: column;

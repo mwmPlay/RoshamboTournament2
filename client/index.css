@@ -812,6 +812,7 @@ svg.small {
 .information-pane {
   flex: 0 0 350px;
   padding: 20px;
+  padding-left: 0;
   display: flex;
   flex-direction: column; }
   .information-pane .toolbar {
@@ -829,20 +830,40 @@ svg.small {
     margin-bottom: auto;
     display: flex;
     flex-wrap: wrap;
-    /*  p {
-            color: #dedede;
-            text-shadow: 0 0 2px #000;
-        }*/ }
+    position: relative;
+    background: rgba(0, 0, 0, 0.3);
+    color: black;
+    height: 200px; }
+    .information-pane .player-info .avatar {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      border-radius: 3px;
+      box-shadow: 0 0 2px #000;
+      border: 2px solid #333;
+      background: #dedede;
+      top: -5px;
+      background: url(http://bestnycacupuncturist.com/wp-content/uploads/2016/11/anonymous-avatar-sm.jpg);
+      background-size: cover; }
     .information-pane .player-info .player-container {
       width: calc(50% - 5px);
       padding: 10px;
-      margin: 0 5px 10px 0;
-      background: #d8d8d8; }
+      margin: 14px 2px;
+      position: relative; }
+      .information-pane .player-info .player-container .avatar {
+        left: 15px; }
+      .information-pane .player-info .player-container .userName,
+      .information-pane .player-info .player-container .avatar {
+        transform: rotate(3deg); }
     .information-pane .player-info .enemyplayer-container {
       width: calc(50% - 5px);
       padding: 10px;
-      margin: 0 0 10px 5px;
-      background: #d8d8d8; }
+      margin: 14px 2px; }
+      .information-pane .player-info .enemyplayer-container .avatar {
+        right: -5px; }
+      .information-pane .player-info .enemyplayer-container .userName,
+      .information-pane .player-info .enemyplayer-container .avatar {
+        transform: rotate(-3deg); }
     .information-pane .player-info .score-container {
       display: flex;
       align-items: center;
@@ -854,13 +875,37 @@ svg.small {
     .information-pane .player-info .userName {
       font-size: 20px;
       margin-top: 3px;
-      font-weight: bold; }
+      font-weight: bold;
+      text-align: center;
+      font-size: 12px;
+      padding: 10px 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: #9a1c1c;
+      border: 1px solid #480909; }
     .information-pane .player-info #score {
       font-weight: bold;
       font-size: 30px; }
+  .information-pane .versus {
+    box-shadow: 2px 2px 4px #000;
+    height: 50px;
+    width: 50px;
+    background: #ffad33;
+    border-radius: 50%;
+    font-size: 20px;
+    position: absolute;
+    transform: rotate(-20deg);
+    left: calc(50% - 25px);
+    top: 100px;
+    font-weight: bold;
+    color: #9a1c1c;
+    border: 2px solid #9a1c1c;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center; }
   .information-pane .history {
     height: 250px;
-    border-radius: 3px;
     display: flex;
     width: 100%;
     flex-direction: column; }
