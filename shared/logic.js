@@ -5,7 +5,11 @@
 			playedHands.push({
 				myHandName: '',
 				otherHandName: '',
-				otherHasChosen: false
+				otherHasChosen: false,
+				myTowel: '',
+				myTowelTarget: '',
+				otherTowel: '',
+				otherTowelTarget: ''
 			});
 		}
 		

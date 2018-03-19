@@ -95,7 +95,8 @@ io.on('connection', function(socket) {
 				playedHands: [],
 				otherUsers: [],
 				player1Name: player1 && player2 ? player1.username : '',
-				player2Name: player1 && player2 ? player2.username : ''
+				player2Name: player1 && player2 ? player2.username : '',
+				towels: []
 			};
 			
 			for (existingUsername in sessionsByUsername) {
@@ -144,9 +145,13 @@ io.on('connection', function(socket) {
 		
 		if (playedHand.username === player1.username && playedHand.otherUsername === player2.username) {
 			logic.savePlayedHandToHistory(player1.playedHands, 'myHandName', playedHand.myHandName);
+			logic.savePlayedHandToHistory(player1.playedHands, 'myTowel', playedHand.myTowel);
+			logic.savePlayedHandToHistory(player1.playedHands, 'myTowelTarget', playedHand.myTowelTarget);
 			logic.savePlayedHandToHistory(player2.playedHands, 'otherHasChosen', true);
 		} else if (playedHand.username === player2.username && playedHand.otherUsername === player1.username) {
 			logic.savePlayedHandToHistory(player2.playedHands, 'myHandName', playedHand.myHandName);
+			logic.savePlayedHandToHistory(player2.playedHands, 'myTowel', playedHand.myTowel);
+			logic.savePlayedHandToHistory(player2.playedHands, 'myTowelTarget', playedHand.myTowelTarget);
 			logic.savePlayedHandToHistory(player1.playedHands, 'otherHasChosen', true);
 		}
 		
@@ -157,12 +162,19 @@ io.on('connection', function(socket) {
 			// both players have played, time to emit the actual hands and store them in the sessions
 			
 			logic.savePlayedHandToHistory(player1.playedHands, 'otherHandName', player2sHandName);
+			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowel', player2sHandName);
+			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowelTarget', player2sHandName);
+			
 			logic.savePlayedHandToHistory(player2.playedHands, 'otherHandName', player1sHandName);
+			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowel', player1sHandName);
+			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowelTarget', player1sHandName);
 			
 			playedHandJson = JSON.stringify({
 				username: player1.username,
 				otherUsername: player2.username,
-				myHandName: player1sHandName
+				myHandName: player1sHandName,
+				myTowel: '',
+				myTowelTarget: ''
 			});
 			
 			io.emit('playHand', playedHandJson);
@@ -170,17 +182,13 @@ io.on('connection', function(socket) {
 			playedHandJson = JSON.stringify({
 				username: player2.username,
 				otherUsername: player1.username,
-				myHandName: player2sHandName
+				myHandName: player2sHandName,
+				myTowel: '',
+				myTowelTarget: ''
 			});
 			
 			io.emit('playHand', playedHandJson);
 		} else {
-			if (playedHand.username === player1.username && playedHand.otherUsername === player2.username) {
-				logic.savePlayedHandToHistory(player2.playedHands, 'otherHasChosen', true);
-			} else if (playedHand.username === player2.username && playedHand.otherUsername === player1.username) {
-				logic.savePlayedHandToHistory(player1.playedHands, 'otherHasChosen', true);
-			}
-			
 			socket.broadcast.emit('handChosen', playedHand.username);
 		}
 	});

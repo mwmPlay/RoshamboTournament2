@@ -36,7 +36,7 @@
 								</p>
 							</div>
 							<div class="damage-info">
-								<p v-for="(handResult, handIndex) in handPrototypes[hand.name].result">
+								<p v-for="handResult in handPrototypes[hand.name].result">
 									{{handResult.damage}} damage to {{handResult.name}}
 								</p>
 							</div>
@@ -129,7 +129,7 @@
 
 			<div class="thisplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name, handIndex)" v-for="(hand, handIndex) in thisPlayer.hands"  v-bind:rotate="randomRotationDegree()" ondrop="drop(event)" ondragover="allowDrop(event)">
+					<div v-bind:type="hand.name" class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands"  v-bind:rotate="randomRotationDegree()" ondrop="drop(event)" ondragover="allowDrop(event)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -152,7 +152,7 @@
 								</p>
 							</div>
 							<div class="damage-info">
-								<p v-for="(handResult, handIndex) in handPrototypes[hand.name].result">
+								<p v-for="handResult in handPrototypes[hand.name].result">
 									{{handResult.damage}} damage to {{handResult.name}}
 								</p>
 							</div>
@@ -211,14 +211,6 @@
 						{{player2Name}}
 					</p>
 				</div>
-				<div class="score-container">
-					<p>
-						Score:
-					</p>
-					<p id="score">
-						{{myScore}} - {{otherScore}}
-					</p>
-				</div>
 			</div>
 
 			<div class="history">
@@ -228,6 +220,7 @@
 				<div class="history-overview">
 					<p v-for="(playedHand, index) in playedHands">
 						Round {{index + 1}}: {{handResult(playedHand.myHandName, playedHand.otherHandName)}}
+						<span v-if="playedHand.myTowel">, also {{playedHand.myTowel}} was used on playedHand.myTowelTarget</span>
 					</p>
 				</div>
 			</div>

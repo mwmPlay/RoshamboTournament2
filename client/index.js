@@ -84,27 +84,24 @@ function drop(ev) {
 		el: '#rps',
 		data: {
 			enemyPlayer: {
-				hands: [],
-				towels: []
+				hands: []
 			},
 			thisPlayer: {
 				hands: [],
 				towels: []
 			},
 			playedHands: [],
-			maxScore: 3,
-			towelId: 0,
-			handId: 0,
 			username: '',
 			challengedBy: '',
 			player1Name: '',
 			player2Name: '',
 			initialTowelAmount: 3,
+			towels: [],
 			otherUsers: [],
 			towelPrototypes: {
 				impendingdoom: {
 					name: 'Towel of impending doom',
-					description: "This towel's fabric is so irritating that it does 3 damage to an hand it's thrown at.",
+					description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
 					emblemIcon: "fab fa-hotjar"
 				},
 				unfathomabledarkness: {
@@ -112,18 +109,18 @@ function drop(ev) {
 					description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
 					emblemIcon: "fas fa-adjust"
 				},
-				unproportionatebludgeoning: {
-					name: 'Unproportionate bludgeoning',
-					description: "This towel is so heavy that when wrapped around an hand it deals extra damage.",
+				disproportionatebludgeoning: {
+					name: 'Towel of disproportionate bludgeoning',
+					description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
 					emblemIcon: "fas fa-stop"
 				},
 				magnificentalleviation: {
 					name: 'Towel of magnificent alleviation',
-					description: "This towel had aloë vera spilled on it and now it has healing properties.",
+					description: "This towel had aloe vera spilled on it and now it has healing properties.",
 					emblemIcon: "fas fa-heart"
 				}
 			},
-
+			
 			handPrototypes: {
 				rock: {
 					name: 'rock',
@@ -305,7 +302,42 @@ function drop(ev) {
 				return this.username === this.player1Name;
 			}
 		},
+		watch: {
+			playedHands: {
+				handler: function(newValue) {
+					// console.log('new ' + JSON.stringify(newValue));
+					
+					// reset values of hands to initial values from prototypes
+					this.thisPlayer.hands.forEach(function(hand) {
+						hand.health = app.handPrototypes[hand.name].health;
+						hand.freeze = 0;
+					});
+					this.enemyPlayer.hands.forEach(function(hand) {
+						hand.health = app.handPrototypes[hand.name].health;
+						hand.freeze = 0;
+					});
+					
+					// run the current history
+					newValue.forEach(function(playedHand) {
+						app.showDown(playedHand);
+					});
+				},
+				deep: true
+			}
+		},
 		methods: {
+			showDown: function(playedHand) {
+				if (playedHand.myHandName && playedHand.otherHandName && playedHand.myHandName !== playedHand.otherHandName) {
+					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
+					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
+					var myHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myHandName });
+					var otherHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherHandName });
+					
+					// do damage
+					myHand.health -= otherHandPrototype.result[playedHand.myHandName].damage;
+					otherHand.health -= myHandPrototype.result[playedHand.otherHandName].damage;
+				}
+			},
 			randomRotationDegree: function () {
 				var modifier = Math.random() > 0.5 ? -1 : 1;
 				return Math.floor(Math.random() * (5)) * modifier;
@@ -341,7 +373,7 @@ function drop(ev) {
 					return '';
 				}
 			},
-			playHand: function(myHandName, handIndex) {
+			playHand: function(myHandName) {
 				log('hand played by me: ' + myHandName, socket);
 				
 				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', myHandName);
@@ -349,25 +381,12 @@ function drop(ev) {
 				var playedHandJson = JSON.stringify({
 					username: this.player1Name,
 					otherUsername: this.player2Name,
-					myHandName: myHandName
+					myHandName: myHandName,
+					myTowel: '',
+					myTowelTarget: ''
 				});
 				
 				socket.emit('playHand', playedHandJson);
-			},
-			calculateTotalScore: function (won) {
-				var result = 0;
-				var _this = this;
-				
-				this.playedHands.forEach(function (playedHand) {
-					if (playedHand.myHandName !== '' && playedHand.otherHandName !== '' && playedHand.myHandName !== playedHand.otherHandName) {
-						var myHand = _this.handPrototypes[playedHand.myHandName];
-						var handResult = myHand.result[playedHand.otherHandName];
-						
-						result += won === handResult.win ? 1 : 0;
-					}
-				});
-				
-				return result;
 			},
 			challengeUser: function(username) {
 				socket.emit('challengeUser', username);
@@ -384,22 +403,20 @@ function drop(ev) {
 				cardSound.play();
 				
 				var hand = this.handPrototypes[type];
-				hand.id = this.handId;
-
-				this[player].hands.push(hand);
-				this.handId++;
+				this[player].hands.push(clone(hand));
 			},
 			addTowelToDeck: function(player, type){
 				var towel = this.towelPrototypes[type];
-				towel.id = this.towelId;
-
-				this[player].towels.push(towel);
-				this.towelId++;
+				this[player].towels.push(clone(towel));
 			},
 			resumeSession: function(session) {
 				this.username = session.username;
 				this.player1Name = session.player1Name;
 				this.player2Name = session.player2Name;
+				
+				session.towels.forEach(function(towel) {
+					this.towels.push(towel);
+				});
 				
 				session.playedHands.forEach(function(playedHand) {
 					app.playedHands.push(playedHand);
@@ -413,21 +430,17 @@ function drop(ev) {
 				this.drawTowels();
 			},
 			drawTowels: function(){
-				if (this.username !== this.player1Name) {
-					// only draw hands if I am actually playing
+				if (!this.thisUserIsPlaying) {
+					// only draw towels if I am actually playing
 					return;
 				}
-
-				for(var i = 0; i < this.initialTowelAmount; i++) {
-					var randomEnemyTowel = pickRandomProperty(this.towelPrototypes);
-					this.addTowelToDeck('enemyPlayer', randomEnemyTowel);
-
-					var randomTowel = pickRandomProperty(this.towelPrototypes);
-					this.addTowelToDeck('thisPlayer', randomTowel);
+				
+				for(var i = 0; i < app.initialTowelAmount; i++) {
+					app.addTowelToDeck('thisPlayer', app.towels[i]);
 				}
 			},
 			drawHands: function(){
-				if (this.username !== this.player1Name) {
+				if (!this.thisUserIsPlaying) {
 					// only draw hands if I am actually playing
 					return;
 				}
@@ -435,19 +448,19 @@ function drop(ev) {
 				var i = 3;
 				var _this = this;
 				var dealCardInterval = 300;
-
+				
 				soundEffects.shuffling.play();
-
+				
 				for(var handKey in this.handPrototypes) {
 					setTimeout(function(handKey) {
 						_this.addHandToDeck('enemyPlayer', handKey);
 					},
 					i*dealCardInterval,
 					handKey);
-
+					
 					i++;
 				}
-
+				
 				for(var handKey in this.handPrototypes) {
 					setTimeout(function(handKey) {
 						_this.addHandToDeck('thisPlayer', handKey);
@@ -457,7 +470,6 @@ function drop(ev) {
 					
 					i++;
 				}
-
 			}
 		}
 	});
@@ -473,12 +485,16 @@ function drop(ev) {
 	socket.on('playHand', function(playedHandJson) {
 		log('hand was played by other: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);
-
+		
 		if (playedHand.username === app.player2Name && playedHand.otherUsername === app.player1Name) {
 			// save hand if it is from my opponent to me (this is also when I am a spectator and the hand is from player 2)
+			logic.savePlayedHandToHistory(app.playedHands, 'otherTowel', playedHand.myTowel);
+			logic.savePlayedHandToHistory(app.playedHands, 'otherTowelTarget', playedHand.myTowelTarget);
 			logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
 		} else if (app.username !== app.player1Name) {
 			// or if I am a spectator of the match (and the hand is from player 1)
+			logic.savePlayedHandToHistory(app.playedHands, 'myTowel', playedHand.myTowel);
+			logic.savePlayedHandToHistory(app.playedHands, 'myTowelTarget', playedHand.myTowelTarget);
 			logic.savePlayedHandToHistory(app.playedHands, 'myHandName', playedHand.myHandName);
 		}
 	});
@@ -520,9 +536,25 @@ function drop(ev) {
 	
 	socket.on('gameStarted', function(partialSessionJson) {
 		log('gameStarted: ' + partialSessionJson, socket);
+		
+		// save partial session details
 		var partialSession = JSON.parse(partialSessionJson);
 		logic.savePlayerNamesToSession(app, partialSession.player1Name, partialSession.player2Name);
+		
+		// clear history and towels
 		app.playedHands.splice(0);
+		app.towels.splice(0);
+		
+		// randomly pick from available towels
+		for(var i = 0; i < app.initialTowelAmount; i++) {
+			var randomTowel = pickRandomProperty(app.towelPrototypes);
+			app.towels.push(randomTowel);
+		}
+		
+		// and let server know that
+		socket.emit('towelsChosen', JSON.stringify(app.towels));
+		
+		// draw it all
 		app.drawHands();
 		app.drawTowels();
 	});
