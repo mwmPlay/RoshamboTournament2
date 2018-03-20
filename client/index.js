@@ -289,12 +289,6 @@ function drop(ev) {
 			otherHasChosen: function () {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
 			},
-			myScore: function () {
-				return this.calculateTotalScore(true);
-			},
-			otherScore: function () {
-				return this.calculateTotalScore(false);
-			},
 			gameInProgress: function() {
 				return !(!this.player1Name || !this.player2Name);
 			},
@@ -418,6 +412,9 @@ function drop(ev) {
 					app.towels.push(towel);
 				});
 				
+				this.drawHands(true);
+				this.drawTowels();
+				
 				session.playedHands.forEach(function(playedHand) {
 					app.playedHands.push(playedHand);
 				});
@@ -425,9 +422,6 @@ function drop(ev) {
 				session.otherUsers.forEach(function(otherUser) {
 					app.otherUsers.push(otherUser);
 				});
-				
-				this.drawHands();
-				this.drawTowels();
 			},
 			drawTowels: function(){
 				if (!this.thisUserIsPlaying) {
@@ -439,7 +433,7 @@ function drop(ev) {
 					app.addTowelToDeck('thisPlayer', app.towels[i]);
 				}
 			},
-			drawHands: function(){
+			drawHands: function(immediate){
 				if (!this.thisUserIsPlaying) {
 					// only draw hands if I am actually playing
 					return;
@@ -452,23 +446,31 @@ function drop(ev) {
 				soundEffects.shuffling.play();
 				
 				for(var handKey in this.handPrototypes) {
-					setTimeout(function(handKey) {
+					if (immediate) {
 						_this.addHandToDeck('enemyPlayer', handKey);
-					},
-					i*dealCardInterval,
-					handKey);
-					
-					i++;
+					} else {
+						setTimeout(function(handKey) {
+							_this.addHandToDeck('enemyPlayer', handKey);
+						},
+						i*dealCardInterval,
+						handKey);
+						
+						i++;
+					}
 				}
 				
 				for(var handKey in this.handPrototypes) {
-					setTimeout(function(handKey) {
+					if (immediate) {
 						_this.addHandToDeck('thisPlayer', handKey);
-					}, 
-					i*dealCardInterval,
-					handKey);
-					
-					i++;
+					} else {
+						setTimeout(function(handKey) {
+							_this.addHandToDeck('thisPlayer', handKey);
+						}, 
+						i*dealCardInterval,
+						handKey);
+						
+						i++;
+					}
 				}
 			}
 		}

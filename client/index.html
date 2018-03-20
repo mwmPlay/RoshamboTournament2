@@ -13,7 +13,7 @@
 		<div id="playboard">
 			<div class="enemyplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" class="hand top" v-for="hand in enemyPlayer.hands" v-bind:rotate="randomRotationDegree()">
+					<div v-bind:type="hand.name" v-if="hand.health > 0" class="hand top" v-for="hand in enemyPlayer.hands" v-bind:rotate="randomRotationDegree()">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -129,7 +129,7 @@
 
 			<div class="thisplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands"  v-bind:rotate="randomRotationDegree()" ondrop="drop(event)" ondragover="allowDrop(event)">
+					<div v-bind:type="hand.name" v-if="hand.health > 0" class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands"  v-bind:rotate="randomRotationDegree()" ondrop="drop(event)" ondragover="allowDrop(event)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
