@@ -139,6 +139,13 @@ io.on('connection', function(socket) {
 		}
 	});
 	
+	socket.on('towelsChosen', function(towelsJson) {
+		log('towelsChosen: ' + towelsJson, socket);
+		var towels = JSON.parse(towelsJson);
+		var session = sessionsBySocketId[socket.id];
+		session.towels = towels;
+	});
+	
 	socket.on('playHand', function(playedHandJson) {
 		log('play hand: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);

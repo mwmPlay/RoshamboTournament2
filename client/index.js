@@ -415,7 +415,7 @@ function drop(ev) {
 				this.player2Name = session.player2Name;
 				
 				session.towels.forEach(function(towel) {
-					this.towels.push(towel);
+					app.towels.push(towel);
 				});
 				
 				session.playedHands.forEach(function(playedHand) {
