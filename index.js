@@ -200,6 +200,21 @@ io.on('connection', function(socket) {
 		}
 	});
 	
+	socket.on('endGame', function() {
+		log('endGame', socket);
+		
+		// clear both players' sessions
+		logic.clearSession(sessions[player1.id]);
+		logic.clearSession(sessions[player2.id]);
+		
+		// clear player 1 and 2
+		player1 = null;
+		player2 = null;
+		
+		// let everyone else know
+		socket.broadcast.emit('gameEnded');
+	});
+	
 	socket.on('challengeUser', function(username) {
 		log('user challenged: ' + username, socket);
 		

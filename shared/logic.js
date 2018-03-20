@@ -37,4 +37,11 @@
 			otherUsers.splice(otherUserIndex, 1);
 		}
 	};
+	
+	exports.clearSession = function(session) {
+		session.playedHands.splice(0);
+		session.towels.splice(0);
+		session.player1Name = '';
+		session.player2Name = '';
+	};
 }(typeof exports === 'undefined' ? this.logic = {} : exports));

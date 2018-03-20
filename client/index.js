@@ -120,7 +120,6 @@ function drop(ev) {
 					emblemIcon: "fas fa-heart"
 				}
 			},
-			
 			handPrototypes: {
 				rock: {
 					name: 'rock',
@@ -292,6 +291,33 @@ function drop(ev) {
 			gameInProgress: function() {
 				return !(!this.player1Name || !this.player2Name);
 			},
+			gameOver: function() {
+				var result = true;
+				
+				for (var i = 0; i < this.enemyPlayer.hands.length; i++) {
+					if (this.enemyPlayer.hands[i].health > 0) {
+						result = false;
+						break;
+					}
+				}
+				
+				// enemy cannot play anymore, we're done
+				if (result) {
+					return result;
+				}
+				
+				// reset and check if this player can still play
+				result = true;
+				
+				for (var i = 0; i < this.thisPlayer.hands.length; i++) {
+					if (this.thisPlayer.hands[i].health > 0) {
+						result = false;
+						break;
+					}
+				}
+				
+				return result;
+			},
 			thisUserIsPlaying: function() {
 				return this.username === this.player1Name;
 			}
@@ -331,6 +357,18 @@ function drop(ev) {
 					myHand.health -= otherHandPrototype.result[playedHand.myHandName].damage;
 					otherHand.health -= myHandPrototype.result[playedHand.otherHandName].damage;
 				}
+			},
+			endGame: function() {
+				// clear all game data
+				this.clearGameData();
+				// send to server to do the same
+				socket.emit('endGame');
+			},
+			clearGameData: function() {
+				logic.clearSession(this);
+				this.enemyPlayer.hands.splice(0);
+				this.thisPlayer.hands.splice(0);
+				this.thisPlayer.towels.splice(0);
 			},
 			randomRotationDegree: function () {
 				var modifier = Math.random() > 0.5 ? -1 : 1;
@@ -543,9 +581,10 @@ function drop(ev) {
 		var partialSession = JSON.parse(partialSessionJson);
 		logic.savePlayerNamesToSession(app, partialSession.player1Name, partialSession.player2Name);
 		
-		// clear history and towels
+		// clear history and towels and challenge
 		app.playedHands.splice(0);
 		app.towels.splice(0);
+		app.challengedBy = '';
 		
 		// randomly pick from available towels
 		for(var i = 0; i < app.initialTowelAmount; i++) {
@@ -559,6 +598,11 @@ function drop(ev) {
 		// draw it all
 		app.drawHands();
 		app.drawTowels();
+	});
+	
+	socket.on('gameEnded', function() {
+		log('gameEnded', socket);
+		app.clearGameData();
 	});
 	
 	socket.on('authenticateFail', function(message) {
