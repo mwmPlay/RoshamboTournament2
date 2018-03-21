@@ -59,8 +59,7 @@ io.on('connection', function(socket) {
 				logic.removeFromOtherUsers(sessionsByUsername[existingUsername].otherUsers, session.username);
 			}
 			
-			// also remove this session from the indexes so it can be used again
-			delete sessions[session.sessionId];
+			// also remove this session from the indexes so it can be used again (except for sessionId, as that can be used for resuming)
 			delete sessionsByUsername[session.username];
 			delete sessionsBySocketId[session.socketId];
 			
@@ -130,6 +129,19 @@ io.on('connection', function(socket) {
 		
 		if (session) {
 			session.socketId = socket.id;
+			
+			// re-add this user to the existing sessions
+			for (existingUsername in sessionsByUsername) {
+				sessionsByUsername[existingUsername].otherUsers.push({
+					name: session.username
+				});
+			}
+			
+			// ensure the session is present in all indexes
+			sessionsBySocketId[socket.id] = session;
+			sessionsByUsername[session.username] = session;
+			
+			// update the client with the last known session state
 			socket.emit('resumeSession', JSON.stringify(session));
 			
 			// and announce the re-join to the others
