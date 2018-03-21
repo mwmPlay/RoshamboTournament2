@@ -180,13 +180,13 @@ io.on('connection', function(socket) {
 		if (player1sHand.myHandName && player2sHand.myHandName) {
 			// both players have played, time to emit the actual hands and store them in the sessions
 			
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherHandName', player2sHand.myHandName);
 			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowel', player2sHand.myTowel);
 			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowelTarget', player2sHand.myTowelTarget);
+			logic.savePlayedHandToHistory(player1.playedHands, 'otherHandName', player2sHand.myHandName);
 			
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherHandName', player1sHand.myHandName);
 			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowel', player1sHand.myTowel);
 			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowelTarget', player1sHand.myTowelTarget);
+			logic.savePlayedHandToHistory(player2.playedHands, 'otherHandName', player1sHand.myHandName);
 			
 			playedHandJson = JSON.stringify({
 				username: player1.username,

@@ -221,7 +221,8 @@
 				<div class="history-overview">
 					<p v-for="(playedHand, index) in playedHands">
 						Round {{index + 1}}: {{handResult(playedHand.myHandName, playedHand.otherHandName)}}
-						<span v-if="playedHand.myTowel">, also {{playedHand.myTowel}} was used on playedHand.myTowelTarget</span>
+						<span v-if="playedHand.myTowel">, also {{playedHand.myTowel}} was used on {{playedHand.myTowelTarget}}</span>
+						<span v-if="playedHand.otherTowel">, also {{playedHand.otherTowel}} was used on {{playedHand.otherTowelTarget}}</span>
 					</p>
 				</div>
 			</div>
