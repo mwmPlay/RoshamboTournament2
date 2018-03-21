@@ -1,4 +1,5 @@
 var soundEffects = {};
+var app;
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 	var carddeal = document.getElementById("carddeal-sound");
@@ -67,20 +68,23 @@ function allowDrop(ev) {
 }
 
 function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
+    ev.dataTransfer.setData("Text", ev.target.id);
 }
 
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data));
+	ev.target.appendChild(document.getElementById(data));
+	
+	app.myTowel = $('#' + data).attr('type');
+	app.myTowelTarget = $(ev.target).attr('type');
 }
 
 (function() {
 	// init socket
 	var socket = io();
 	
-	var app = new Vue({
+	app = new Vue({
 		el: '#rps',
 		data: {
 			enemyPlayer: {
@@ -406,6 +410,7 @@ function drop(ev) {
 				}
 			},
 			playHand: function(myHandName) {
+				var _this = this;
 				log('hand played by me: ' + myHandName, socket);
 				
 				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', myHandName);
@@ -414,8 +419,8 @@ function drop(ev) {
 					username: this.player1Name,
 					otherUsername: this.player2Name,
 					myHandName: myHandName,
-					myTowel: '',
-					myTowelTarget: ''
+					myTowel: _this.myTowel,
+					myTowelTarget: _this.myTowelTarget
 				});
 				
 				socket.emit('playHand', playedHandJson);
@@ -525,7 +530,7 @@ function drop(ev) {
 	socket.on('playHand', function(playedHandJson) {
 		log('hand was played by other: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);
-		
+
 		if (playedHand.username === app.player2Name && playedHand.otherUsername === app.player1Name) {
 			// save hand if it is from my opponent to me (this is also when I am a spectator and the hand is from player 2)
 			logic.savePlayedHandToHistory(app.playedHands, 'otherTowel', playedHand.myTowel);
