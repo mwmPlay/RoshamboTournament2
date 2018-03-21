@@ -101,6 +101,8 @@ function drop(ev) {
 			player2Name: '',
 			initialTowelAmount: 3,
 			towels: [],
+			myTowel: '',
+			myTowelTarget: '',
 			otherUsers: [],
 			towelPrototypes: {
 				impendingdoom: {
@@ -410,7 +412,6 @@ function drop(ev) {
 				}
 			},
 			playHand: function(myHandName) {
-				var _this = this;
 				log('hand played by me: ' + myHandName, socket);
 				
 				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', myHandName);
@@ -419,9 +420,12 @@ function drop(ev) {
 					username: this.player1Name,
 					otherUsername: this.player2Name,
 					myHandName: myHandName,
-					myTowel: _this.myTowel,
-					myTowelTarget: _this.myTowelTarget
+					myTowel: this.myTowel,
+					myTowelTarget: this.myTowelTarget
 				});
+				
+				this.myTowel = '';
+				this.myTowelTarget = '';
 				
 				socket.emit('playHand', playedHandJson);
 			},
