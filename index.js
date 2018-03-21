@@ -294,6 +294,11 @@ io.on('connection', function(socket) {
 			// emit error?
 		}
 	});
+	
+	socket.on('chatMessage', function(chatMessage) {
+		log('chatMessage: ' + chatMessage, socket);
+		io.emit('chatMessage', chatMessage);
+	});
 });
 
 // exit logic

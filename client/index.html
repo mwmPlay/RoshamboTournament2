@@ -248,6 +248,21 @@
 					</li>
 				</ul>
 			</div>
+			
+			<div class="chat">
+				<div class="chatTitle">
+					<p class="specialText">
+						Chat:
+					</p>
+				</div>
+				<ul class="chat-messages">
+					<li class="chat-message" v-for="chatMessage in chatMessages">
+						{{chatMessage}}
+					</li>
+				</ul>
+				<input type="text" v-model.trim="chatMessage">
+				<input type="button" value="Send" @click="sendChatMessage()">
+			</div>
 		</div>
 	</div>
 

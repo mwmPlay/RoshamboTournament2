@@ -104,6 +104,8 @@ function drop(ev) {
 			myTowel: '',
 			myTowelTarget: '',
 			otherUsers: [],
+			chatMessages: [],
+			chatMessage: '',
 			towelPrototypes: {
 				impendingdoom: {
 					name: 'impendingdoom',
@@ -467,6 +469,10 @@ function drop(ev) {
 			challengeUser: function(username) {
 				socket.emit('challengeUser', username);
 			},
+			sendChatMessage: function() {
+				socket.emit('chatMessage', this.username + ': ' + this.chatMessage);
+				this.chatMessage = '';
+			},
 			acceptChallenge: function() {
 				socket.emit('challengeAccepted', this.challengedBy);
 			},
@@ -569,7 +575,7 @@ function drop(ev) {
 	socket.on('playHand', function(playedHandJson) {
 		log('hand was played by other: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);
-
+		
 		if (playedHand.username === app.player2Name && playedHand.otherUsername === app.player1Name) {
 			// save hand if it is from my opponent to me (this is also when I am a spectator and the hand is from player 2)
 			logic.savePlayedHandToHistory(app.playedHands, 'otherTowel', playedHand.myTowel);
@@ -616,6 +622,10 @@ function drop(ev) {
 	
 	socket.on('challengeRejected', function(username) {
 		alert(username + ' has rejected your challenge :(');
+	});
+	
+	socket.on('chatMessage', function(chatMessage) {
+		app.chatMessages.push(chatMessage);
 	});
 	
 	socket.on('gameStarted', function(partialSessionJson) {
