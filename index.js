@@ -174,26 +174,26 @@ io.on('connection', function(socket) {
 			logic.savePlayedHandToHistory(player1.playedHands, 'otherHasChosen', true);
 		}
 		
-		var player1sHandName = player1.playedHands[player1.playedHands.length - 1].myHandName;
-		var player2sHandName = player2.playedHands[player2.playedHands.length - 1].myHandName;
+		var player1sHand = player1.playedHands[player1.playedHands.length - 1];
+		var player2sHand = player2.playedHands[player2.playedHands.length - 1];
 		
-		if (player1sHandName && player2sHandName) {
+		if (player1sHand.myHandName && player2sHand.myHandName) {
 			// both players have played, time to emit the actual hands and store them in the sessions
 			
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherHandName', player2sHandName);
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowel', player2sHandName);
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowelTarget', player2sHandName);
+			logic.savePlayedHandToHistory(player1.playedHands, 'otherHandName', player2sHand.myHandName);
+			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowel', player2sHand.myTowel);
+			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowelTarget', player2sHand.myTowelTarget);
 			
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherHandName', player1sHandName);
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowel', player1sHandName);
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowelTarget', player1sHandName);
+			logic.savePlayedHandToHistory(player2.playedHands, 'otherHandName', player1sHand.myHandName);
+			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowel', player1sHand.myTowel);
+			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowelTarget', player1sHand.myTowelTarget);
 			
 			playedHandJson = JSON.stringify({
 				username: player1.username,
 				otherUsername: player2.username,
-				myHandName: player1sHandName,
-				myTowel: '',
-				myTowelTarget: ''
+				myHandName: player1sHand.myHandName,
+				myTowel: player1sHand.myTowel,
+				myTowelTarget: player1sHand.myTowelTarget
 			});
 			
 			io.emit('playHand', playedHandJson);
@@ -201,9 +201,9 @@ io.on('connection', function(socket) {
 			playedHandJson = JSON.stringify({
 				username: player2.username,
 				otherUsername: player1.username,
-				myHandName: player2sHandName,
-				myTowel: '',
-				myTowelTarget: ''
+				myHandName: player2sHand.myHandName,
+				myTowel: player2sHand.myTowel,
+				myTowelTarget: player2sHand.myTowelTarget
 			});
 			
 			io.emit('playHand', playedHandJson);

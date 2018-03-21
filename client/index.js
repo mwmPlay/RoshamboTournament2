@@ -106,22 +106,26 @@ function drop(ev) {
 			otherUsers: [],
 			towelPrototypes: {
 				impendingdoom: {
-					name: 'Towel of impending doom',
+					name: 'impendingdoom',
+					title: 'Towel of impending doom',
 					description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
 					emblemIcon: "fab fa-hotjar"
 				},
 				unfathomabledarkness: {
-					name: 'Towel of unfathomable darkness',
+					name: 'unfathomabledarkness',
+					title: 'Towel of unfathomable darkness',
 					description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
 					emblemIcon: "fas fa-adjust"
 				},
 				disproportionatebludgeoning: {
-					name: 'Towel of disproportionate bludgeoning',
+					name: 'disproportionatebludgeoning',
+					title: 'Towel of disproportionate bludgeoning',
 					description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
 					emblemIcon: "fas fa-stop"
 				},
 				magnificentalleviation: {
-					name: 'Towel of magnificent alleviation',
+					name: 'magnificentalleviation',
+					title: 'Towel of magnificent alleviation',
 					description: "This towel had aloe vera spilled on it and now it has healing properties.",
 					emblemIcon: "fas fa-heart"
 				}
