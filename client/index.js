@@ -357,15 +357,44 @@ function drop(ev) {
 		},
 		methods: {
 			showDown: function(playedHand) {
-				if (playedHand.myHandName && playedHand.otherHandName && playedHand.myHandName !== playedHand.otherHandName) {
+				if (playedHand.myHandName && playedHand.otherHandName) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
 					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
 					var myHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myHandName });
 					var otherHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherHandName });
 					
-					// do damage
-					myHand.health -= otherHandPrototype.result[playedHand.myHandName].damage;
-					otherHand.health -= myHandPrototype.result[playedHand.otherHandName].damage;
+					if (playedHand.myHandName !== playedHand.otherHandName) {
+						// do damage
+						myHand.health -= otherHandPrototype.result[playedHand.myHandName].damage;
+						otherHand.health -= myHandPrototype.result[playedHand.otherHandName].damage;
+					}
+					
+					// do my towel
+					if (playedHand.myTowel === 'disproportionatebludgeoning') {
+						// disproportionatebludgeoning: 2 dmg
+						otherHand.health -= 2;
+					} else if (playedHand.myTowel === 'magnificentalleviation' && playedHand.myTowelTarget) {
+						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
+						var targetHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myTowelTarget });
+						var targetHandPrototype = this.handPrototypes[playedHand.myTowelTarget];
+						
+						if (targetHand.health > 0) {
+							targetHand.health = targetHand.health > targetHandPrototype.health - 2 ? targetHandPrototype.health : targetHand.health + 2;
+						}
+					}
+					
+					// do other towel
+					if (playedHand.otherTowel === 'disproportionatebludgeoning') {
+						myHand.health -= 2;
+					} else if (playedHand.otherTowel === 'magnificentalleviation' && playedHand.otherTowelTarget) {
+						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
+						var targetHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherTowelTarget });
+						var targetHandPrototype = this.handPrototypes[playedHand.otherTowelTarget];
+						
+						if (targetHand.health > 0) {
+							targetHand.health = targetHand.health > targetHandPrototype.health - 2 ? targetHandPrototype.health : targetHand.health + 2;
+						}
+					}
 				}
 			},
 			endGame: function() {
@@ -419,6 +448,8 @@ function drop(ev) {
 				log('hand played by me: ' + myHandName, socket);
 				
 				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', myHandName);
+				logic.savePlayedHandToHistory(this.playedHands, 'myTowel', this.myTowel);
+				logic.savePlayedHandToHistory(this.playedHands, 'myTowelTarget', this.myTowelTarget);
 				
 				var playedHandJson = JSON.stringify({
 					username: this.player1Name,
