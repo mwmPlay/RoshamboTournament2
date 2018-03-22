@@ -33,6 +33,19 @@ p {
 	}
 }
 
+input[type="text"] {
+	font-family: georgia;
+	color: #333;    
+	padding: 3px; 
+	margin-top: 5px;
+	border: 2px solid #333;
+	transition: 0.2s ease-out;
+
+	&:hover {
+		background: #f1f1f1;
+	}
+}
+
 svg {
 	&.small {
 		width: 0.5em !important;

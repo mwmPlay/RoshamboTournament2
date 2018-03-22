@@ -226,13 +226,13 @@
 					</p>
 				</div>
 			</div>
-
-			<div class="lobby">
-				<div class="lobbyTitle">
-					<p class="specialText">
-						Other players:
-					</p>
-				</div>
+			<div class="lobbyTitle">
+				<p class="specialText">
+					<span v-bind:class="{ selected: ui.playerUI === 'lobby' }" @click="ui.playerUI = 'lobby'">Other players</span> / 
+					<span v-bind:class="{ selected: ui.playerUI === 'flamebox' }" @click="ui.playerUI = 'flamebox'">flamebox:</span>
+				</p>
+			</div>
+			<div class="lobby" v-if="ui.playerUI === 'lobby'">
 				<ul class="users-overview">
 					<li class="otherUser" v-for="otherUser in otherUsers">
 						{{otherUser.name}}
@@ -249,19 +249,16 @@
 				</ul>
 			</div>
 			
-			<div class="chat">
-				<div class="chatTitle">
-					<p class="specialText">
-						Chat:
-					</p>
-				</div>
+			<div class="chat" v-if="ui.playerUI === 'flamebox'">
 				<ul class="chat-messages">
 					<li class="chat-message" v-for="chatMessage in chatMessages">
 						{{chatMessage}}
 					</li>
 				</ul>
-				<input type="text" v-model.trim="chatMessage">
-				<input type="button" value="Send" @click="sendChatMessage()">
+				<div class="chat-inputs">
+					<input type="text" id="chatMessageInput" v-model.trim="chatMessage">
+					<input type="button" value="Send" @click="sendChatMessage()">
+				</div>
 			</div>
 		</div>
 	</div>

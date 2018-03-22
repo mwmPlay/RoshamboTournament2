@@ -94,6 +94,9 @@ function drop(ev) {
 				hands: [],
 				towels: []
 			},
+			ui: {
+				playerUI: 'lobby'
+			},
 			playedHands: [],
 			username: '',
 			challengedBy: '',

@@ -1,3 +1,23 @@
+@mixin pane {
+    width: 100%;
+    height: 200px;
+    flex-direction: column;
+    display: flex;
+
+    ul {
+        overflow: auto;
+        background: #dedede;
+        border-radius: 3px;
+        border: 2px solid #333;
+        padding: 10px;
+        width: 100%;
+        height: 100%;
+        margin-top: 5px;
+        margin-bottom: 0;
+        display: flex;
+    }
+}
+
 .information-pane {
     flex: 0 0 350px;
     padding: 20px;
@@ -119,10 +139,8 @@
     }
 
     .history {    
+        @include pane;
         height: 250px;
-        display: flex; 
-        width: 100%;
-        flex-direction: column;
 
         .history-overview {
             margin-top: 5px;
@@ -132,6 +150,8 @@
             height: 250px;
             padding: 10px;
             width: 100%;
+            display: flex;
+            flex-direction: column-reverse;
 
             p {
                 font-size: 12px;
@@ -141,24 +161,42 @@
         }
     }
 
-    .lobby {
+    .lobbyTitle {
         margin-top: 20px;
+
+        span {
+            transition: 0.4s;
+            cursor: pointer;
+            color: #afafaf;
+
+            &:hover {
+                color: #fff;
+            }
+
+            &.selected {
+                color: #fff;
+            }
+        }
+    }
+
+    #chatMessageInput {
         width: 100%;
-        height: 200px;
-        flex-direction: column;
-        display: flex;
+    }
+
+    .chat {
+        @include pane;
 
         ul {
-            overflow: auto;
-            background: #dedede;
-            border-radius: 3px;
-            border: 2px solid #333;
-            padding: 10px;
-            width: 100%;
-            height: 100%;
-            margin-top: 5px;
-            margin-bottom: 0;
+            flex-direction: column-reverse;
         }
+
+        li {
+            font-size: 15px;
+        }
+    }
+
+    .lobby {
+        @include pane;
 
         li {
             font-size: 15px;
