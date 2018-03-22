@@ -358,6 +358,13 @@ function drop(ev) {
 					});
 				},
 				deep: true
+			},
+			chatMessages: function() {
+				// move the chat box to the bottom after the DOM has updated after the chat messages have changed
+				Vue.nextTick(function() {
+					var container = app.$el.querySelector('.chat-messages');
+					container.scrollTop = container.scrollHeight;
+				});
 			}
 		},
 		methods: {

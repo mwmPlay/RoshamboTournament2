@@ -232,7 +232,7 @@
 					<span v-bind:class="{ selected: ui.playerUI === 'flamebox' }" @click="ui.playerUI = 'flamebox'">flamebox:</span>
 				</p>
 			</div>
-			<div class="lobby" v-if="ui.playerUI === 'lobby'">
+			<div class="lobby" v-show="ui.playerUI === 'lobby'">
 				<ul class="users-overview">
 					<li class="otherUser" v-for="otherUser in otherUsers">
 						{{otherUser.name}}
@@ -249,7 +249,7 @@
 				</ul>
 			</div>
 			
-			<div class="chat" v-if="ui.playerUI === 'flamebox'">
+			<div class="chat" v-show="ui.playerUI === 'flamebox'">
 				<ul class="chat-messages">
 					<li class="chat-message" v-for="chatMessage in chatMessages">
 						{{chatMessage}}

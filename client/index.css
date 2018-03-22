@@ -974,7 +974,7 @@ svg.small {
       margin-bottom: 0;
       display: flex; }
     .information-pane .chat ul {
-      flex-direction: column-reverse; }
+      flex-direction: column; }
     .information-pane .chat li {
       font-size: 15px; }
   .information-pane .lobby {
