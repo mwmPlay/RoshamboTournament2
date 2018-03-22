@@ -353,6 +353,11 @@ function drop(ev) {
 						hand.freeze = 0;
 					});
 					
+					// and of towels
+					this.enemyPlayer.towels.splice(0);
+					this.thisPlayer.towels.splice(0);
+					this.drawTowels();
+					
 					// run the current history
 					newValue.forEach(function(playedHand) {
 						app.showDown(playedHand);
@@ -396,6 +401,14 @@ function drop(ev) {
 						}
 					}
 					
+					// remove towel after use
+					if (playedHand.myTowel) {
+						var towelIndex = this.thisPlayer.towels.findIndex(function(towel) {
+							return towel.name === playedHand.myTowel;
+						});
+						this.thisPlayer.towels.splice(towelIndex, 1);
+					}
+					
 					// do other towel
 					if (playedHand.otherTowel === 'disproportionatebludgeoning') {
 						myHand.health -= 2;
@@ -407,6 +420,11 @@ function drop(ev) {
 						if (targetHand.health > 0) {
 							targetHand.health = targetHand.health > targetHandPrototype.health - 2 ? targetHandPrototype.health : targetHand.health + 2;
 						}
+					}
+					
+					// remove towel after use
+					if (playedHand.otherTowel) {
+						this.enemyPlayer.towels.splice(0, 1);
 					}
 				}
 			},
@@ -610,6 +628,11 @@ function drop(ev) {
 			logic.savePlayedHandToHistory(app.playedHands, 'myTowel', playedHand.myTowel);
 			logic.savePlayedHandToHistory(app.playedHands, 'myTowelTarget', playedHand.myTowelTarget);
 			logic.savePlayedHandToHistory(app.playedHands, 'myHandName', playedHand.myHandName);
+		}
+		
+		if (playedHand.myTowel) {
+			// reset my towel
+			app.$el.querySelector('.thisplayerside .spelldeck').appendChild(app.$el.querySelector('.thisplayerside .towel'));
 		}
 	});
 	
