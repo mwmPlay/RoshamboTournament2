@@ -88,7 +88,8 @@ function drop(ev) {
 		el: '#rps',
 		data: {
 			enemyPlayer: {
-				hands: []
+				hands: [],
+				towels: []
 			},
 			thisPlayer: {
 				hands: [],
@@ -418,6 +419,7 @@ function drop(ev) {
 			clearGameData: function() {
 				logic.clearSession(this);
 				this.enemyPlayer.hands.splice(0);
+				this.enemyPlayer.towels.splice(0);
 				this.thisPlayer.hands.splice(0);
 				this.thisPlayer.towels.splice(0);
 			},
@@ -531,6 +533,16 @@ function drop(ev) {
 				
 				for(var i = 0; i < app.initialTowelAmount; i++) {
 					app.addTowelToDeck('thisPlayer', app.towels[i]);
+				}
+				
+				// draw mock towels for the enemy
+				for(var i = 0; i < app.initialTowelAmount; i++) {
+					this.enemyPlayer.towels.push({
+						name: 'unknown',
+						title: 'Unknown towel',
+						description: "This towel's identity is secret.",
+						emblemIcon: "fas fa-question"
+					});
 				}
 			},
 			drawHands: function(immediate){
