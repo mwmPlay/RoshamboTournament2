@@ -380,16 +380,21 @@ function drop(ev) {
 					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
 					var myHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myHandName });
 					var otherHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherHandName });
+					var damageToMyself = 0;
+					var damageToOther = 0;
 					
 					if (playedHand.myHandName !== playedHand.otherHandName) {
+						damageToMyself = otherHandPrototype.result[playedHand.myHandName].damage;
+						damageToOther = myHandPrototype.result[playedHand.otherHandName].damage;
+						
 						// do damage
-						myHand.health -= otherHandPrototype.result[playedHand.myHandName].damage;
-						otherHand.health -= myHandPrototype.result[playedHand.otherHandName].damage;
+						myHand.health -= damageToMyself;
+						otherHand.health -= damageToOther;
 					}
 					
 					// do my towel
-					if (playedHand.myTowel === 'disproportionatebludgeoning') {
-						// disproportionatebludgeoning: 2 dmg
+					if (playedHand.myTowel === 'disproportionatebludgeoning' && damageToOther > 0) {
+						// disproportionatebludgeoning: 2 dmg, but only if there was damage
 						otherHand.health -= 2;
 					} else if (playedHand.myTowel === 'magnificentalleviation' && playedHand.myTowelTarget) {
 						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
@@ -410,7 +415,8 @@ function drop(ev) {
 					}
 					
 					// do other towel
-					if (playedHand.otherTowel === 'disproportionatebludgeoning') {
+					if (playedHand.otherTowel === 'disproportionatebludgeoning' && damageToMyself > 0) {
+						// disproportionatebludgeoning: 2 dmg, but only if there was damage
 						myHand.health -= 2;
 					} else if (playedHand.otherTowel === 'magnificentalleviation' && playedHand.otherTowelTarget) {
 						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
