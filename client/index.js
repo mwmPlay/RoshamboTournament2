@@ -375,7 +375,7 @@ function drop(ev) {
 		},
 		methods: {
 			showDown: function(playedHand) {
-				if (playedHand.myHandName && playedHand.otherHandName) {
+				if (playedHand.myHandName && playedHand.otherHandName && this.thisUserIsPlaying) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
 					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
 					var myHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myHandName });
@@ -630,7 +630,7 @@ function drop(ev) {
 			logic.savePlayedHandToHistory(app.playedHands, 'myHandName', playedHand.myHandName);
 		}
 		
-		if (playedHand.myTowel) {
+		if (playedHand.myTowel && app.thisUserIsPlaying) {
 			// reset my towel
 			app.$el.querySelector('.thisplayerside .spelldeck').appendChild(app.$el.querySelector('.thisplayerside .towel'));
 		}
