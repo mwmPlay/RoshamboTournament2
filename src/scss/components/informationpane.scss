@@ -192,14 +192,20 @@
 
         li {
             font-size: 15px;
+			list-style: none;
         }
     }
 
     .lobby {
         @include pane;
 
+		ul {
+			flex-direction: column;
+		}
+		
         li {
             font-size: 15px;
+			list-style: none;
 
             svg {
                 cursor: pointer;
