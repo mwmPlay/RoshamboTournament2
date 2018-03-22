@@ -473,8 +473,10 @@ function drop(ev) {
 				socket.emit('challengeUser', username);
 			},
 			sendChatMessage: function() {
-				socket.emit('chatMessage', this.username + ': ' + this.chatMessage);
-				this.chatMessage = '';
+				if (this.chatMessage !== '') {
+					socket.emit('chatMessage', this.username + ': ' + this.chatMessage);
+					this.chatMessage = '';
+				}
 			},
 			acceptChallenge: function() {
 				socket.emit('challengeAccepted', this.challengedBy);
