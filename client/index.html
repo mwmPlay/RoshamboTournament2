@@ -29,12 +29,12 @@
 									{{hand.health}}
 								</p>
 							</div>
-							<div class="freeze">
+							<!-- <div class="freeze">
 								<i class="fas fa-snowflake"></i>
 								<p class="specialText">
 									{{hand.freeze}}
 								</p>
-							</div>
+							</div> -->
 							<div class="damage-info">
 								<p v-for="handResult in handPrototypes[hand.name].result">
 									{{handResult.damage}} damage to {{handResult.name}}
@@ -145,12 +145,12 @@
 									{{hand.health}}
 								</p>
 							</div>
-							<div class="freeze">
+							<!-- <div class="freeze">
 								<i class="fas fa-snowflake"></i>
 								<p class="specialText">
 									{{hand.freeze}}
 								</p>
-							</div>
+							</div> -->
 							<div class="damage-info">
 								<p v-for="handResult in handPrototypes[hand.name].result">
 									{{handResult.damage}} damage to {{handResult.name}}
@@ -188,7 +188,7 @@
 		<div class="information-pane">
 			<div class="toolbar">
 				<div class="controls">
-					<a href="#" data-icon="♚" type="button" v-if="!gameInProgress" class="button orange shield glossy">New Tournament</a>
+					<!-- <a href="#" data-icon="♚" type="button" v-if="!gameInProgress" class="button orange shield glossy">New Tournament</a> -->
 					<a href="#" data-icon="♚" type="button" v-if="gameInProgress && gameOver" class="button orange shield glossy" @click="endGame">End Game</a>
 				</div>
 			</div>

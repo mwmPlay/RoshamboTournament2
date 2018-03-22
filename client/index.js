@@ -111,7 +111,7 @@ function drop(ev) {
 			chatMessages: [],
 			chatMessage: '',
 			towelPrototypes: {
-				impendingdoom: {
+				/* impendingdoom: {
 					name: 'impendingdoom',
 					title: 'Towel of impending doom',
 					description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
@@ -122,7 +122,7 @@ function drop(ev) {
 					title: 'Towel of unfathomable darkness',
 					description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
 					emblemIcon: "fas fa-adjust"
-				},
+				}, */
 				disproportionatebludgeoning: {
 					name: 'disproportionatebludgeoning',
 					title: 'Towel of disproportionate bludgeoning',
