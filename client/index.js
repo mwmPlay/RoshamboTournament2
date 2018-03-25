@@ -611,6 +611,10 @@ function log(message, socket) {
 		}
 	});
 	
+	socket.on('disconnect', function() {
+		alert('Server appears to be down!');
+	});
+	
 	socket.on('handChosen', function(player2Name) {
 		log('hand was chosen, but not yet played by other: ' + player2Name, socket);
 		if (player2Name === app.player2Name || app.username !== app.player1Name) {
