@@ -1,5 +1,4 @@
 var soundEffects = {};
-var app;
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 	var carddeal = document.getElementById("carddeal-sound");
@@ -63,28 +62,11 @@ function log(message, socket) {
 	console.log(message);
 }
 
-function allowDrop(ev) {
-	ev.preventDefault();
-}
-
-function drag(ev) {
-    ev.dataTransfer.setData("Text", ev.target.id);
-}
-
-function drop(ev) {
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-	ev.target.appendChild(document.getElementById(data));
-	
-	app.myTowel = $('#' + data).attr('type');
-	app.myTowelTarget = $(ev.target).attr('type');
-}
-
 (function() {
 	// init socket
 	var socket = io();
 	
-	app = new Vue({
+	var app = new Vue({
 		el: '#rps',
 		data: {
 			enemyPlayer: {
@@ -105,6 +87,7 @@ function drop(ev) {
 			player2Name: '',
 			initialTowelAmount: 3,
 			towels: [],
+			myTowelId: '',
 			myTowel: '',
 			myTowelTarget: '',
 			otherUsers: [],
@@ -450,6 +433,22 @@ function drop(ev) {
 			randomRotationDegree: function () {
 				var modifier = Math.random() > 0.5 ? -1 : 1;
 				return Math.floor(Math.random() * (5)) * modifier;
+			},
+			onDragStart: function(event) {
+				// store the id of the towel so it can be moved on drop
+				this.myTowelId = event.target.id;
+			},
+			onDrop: function(event) {
+				// trade the id for the actual element
+				var towelElem = document.getElementById(this.myTowelId);
+				this.myTowelId = '';
+				
+				// move the towel to the hand
+				event.target.appendChild(towelElem);
+				
+				// set the values in the model
+				this.myTowel = towelElem.getAttribute('type');
+				this.myTowelTarget = event.target.getAttribute('type');
 			},
 			handButtonTooltip: function (hand) {
 				var tooltip = '';

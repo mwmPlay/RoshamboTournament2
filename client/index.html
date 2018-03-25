@@ -129,7 +129,7 @@
 
 			<div class="thisplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands"  v-bind:rotate="randomRotationDegree()" ondrop="drop(event)" ondragover="allowDrop(event)">
+					<div v-bind:type="hand.name" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands"  v-bind:rotate="randomRotationDegree()" v-on:drop.prevent="onDrop" v-on:dragover.prevent>
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -160,7 +160,7 @@
 					</div>
 				</div>
 				<div class="spelldeck">
-					<div class="towel" v-if="!gameOver" v-for="(towel, towelIndex) in thisPlayer.towels" v-bind:type="towel.name"  v-bind:id="'towel'+towelIndex" draggable="true" ondragstart="drag(event)">
+					<div class="towel" v-if="!gameOver" v-for="(towel, towelIndex) in thisPlayer.towels" v-bind:type="towel.name"  v-bind:id="'towel'+towelIndex" draggable="true" v-on:dragstart="onDragStart">
 						<div class="towel-twirl-left">
 
 						</div>
@@ -259,11 +259,7 @@
 			</div>
 		</div>
 	</div>
-
-	<script
-	src="https://code.jquery.com/jquery-3.3.1.min.js"
-	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-	crossorigin="anonymous"></script>
+	
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 	<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
