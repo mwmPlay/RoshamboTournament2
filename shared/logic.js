@@ -44,4 +44,8 @@
 		session.player1Name = '';
 		session.player2Name = '';
 	};
+	
+	exports.validateUsername = function(username) {
+		return username && username.length <= 20;
+	}
 }(typeof exports === 'undefined' ? this.logic = {} : exports));

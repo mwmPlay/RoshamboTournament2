@@ -69,9 +69,13 @@ io.on('connection', function(socket) {
 	});
 	
 	socket.on('authenticate', function(username) {
+		if (username) {
+			username = username.trim();
+		}
+		
 		log('user authentication attempted: ' + username, socket);
 		
-		if (!username || username.match(/^\s*$/) !== null) {
+		if (!logic.validateUsername(username)) {
 			log('authentication failed: invalid name: ' + username, socket);
 			
 			// invalid name, ask for a new name
