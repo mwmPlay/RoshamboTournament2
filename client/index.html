@@ -10,10 +10,21 @@
 
 <body>
 	<div id="rps">
+		<div class="popup" v-if="ui.messageToUser != ''">
+			<div class="prompt">
+				<div class="message">
+					<p class="specialText">{{ui.messageToUser}}</p>
+				</div>
+				<div class="buttons">
+					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="ui.messageToUser = ''">Okay</a>
+				</div>
+			</div>
+		</div>
+
 		<div id="playboard">
 			<div class="enemyplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" v-if="hand.health > 0 && !gameOver" class="hand top" v-for="hand in enemyPlayer.hands" v-bind:rotate="randomRotationDegree()">
+					<div v-bind:type="hand.name" v-bind:rotate="hand.rotation" v-if="hand.health > 0 && !gameOver" class="hand top" v-for="hand in enemyPlayer.hands">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -129,7 +140,7 @@
 
 			<div class="thisplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands"  v-bind:rotate="randomRotationDegree()" v-on:drop.prevent="onDrop" v-on:dragover.prevent>
+					<div v-bind:type="hand.name" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop" v-on:dragover.prevent>
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -226,8 +237,11 @@
 			</div>
 			<div class="lobbyTitle">
 				<p class="specialText">
-					<span v-bind:class="{ selected: ui.playerUI === 'lobby' }" @click="ui.playerUI = 'lobby'">Other players</span> / 
-					<span v-bind:class="{ selected: ui.playerUI === 'flamebox' }" @click="ui.playerUI = 'flamebox'">flamebox:</span>
+					<span v-bind:class="{ selected: ui.playerUI === 'lobby' }" @click="lobbySwitch('lobby')">Lobby</span> / 
+					<span v-bind:class="{ selected: ui.playerUI === 'flamebox' }" @click="lobbySwitch('flamebox')">
+						flamebox: 
+						<span id="new-messages-counter" v-show="newMessages > 0">({{newMessages}})</span>
+					</span>
 				</p>
 			</div>
 			<div class="lobby" v-show="ui.playerUI === 'lobby'">
@@ -237,12 +251,18 @@
 						<span v-if="!gameInProgress && challengedBy !== otherUser.name" @click="challengeUser(otherUser.name)" title="Challenge this player">
 							<i class="fas fa-crosshairs"></i>
 						</span>
-						<span v-if="!gameInProgress && challengedBy === otherUser.name" @click="acceptChallenge()" title="Accept challenge">
-							<i class="fas fa-check"></i>
-						</span>
-						<span v-if="!gameInProgress && challengedBy === otherUser.name" @click="rejectChallenge()" title="Reject challenge">
-							<i class="fas fa-times"></i>
-						</span>
+
+						<div class="popup" v-if="!gameInProgress && challengedBy === otherUser.name">
+							<div class="prompt">
+								<div class="message">
+									<p class="specialText">{{otherUser.name}} challenges you for a game</p>
+								</div>
+								<div class="buttons">
+									<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="acceptChallenge()">Accept challenge</a>
+									<a href="#" data-icon="♚" type="button" class="button orange shield glossy" @click="rejectChallenge()">Reject challenge</a>
+								</div>
+							</div>
+						</div>
 					</li>
 				</ul>
 			</div>

@@ -53,6 +53,11 @@ function pickRandomProperty(obj) {
     return result;
 }
 
+function randomRotationDegree() {
+	var modifier = Math.random() > 0.5 ? -1 : 1;
+	return Math.floor(Math.random() * (5)) * modifier;
+}
+
 function log(message, socket) {
 	if(socket) {
 		// prepend with socket id
@@ -78,7 +83,8 @@ function log(message, socket) {
 				towels: []
 			},
 			ui: {
-				playerUI: 'lobby'
+				playerUI: 'lobby',
+				messageToUser: '',
 			},
 			playedHands: [],
 			username: '',
@@ -92,6 +98,7 @@ function log(message, socket) {
 			myTowelTarget: '',
 			otherUsers: [],
 			chatMessages: [],
+			newMessages: 0,
 			chatMessage: '',
 			towelPrototypes: {
 				/* impendingdoom: {
@@ -124,6 +131,7 @@ function log(message, socket) {
 					name: 'rock',
 					health: 7,
 					freeze: 0,
+					rotation: randomRotationDegree(),
 					result: {
 						paper: {
 							name: 'paper',
@@ -155,6 +163,7 @@ function log(message, socket) {
 					name: 'paper',
 					health: 5,
 					freeze: 0,
+					rotation: randomRotationDegree(),
 					result: {
 						rock: {
 							name: 'rock',
@@ -186,6 +195,7 @@ function log(message, socket) {
 					name: 'scissors',
 					health: 5,
 					freeze: 0,
+					rotation: randomRotationDegree(),
 					result: {
 						rock: {
 							name: 'rock',
@@ -217,6 +227,7 @@ function log(message, socket) {
 					name: 'lizard',
 					health: 5,
 					freeze: 0,
+					rotation: randomRotationDegree(),
 					result: {
 						rock: {
 							name: 'rock',
@@ -248,6 +259,7 @@ function log(message, socket) {
 					name: 'spock',
 					health: 5,
 					freeze: 0,
+					rotation: randomRotationDegree(),
 					result: {
 						rock: {
 							name: 'rock',
@@ -345,18 +357,24 @@ function log(message, socket) {
 					newValue.forEach(function(playedHand) {
 						app.showDown(playedHand);
 					});
+
+					// scroll the history overview down
+					this.scrollElementDown('.history-overview');
 				},
 				deep: true
 			},
 			chatMessages: function() {
-				// move the chat box to the bottom after the DOM has updated after the chat messages have changed
-				Vue.nextTick(function() {
-					var container = app.$el.querySelector('.chat-messages');
-					container.scrollTop = container.scrollHeight;
-				});
+				this.scrollElementDown('.chat-messages');
 			}
 		},
 		methods: {
+			scrollElementDown: function(element){
+				// move the element to the bottom after the DOM has updated after the chat messages have changed
+				Vue.nextTick(function() {
+					var container = app.$el.querySelector(element);
+					container.scrollTop = container.scrollHeight;
+				});
+			},
 			showDown: function(playedHand) {
 				if (playedHand.myHandName && playedHand.otherHandName && this.thisUserIsPlaying) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
@@ -430,13 +448,17 @@ function log(message, socket) {
 				this.thisPlayer.hands.splice(0);
 				this.thisPlayer.towels.splice(0);
 			},
-			randomRotationDegree: function () {
-				var modifier = Math.random() > 0.5 ? -1 : 1;
-				return Math.floor(Math.random() * (5)) * modifier;
-			},
 			onDragStart: function(event) {
 				// store the id of the towel so it can be moved on drop
 				this.myTowelId = event.target.id;
+			},
+			lobbySwitch: function(tabClickedName){
+				this.ui.playerUI = tabClickedName;
+
+				if(tabClickedName === 'flamebox') {
+					app.newMessages = 0;
+					this.scrollElementDown('.chat-messages');
+				}
 			},
 			onDrop: function(event) {
 				// trade the id for the actual element
@@ -612,7 +634,7 @@ function log(message, socket) {
 	});
 	
 	socket.on('disconnect', function() {
-		alert('Server appears to be down!');
+		app.ui.messageToUser = 'Server appears to be down!';
 	});
 	
 	socket.on('handChosen', function(player2Name) {
@@ -677,10 +699,14 @@ function log(message, socket) {
 	});
 	
 	socket.on('challengeRejected', function(username) {
-		alert(username + ' has rejected your challenge :(');
+		app.ui.messageToUser = username + ' has rejected your challenge :(';
 	});
 	
 	socket.on('chatMessage', function(chatMessage) {
+		if(app.ui.playerUI !== 'flamebox'){
+			app.newMessages++;
+		}
+
 		app.chatMessages.push(chatMessage);
 	});
 	
@@ -728,3 +754,5 @@ function log(message, socket) {
 		socket.emit('resumeSession', sessionId);
 	}
 })();
+
+

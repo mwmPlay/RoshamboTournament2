@@ -16,6 +16,16 @@
   100% {
     opacity: 100%; } }
 
+@keyframes bounceIntoExistence {
+  0% {
+    transform: scale(0) translate3d(0, 0, 0); }
+  80% {
+    transform: scale(1.1); }
+  90% {
+    transform: scale(0.89); }
+  100% {
+    transform: scale(1) translate3d(0, 0, 0); } }
+
 @keyframes bounceIn {
   0% {
     transform: scale(0.3) translate3d(0, 0, 0); }
@@ -686,6 +696,40 @@ svg.small {
       opacity: 1;
       top: 7px; }
 
+.popup {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.7);
+  transition: background 2s;
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+  .popup .prompt {
+    transform: scale(0);
+    background: radial-gradient(ellipse closest-side, #9dcce1, #52a2c8 100%);
+    display: flex;
+    width: 500px;
+    flex-direction: column;
+    padding: 30px;
+    animation: bounceIntoExistence 2s forwards;
+    z-index: 10;
+    box-shadow: 0 0 18px #000; }
+  .popup .message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    min-height: 100px; }
+  .popup .buttons {
+    align-items: flex-end;
+    height: 50px;
+    display: flex;
+    justify-content: space-between; }
+
 #rps {
   width: 100%;
   height: 100%;
@@ -819,6 +863,10 @@ svg.small {
   border: 1px solid #333;
   box-shadow: 0 0 2px #333; }
 
+#new-messages-counter {
+  transform: scale(0);
+  animation: bounceIntoExistence 1s forwards; }
+
 .information-pane {
   flex: 0 0 350px;
   padding: 20px;
@@ -853,7 +901,7 @@ svg.small {
       border: 2px solid #333;
       background: #dedede;
       top: -5px;
-      background: url(http://bestnycacupuncturist.com/wp-content/uploads/2016/11/anonymous-avatar-sm.jpg);
+      background: url("media/anonymous-avatar.jpg");
       background-size: cover; }
     .information-pane .player-info .player-container {
       width: calc(50% - 5px);
