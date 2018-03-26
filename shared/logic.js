@@ -1,189 +1,195 @@
 // special IIFE to handle both the node environment and the browser and give the same result
 (function(exports){
-	exports.handPrototypes = {
-		rock: {
-			name: 'rock',
-			health: 7,
-			freeze: 0,
-			result: {
-				paper: {
-					name: 'paper',
-					text: 'is covered by',
-					win: false,
-					damage: 0
-				},
-				scissors: {
-					name: 'scissors',
-					text: 'crushes',
-					win: true,
-					damage: 3
-				},
-				lizard: {
-					name: 'lizard',
-					text: 'crushes',
-					win: true,
-					damage: 3
-				},
-				spock: {
-					name: 'spock',
-					text: 'is vaporized by',
-					win: false,
-					damage: 0
+	exports.staticData = {
+		initialTowelAmount: 3,
+		handPrototypes: {
+			rock: {
+				name: 'rock',
+				health: 7,
+				freeze: 0,
+				result: {
+					paper: {
+						name: 'paper',
+						text: 'is covered by',
+						win: false,
+						damage: 0
+					},
+					scissors: {
+						name: 'scissors',
+						text: 'crushes',
+						win: true,
+						damage: 3
+					},
+					lizard: {
+						name: 'lizard',
+						text: 'crushes',
+						win: true,
+						damage: 3
+					},
+					spock: {
+						name: 'spock',
+						text: 'is vaporized by',
+						win: false,
+						damage: 0
+					}
+				}
+			},
+			paper: {
+				name: 'paper',
+				health: 5,
+				freeze: 0,
+				result: {
+					rock: {
+						name: 'rock',
+						text: 'covers',
+						win: true,
+						damage: 3
+					},
+					scissors: {
+						name: 'scissors',
+						text: 'is cut by',
+						win: false,
+						damage: 0
+					},
+					lizard: {
+						name: 'lizard',
+						text: 'is eaten by',
+						win: false,
+						damage: 0
+					},
+					spock: {
+						name: 'spock',
+						text: 'disproves',
+						win: true,
+						damage: 3
+					}
+				}
+			},
+			scissors: {
+				name: 'scissors',
+				health: 5,
+				freeze: 0,
+				result: {
+					rock: {
+						name: 'rock',
+						text: 'are crushed by',
+						win: false,
+						damage: 1
+					},
+					paper: {
+						name: 'paper',
+						text: 'cut',
+						win: true,
+						damage: 3
+					},
+					lizard: {
+						name: 'lizard',
+						text: 'decapitate',
+						win: true,
+						damage: 3
+					},
+					spock: {
+						name: 'spock',
+						text: 'are smashed by',
+						win: false,
+						damage: 1
+					}
+				}
+			},
+			lizard: {
+				name: 'lizard',
+				health: 5,
+				freeze: 0,
+				result: {
+					rock: {
+						name: 'rock',
+						text: 'is crushed by',
+						win: false,
+						damage: 0
+					},
+					paper: {
+						name: 'paper',
+						text: 'eats',
+						win: true,
+						damage: 3
+					},
+					scissors: {
+						name: 'scissors',
+						text: 'is decapitated by',
+						win: false,
+						damage: 0
+					},
+					spock: {
+						name: 'spock',
+						text: 'poisons',
+						win: true,
+						damage: 3
+					}
+				}
+			},
+			spock: {
+				name: 'spock',
+				health: 5,
+				freeze: 0,
+				result: {
+					rock: {
+						name: 'rock',
+						text: 'vaporizes',
+						win: true,
+						damage: 3
+					},
+					paper: {
+						name: 'paper',
+						text: 'is disproved by',
+						win: false,
+						damage: 0
+					},
+					scissors: {
+						name: 'scissors',
+						text: 'smashes',
+						win: true,
+						damage: 3
+					},
+					lizard: {
+						name: 'lizard',
+						text: 'is poisoned by',
+						win: false,
+						damage: 0
+					}
 				}
 			}
 		},
-		paper: {
-			name: 'paper',
-			health: 5,
-			freeze: 0,
-			result: {
-				rock: {
-					name: 'rock',
-					text: 'covers',
-					win: true,
-					damage: 3
-				},
-				scissors: {
-					name: 'scissors',
-					text: 'is cut by',
-					win: false,
-					damage: 0
-				},
-				lizard: {
-					name: 'lizard',
-					text: 'is eaten by',
-					win: false,
-					damage: 0
-				},
-				spock: {
-					name: 'spock',
-					text: 'disproves',
-					win: true,
-					damage: 3
-				}
-			}
-		},
-		scissors: {
-			name: 'scissors',
-			health: 5,
-			freeze: 0,
-			result: {
-				rock: {
-					name: 'rock',
-					text: 'are crushed by',
-					win: false,
-					damage: 1
-				},
-				paper: {
-					name: 'paper',
-					text: 'cut',
-					win: true,
-					damage: 3
-				},
-				lizard: {
-					name: 'lizard',
-					text: 'decapitate',
-					win: true,
-					damage: 3
-				},
-				spock: {
-					name: 'spock',
-					text: 'are smashed by',
-					win: false,
-					damage: 1
-				}
-			}
-		},
-		lizard: {
-			name: 'lizard',
-			health: 5,
-			freeze: 0,
-			result: {
-				rock: {
-					name: 'rock',
-					text: 'is crushed by',
-					win: false,
-					damage: 0
-				},
-				paper: {
-					name: 'paper',
-					text: 'eats',
-					win: true,
-					damage: 3
-				},
-				scissors: {
-					name: 'scissors',
-					text: 'is decapitated by',
-					win: false,
-					damage: 0
-				},
-				spock: {
-					name: 'spock',
-					text: 'poisons',
-					win: true,
-					damage: 3
-				}
-			}
-		},
-		spock: {
-			name: 'spock',
-			health: 5,
-			freeze: 0,
-			result: {
-				rock: {
-					name: 'rock',
-					text: 'vaporizes',
-					win: true,
-					damage: 3
-				},
-				paper: {
-					name: 'paper',
-					text: 'is disproved by',
-					win: false,
-					damage: 0
-				},
-				scissors: {
-					name: 'scissors',
-					text: 'smashes',
-					win: true,
-					damage: 3
-				},
-				lizard: {
-					name: 'lizard',
-					text: 'is poisoned by',
-					win: false,
-					damage: 0
-				}
+		towelPrototypes: {
+			/* impendingdoom: {
+				name: 'impendingdoom',
+				title: 'Towel of impending doom',
+				description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
+				emblemIcon: "fab fa-hotjar"
+			},
+			unfathomabledarkness: {
+				name: 'unfathomabledarkness',
+				title: 'Towel of unfathomable darkness',
+				description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
+				emblemIcon: "fas fa-adjust"
+			}, */
+			disproportionatebludgeoning: {
+				name: 'disproportionatebludgeoning',
+				title: 'Towel of disproportionate bludgeoning',
+				description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
+				emblemIcon: "fas fa-stop"
+			},
+			magnificentalleviation: {
+				name: 'magnificentalleviation',
+				title: 'Towel of magnificent alleviation',
+				description: "This towel had aloe vera spilled on it and now it has healing properties.",
+				emblemIcon: "fas fa-heart"
 			}
 		}
-	}
+	};
 	
-	exports.towelPrototypes = {
-		/* impendingdoom: {
-			name: 'impendingdoom',
-			title: 'Towel of impending doom',
-			description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
-			emblemIcon: "fab fa-hotjar"
-		},
-		unfathomabledarkness: {
-			name: 'unfathomabledarkness',
-			title: 'Towel of unfathomable darkness',
-			description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
-			emblemIcon: "fas fa-adjust"
-		}, */
-		disproportionatebludgeoning: {
-			name: 'disproportionatebludgeoning',
-			title: 'Towel of disproportionate bludgeoning',
-			description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
-			emblemIcon: "fas fa-stop"
-		},
-		magnificentalleviation: {
-			name: 'magnificentalleviation',
-			title: 'Towel of magnificent alleviation',
-			description: "This towel had aloe vera spilled on it and now it has healing properties.",
-			emblemIcon: "fas fa-heart"
-		}
-	}
+	exports.repos = {
+		initialTowels: []
+	};
 	
 	exports.savePlayedHandToHistory = function(playedHands, key, value) {
 		if (playedHands.length === 0 || (playedHands[playedHands.length - 1].myHandName !== '' && playedHands[playedHands.length - 1].otherHandName !== '')) {
@@ -232,5 +238,5 @@
 	
 	exports.validateUsername = function(username) {
 		return username && username.length <= 20;
-	}
+	};
 }(typeof exports === 'undefined' ? this.logic = {} : exports));

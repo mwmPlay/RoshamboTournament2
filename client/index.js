@@ -85,8 +85,6 @@ function log(message, socket) {
 			challengedBy: '',
 			player1Name: '',
 			player2Name: '',
-			initialTowelAmount: 3,
-			towels: [],
 			myTowelId: '',
 			myTowel: '',
 			myTowelTarget: '',
@@ -96,7 +94,7 @@ function log(message, socket) {
 		},
 		computed: {
 			handPrototypes: function() {
-				return logic.handPrototypes;
+				return logic.staticData.handPrototypes;
 			},
 			myHandName: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].myHandName : '';
@@ -345,7 +343,7 @@ function log(message, socket) {
 				this[player].hands.push(clone(hand));
 			},
 			addTowelToDeck: function(player, type){
-				var towel = logic.towelPrototypes[type];
+				var towel = logic.staticData.towelPrototypes[type];
 				this[player].towels.push(clone(towel));
 			},
 			resumeSession: function(session) {
@@ -354,7 +352,7 @@ function log(message, socket) {
 				this.player2Name = session.player2Name;
 				
 				session.towels.forEach(function(towel) {
-					app.towels.push(towel);
+					logic.repos.initialTowels.push(towel);
 				});
 				
 				this.drawHands(true);
@@ -374,12 +372,12 @@ function log(message, socket) {
 					return;
 				}
 				
-				for(var i = 0; i < app.initialTowelAmount; i++) {
-					app.addTowelToDeck('thisPlayer', app.towels[i]);
+				for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
+					app.addTowelToDeck('thisPlayer', logic.repos.initialTowels[i]);
 				}
 				
 				// draw mock towels for the enemy
-				for(var i = 0; i < app.initialTowelAmount; i++) {
+				for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
 					this.enemyPlayer.towels.push({
 						name: 'unknown',
 						title: 'Unknown towel',
@@ -513,17 +511,17 @@ function log(message, socket) {
 		
 		// clear history and towels and challenge
 		app.playedHands.splice(0);
-		app.towels.splice(0);
+		logic.repos.initialTowels.splice(0);
 		app.challengedBy = '';
 		
 		// randomly pick from available towels
-		for(var i = 0; i < app.initialTowelAmount; i++) {
-			var randomTowel = pickRandomProperty(logic.towelPrototypes);
-			app.towels.push(randomTowel);
+		for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
+			var randomTowel = pickRandomProperty(logic.staticData.towelPrototypes);
+			logic.repos.initialTowels.push(randomTowel);
 		}
 		
 		// and let server know that
-		socket.emit('towelsChosen', JSON.stringify(app.towels));
+		socket.emit('towelsChosen', JSON.stringify(logic.repos.initialTowels));
 		
 		// draw it all
 		app.drawHands();
