@@ -53,11 +53,6 @@ function pickRandomProperty(obj) {
     return result;
 }
 
-function randomRotationDegree() {
-	var modifier = Math.random() > 0.5 ? -1 : 1;
-	return Math.floor(Math.random() * (5)) * modifier;
-}
-
 function log(message, socket) {
 	if(socket) {
 		// prepend with socket id
@@ -97,195 +92,7 @@ function log(message, socket) {
 			otherUsers: [],
 			chatMessages: [],
 			newMessages: 0,
-			chatMessage: '',
-			towelPrototypes: {
-				/* impendingdoom: {
-					name: 'impendingdoom',
-					title: 'Towel of impending doom',
-					description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
-					emblemIcon: "fab fa-hotjar"
-				},
-				unfathomabledarkness: {
-					name: 'unfathomabledarkness',
-					title: 'Towel of unfathomable darkness',
-					description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
-					emblemIcon: "fas fa-adjust"
-				}, */
-				disproportionatebludgeoning: {
-					name: 'disproportionatebludgeoning',
-					title: 'Towel of disproportionate bludgeoning',
-					description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
-					emblemIcon: "fas fa-stop"
-				},
-				magnificentalleviation: {
-					name: 'magnificentalleviation',
-					title: 'Towel of magnificent alleviation',
-					description: "This towel had aloe vera spilled on it and now it has healing properties.",
-					emblemIcon: "fas fa-heart"
-				}
-			},
-			handPrototypes: {
-				rock: {
-					name: 'rock',
-					health: 7,
-					freeze: 0,
-					rotation: randomRotationDegree(),
-					result: {
-						paper: {
-							name: 'paper',
-							text: 'is covered by',
-							win: false,
-							damage: 0
-						},
-						scissors: {
-							name: 'scissors',
-							text: 'crushes',
-							win: true,
-							damage: 3
-						},
-						lizard: {
-							name: 'lizard',
-							text: 'crushes',
-							win: true,
-							damage: 3
-						},
-						spock: {
-							name: 'spock',
-							text: 'is vaporized by',
-							win: false,
-							damage: 0
-						}
-					}
-				},
-				paper: {
-					name: 'paper',
-					health: 5,
-					freeze: 0,
-					rotation: randomRotationDegree(),
-					result: {
-						rock: {
-							name: 'rock',
-							text: 'covers',
-							win: true,
-							damage: 3
-						},
-						scissors: {
-							name: 'scissors',
-							text: 'is cut by',
-							win: false,
-							damage: 0
-						},
-						lizard: {
-							name: 'lizard',
-							text: 'is eaten by',
-							win: false,
-							damage: 0
-						},
-						spock: {
-							name: 'spock',
-							text: 'disproves',
-							win: true,
-							damage: 3
-						}
-					}
-				},
-				scissors: {
-					name: 'scissors',
-					health: 5,
-					freeze: 0,
-					rotation: randomRotationDegree(),
-					result: {
-						rock: {
-							name: 'rock',
-							text: 'are crushed by',
-							win: false,
-							damage: 1
-						},
-						paper: {
-							name: 'paper',
-							text: 'cut',
-							win: true,
-							damage: 3
-						},
-						lizard: {
-							name: 'lizard',
-							text: 'decapitate',
-							win: true,
-							damage: 3
-						},
-						spock: {
-							name: 'spock',
-							text: 'are smashed by',
-							win: false,
-							damage: 1
-						}
-					}
-				},
-				lizard: {
-					name: 'lizard',
-					health: 5,
-					freeze: 0,
-					rotation: randomRotationDegree(),
-					result: {
-						rock: {
-							name: 'rock',
-							text: 'is crushed by',
-							win: false,
-							damage: 0
-						},
-						paper: {
-							name: 'paper',
-							text: 'eats',
-							win: true,
-							damage: 3
-						},
-						scissors: {
-							name: 'scissors',
-							text: 'is decapitated by',
-							win: false,
-							damage: 0
-						},
-						spock: {
-							name: 'spock',
-							text: 'poisons',
-							win: true,
-							damage: 3
-						}
-					}
-				},
-				spock: {
-					name: 'spock',
-					health: 5,
-					freeze: 0,
-					rotation: randomRotationDegree(),
-					result: {
-						rock: {
-							name: 'rock',
-							text: 'vaporizes',
-							win: true,
-							damage: 3
-						},
-						paper: {
-							name: 'paper',
-							text: 'is disproved by',
-							win: false,
-							damage: 0
-						},
-						scissors: {
-							name: 'scissors',
-							text: 'smashes',
-							win: true,
-							damage: 3
-						},
-						lizard: {
-							name: 'lizard',
-							text: 'is poisoned by',
-							win: false,
-							damage: 0
-						}
-					}
-				}
-			}
+			chatMessage: ''
 		},
 		computed: {
 			handPrototypes: function() {
@@ -370,7 +177,7 @@ function log(message, socket) {
 		},
 		methods: {
 			scrollElementDown: function(element){
-				// move the element to the bottom after the DOM has updated after the chat messages have changed
+				// move the element to the bottom after the DOM has updated
 				Vue.nextTick(function() {
 					var container = app.$el.querySelector(element);
 					container.scrollTop = container.scrollHeight;
@@ -449,13 +256,17 @@ function log(message, socket) {
 				this.thisPlayer.hands.splice(0);
 				this.thisPlayer.towels.splice(0);
 			},
+			randomRotationDegree: function() {
+				var modifier = Math.random() > 0.5 ? -1 : 1;
+				return Math.floor(Math.random() * (5)) * modifier;
+			},
 			onDragStart: function(event) {
 				// store the id of the towel so it can be moved on drop
 				this.myTowelId = event.target.id;
 			},
 			lobbySwitch: function(tabClickedName){
 				this.ui.playerUI = tabClickedName;
-
+				
 				if(tabClickedName === 'flamebox') {
 					app.newMessages = 0;
 					this.scrollElementDown('.chat-messages');
@@ -545,7 +356,9 @@ function log(message, socket) {
 				cardSound.play();
 				
 				var hand = this.handPrototypes[type];
-				this[player].hands.push(clone(hand));
+				var handClone = clone(hand);
+				handClone.rotation = this.randomRotationDegree();
+				this[player].hands.push(handClone);
 			},
 			addTowelToDeck: function(player, type){
 				var towel = logic.staticData.towelPrototypes[type];
@@ -603,7 +416,7 @@ function log(message, socket) {
 				
 				soundEffects.shuffling.play();
 				
-				for(var handKey in this.handPrototypes) {
+				for (var handKey in this.handPrototypes) {
 					if (immediate) {
 						_this.addHandToDeck('enemyPlayer', handKey);
 					} else {
@@ -617,7 +430,7 @@ function log(message, socket) {
 					}
 				}
 				
-				for(var handKey in this.handPrototypes) {
+				for (var handKey in this.handPrototypes) {
 					if (immediate) {
 						_this.addHandToDeck('thisPlayer', handKey);
 					} else {
