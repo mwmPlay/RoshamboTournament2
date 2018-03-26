@@ -290,17 +290,20 @@ function log(message, socket) {
 			}
 		},
 		computed: {
-			myHandName: function () {
+			handPrototypes: function() {
+				return logic.handPrototypes;
+			},
+			myHandName: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].myHandName : '';
 			},
-			otherHandName: function () {
+			otherHandName: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHandName : '';
 			},
-			otherHasChosen: function () {
+			otherHasChosen: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
 			},
 			gameInProgress: function() {
-				return !(!this.player1Name || !this.player2Name);
+				return this.player1Name && this.player2Name;
 			},
 			gameOver: function() {
 				var result = true;
@@ -547,7 +550,7 @@ function log(message, socket) {
 				this[player].hands.push(clone(hand));
 			},
 			addTowelToDeck: function(player, type){
-				var towel = this.towelPrototypes[type];
+				var towel = logic.towelPrototypes[type];
 				this[player].towels.push(clone(towel));
 			},
 			resumeSession: function(session) {
@@ -724,7 +727,7 @@ function log(message, socket) {
 		
 		// randomly pick from available towels
 		for(var i = 0; i < app.initialTowelAmount; i++) {
-			var randomTowel = pickRandomProperty(app.towelPrototypes);
+			var randomTowel = pickRandomProperty(logic.towelPrototypes);
 			app.towels.push(randomTowel);
 		}
 		
