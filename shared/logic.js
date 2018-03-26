@@ -158,6 +158,33 @@
 		}
 	}
 	
+	exports.towelPrototypes = {
+		/* impendingdoom: {
+			name: 'impendingdoom',
+			title: 'Towel of impending doom',
+			description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
+			emblemIcon: "fab fa-hotjar"
+		},
+		unfathomabledarkness: {
+			name: 'unfathomabledarkness',
+			title: 'Towel of unfathomable darkness',
+			description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
+			emblemIcon: "fas fa-adjust"
+		}, */
+		disproportionatebludgeoning: {
+			name: 'disproportionatebludgeoning',
+			title: 'Towel of disproportionate bludgeoning',
+			description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
+			emblemIcon: "fas fa-stop"
+		},
+		magnificentalleviation: {
+			name: 'magnificentalleviation',
+			title: 'Towel of magnificent alleviation',
+			description: "This towel had aloe vera spilled on it and now it has healing properties.",
+			emblemIcon: "fas fa-heart"
+		}
+	}
+	
 	exports.savePlayedHandToHistory = function(playedHands, key, value) {
 		if (playedHands.length === 0 || (playedHands[playedHands.length - 1].myHandName !== '' && playedHands[playedHands.length - 1].otherHandName !== '')) {
 			playedHands.push({
