@@ -1,0 +1,36 @@
+.popup {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.7);
+    transition: background 2s; 
+    @include flexCenter;
+
+    .prompt {
+        transform: scale(0);
+        background: radial-gradient(ellipse closest-side, #9dcce1, #52a2c8 100%);
+        display: flex;
+        width: 500px;
+        flex-direction: column;
+        padding: 30px;
+        animation: bounceIntoExistence 2s forwards;
+        z-index: 10;    
+        box-shadow: 0 0 18px #000;
+    }
+
+    .message {
+        @include flexCenter;
+        height: 30px;
+        min-height: 100px;
+    }
+
+    .buttons {    
+        align-items: flex-end;
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+    }
+}

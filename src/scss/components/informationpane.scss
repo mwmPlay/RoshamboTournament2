@@ -18,6 +18,11 @@
     }
 }
 
+#new-messages-counter {
+    transform: scale(0);
+    animation: bounceIntoExistence 1s forwards;
+}
+
 .information-pane {
     flex: 0 0 350px;
     padding: 20px;
@@ -58,7 +63,7 @@
             border: 2px solid #333;
             background: #dedede;
             top: -5px;
-            background: url(http://bestnycacupuncturist.com/wp-content/uploads/2016/11/anonymous-avatar-sm.jpg);
+            background: url('media/anonymous-avatar.jpg');
             background-size: cover;
         }
 

@@ -53,6 +53,11 @@ function pickRandomProperty(obj) {
     return result;
 }
 
+function randomRotationDegree() {
+	var modifier = Math.random() > 0.5 ? -1 : 1;
+	return Math.floor(Math.random() * (5)) * modifier;
+}
+
 function log(message, socket) {
 	if(socket) {
 		// prepend with socket id
@@ -78,7 +83,8 @@ function log(message, socket) {
 				towels: []
 			},
 			ui: {
-				playerUI: 'lobby'
+				playerUI: 'lobby',
+				messageToUser: '',
 			},
 			playedHands: [],
 			username: '',
@@ -90,7 +96,196 @@ function log(message, socket) {
 			myTowelTarget: '',
 			otherUsers: [],
 			chatMessages: [],
-			chatMessage: ''
+			newMessages: 0,
+			chatMessage: '',
+			towelPrototypes: {
+				/* impendingdoom: {
+					name: 'impendingdoom',
+					title: 'Towel of impending doom',
+					description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
+					emblemIcon: "fab fa-hotjar"
+				},
+				unfathomabledarkness: {
+					name: 'unfathomabledarkness',
+					title: 'Towel of unfathomable darkness',
+					description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
+					emblemIcon: "fas fa-adjust"
+				}, */
+				disproportionatebludgeoning: {
+					name: 'disproportionatebludgeoning',
+					title: 'Towel of disproportionate bludgeoning',
+					description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
+					emblemIcon: "fas fa-stop"
+				},
+				magnificentalleviation: {
+					name: 'magnificentalleviation',
+					title: 'Towel of magnificent alleviation',
+					description: "This towel had aloe vera spilled on it and now it has healing properties.",
+					emblemIcon: "fas fa-heart"
+				}
+			},
+			handPrototypes: {
+				rock: {
+					name: 'rock',
+					health: 7,
+					freeze: 0,
+					rotation: randomRotationDegree(),
+					result: {
+						paper: {
+							name: 'paper',
+							text: 'is covered by',
+							win: false,
+							damage: 0
+						},
+						scissors: {
+							name: 'scissors',
+							text: 'crushes',
+							win: true,
+							damage: 3
+						},
+						lizard: {
+							name: 'lizard',
+							text: 'crushes',
+							win: true,
+							damage: 3
+						},
+						spock: {
+							name: 'spock',
+							text: 'is vaporized by',
+							win: false,
+							damage: 0
+						}
+					}
+				},
+				paper: {
+					name: 'paper',
+					health: 5,
+					freeze: 0,
+					rotation: randomRotationDegree(),
+					result: {
+						rock: {
+							name: 'rock',
+							text: 'covers',
+							win: true,
+							damage: 3
+						},
+						scissors: {
+							name: 'scissors',
+							text: 'is cut by',
+							win: false,
+							damage: 0
+						},
+						lizard: {
+							name: 'lizard',
+							text: 'is eaten by',
+							win: false,
+							damage: 0
+						},
+						spock: {
+							name: 'spock',
+							text: 'disproves',
+							win: true,
+							damage: 3
+						}
+					}
+				},
+				scissors: {
+					name: 'scissors',
+					health: 5,
+					freeze: 0,
+					rotation: randomRotationDegree(),
+					result: {
+						rock: {
+							name: 'rock',
+							text: 'are crushed by',
+							win: false,
+							damage: 1
+						},
+						paper: {
+							name: 'paper',
+							text: 'cut',
+							win: true,
+							damage: 3
+						},
+						lizard: {
+							name: 'lizard',
+							text: 'decapitate',
+							win: true,
+							damage: 3
+						},
+						spock: {
+							name: 'spock',
+							text: 'are smashed by',
+							win: false,
+							damage: 1
+						}
+					}
+				},
+				lizard: {
+					name: 'lizard',
+					health: 5,
+					freeze: 0,
+					rotation: randomRotationDegree(),
+					result: {
+						rock: {
+							name: 'rock',
+							text: 'is crushed by',
+							win: false,
+							damage: 0
+						},
+						paper: {
+							name: 'paper',
+							text: 'eats',
+							win: true,
+							damage: 3
+						},
+						scissors: {
+							name: 'scissors',
+							text: 'is decapitated by',
+							win: false,
+							damage: 0
+						},
+						spock: {
+							name: 'spock',
+							text: 'poisons',
+							win: true,
+							damage: 3
+						}
+					}
+				},
+				spock: {
+					name: 'spock',
+					health: 5,
+					freeze: 0,
+					rotation: randomRotationDegree(),
+					result: {
+						rock: {
+							name: 'rock',
+							text: 'vaporizes',
+							win: true,
+							damage: 3
+						},
+						paper: {
+							name: 'paper',
+							text: 'is disproved by',
+							win: false,
+							damage: 0
+						},
+						scissors: {
+							name: 'scissors',
+							text: 'smashes',
+							win: true,
+							damage: 3
+						},
+						lizard: {
+							name: 'lizard',
+							text: 'is poisoned by',
+							win: false,
+							damage: 0
+						}
+					}
+				}
+			}
 		},
 		computed: {
 			handPrototypes: function() {
@@ -163,18 +358,24 @@ function log(message, socket) {
 					newValue.forEach(function(playedHand) {
 						app.showDown(playedHand);
 					});
+
+					// scroll the history overview down
+					this.scrollElementDown('.history-overview');
 				},
 				deep: true
 			},
 			chatMessages: function() {
-				// move the chat box to the bottom after the DOM has updated after the chat messages have changed
-				Vue.nextTick(function() {
-					var container = app.$el.querySelector('.chat-messages');
-					container.scrollTop = container.scrollHeight;
-				});
+				this.scrollElementDown('.chat-messages');
 			}
 		},
 		methods: {
+			scrollElementDown: function(element){
+				// move the element to the bottom after the DOM has updated after the chat messages have changed
+				Vue.nextTick(function() {
+					var container = app.$el.querySelector(element);
+					container.scrollTop = container.scrollHeight;
+				});
+			},
 			showDown: function(playedHand) {
 				if (playedHand.myHandName && playedHand.otherHandName && this.thisUserIsPlaying) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
@@ -248,13 +449,17 @@ function log(message, socket) {
 				this.thisPlayer.hands.splice(0);
 				this.thisPlayer.towels.splice(0);
 			},
-			randomRotationDegree: function () {
-				var modifier = Math.random() > 0.5 ? -1 : 1;
-				return Math.floor(Math.random() * (5)) * modifier;
-			},
 			onDragStart: function(event) {
 				// store the id of the towel so it can be moved on drop
 				this.myTowelId = event.target.id;
+			},
+			lobbySwitch: function(tabClickedName){
+				this.ui.playerUI = tabClickedName;
+
+				if(tabClickedName === 'flamebox') {
+					app.newMessages = 0;
+					this.scrollElementDown('.chat-messages');
+				}
 			},
 			onDrop: function(event) {
 				// trade the id for the actual element
@@ -430,7 +635,7 @@ function log(message, socket) {
 	});
 	
 	socket.on('disconnect', function() {
-		alert('Server appears to be down!');
+		app.ui.messageToUser = 'Server appears to be down!';
 	});
 	
 	socket.on('handChosen', function(player2Name) {
@@ -495,10 +700,14 @@ function log(message, socket) {
 	});
 	
 	socket.on('challengeRejected', function(username) {
-		alert(username + ' has rejected your challenge :(');
+		app.ui.messageToUser = username + ' has rejected your challenge :(';
 	});
 	
 	socket.on('chatMessage', function(chatMessage) {
+		if(app.ui.playerUI !== 'flamebox'){
+			app.newMessages++;
+		}
+
 		app.chatMessages.push(chatMessage);
 	});
 	
@@ -546,3 +755,5 @@ function log(message, socket) {
 		socket.emit('resumeSession', sessionId);
 	}
 })();
+
+
