@@ -134,7 +134,7 @@ function log(message, socket) {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
 			},
 			gameInProgress: function() {
-				return !(!this.player1Name || !this.player2Name);
+				return this.player1Name && this.player2Name;
 			},
 			gameOver: function() {
 				var result = true;
