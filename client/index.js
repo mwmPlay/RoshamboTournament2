@@ -7,12 +7,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	soundEffects.carddeal2 = carddeal2;
 	var shuffling = document.getElementById("shuffling-sound");
 	soundEffects.shuffling = shuffling;
-
-/*	var backgroundMusic = document.getElementById("background-music");
+	var backgroundMusic = document.getElementById("background-music");
 	soundEffects.backgroundMusic = backgroundMusic;
-    backgroundMusic.play();
+	var buttonClick = document.getElementById("buttonclick-sound");
+	soundEffects.buttonClick = buttonClick;
+	var newMessage = document.getElementById("newmessage-sound");
+	soundEffects.newMessage = newMessage;
 
-   $('.handsdeck').on('mouseenter', '.hand[type="scissors"]', function(){
+	//backgroundMusic.play(); // << turn off while developing to prevent suicide
+
+  /* $('.handsdeck').on('mouseenter', '.hand[type="scissors"]', function(){
 		var scissorsSound = document.getElementById("scissors-sound");
 		soundEffects.scissorsSound = scissorsSound;
 		scissorsSound.play();
@@ -80,6 +84,9 @@ function log(message, socket) {
 			ui: {
 				playerUI: 'lobby',
 				messageToUser: '',
+				promptMessage: '',
+				pickedUserName: '',
+				musicOn: true
 			},
 			playedHands: [],
 			username: '',
@@ -249,6 +256,15 @@ function log(message, socket) {
 				// send to server to do the same
 				socket.emit('endGame');
 			},
+			toggleMusic: function(){
+				app.ui.musicOn = !app.ui.musicOn;
+
+				if(app.ui.musicOn){
+					soundEffects.backgroundMusic.play();
+				} else {
+					soundEffects.backgroundMusic.pause();
+				}
+			},
 			clearGameData: function() {
 				logic.clearSession(this);
 				this.enemyPlayer.hands.splice(0);
@@ -270,6 +286,7 @@ function log(message, socket) {
 				if(tabClickedName === 'flamebox') {
 					app.newMessages = 0;
 					this.scrollElementDown('.chat-messages');
+					this.$els.chatMessageInput.focus();
 				}
 			},
 			onDrop: function(event) {
@@ -350,6 +367,10 @@ function log(message, socket) {
 			rejectChallenge: function() {
 				this.challengedBy = '';
 				socket.emit('challengeRejected', this.challengedBy);
+			},
+			userPickedAName: function(){
+				app.ui.promptMessage = '';
+				socket.emit('authenticate', app.ui.pickedUserName);
 			},
 			addHandToDeck: function(player, type){
 				var cardSound = new Audio('media/carddeal.wav');
@@ -519,6 +540,7 @@ function log(message, socket) {
 	socket.on('chatMessage', function(chatMessage) {
 		if(app.ui.playerUI !== 'flamebox'){
 			app.newMessages++;
+			soundEffects.newMessage.play();
 		}
 
 		app.chatMessages.push(chatMessage);
@@ -556,17 +578,13 @@ function log(message, socket) {
 	});
 	
 	socket.on('authenticateFail', function(message) {
-		var username = prompt(message);
-		socket.emit('authenticate', username);
+		app.ui.promptMessage = message;
 	});
 	
 	if (document.cookie === '') {
-		var username = prompt('Who are you?');
-		socket.emit('authenticate', username);
+		app.ui.promptMessage = 'Who are you?';
 	} else {
 		var sessionId = document.cookie.substring(10);
 		socket.emit('resumeSession', sessionId);
 	}
 })();
-
-

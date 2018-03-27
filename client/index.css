@@ -460,7 +460,8 @@ body {
   margin: 0;
   padding: 0;
   font-size: 13px;
-  overflow: hidden; }
+  overflow: hidden;
+  cursor: url("media/cursor.cur"), default; }
 
 p {
   font-family: georgia;
@@ -474,12 +475,13 @@ p {
     color: #fff; }
 
 input[type="text"] {
-  font-family: georgia;
   color: #333;
-  padding: 3px;
   margin-top: 5px;
   border: 2px solid #333;
-  transition: 0.2s ease-out; }
+  transition: 0.2s ease-out;
+  font-weight: bold;
+  font-family: roboto;
+  padding: 3px 5px; }
   input[type="text"]:hover {
     background: #f1f1f1; }
 
@@ -687,7 +689,6 @@ svg.small {
     position: absolute;
     transform: scale(0.6); }
   .hand:hover {
-    cursor: pointer;
     box-shadow: 0 0 20px #000;
     transform: scale(1.05); }
     .hand:hover .icon {
@@ -710,6 +711,7 @@ svg.small {
   justify-content: center; }
   .popup .prompt {
     transform: scale(0);
+    border: 4px solid #086e9e;
     background: radial-gradient(ellipse closest-side, #9dcce1, #52a2c8 100%);
     display: flex;
     width: 500px;
@@ -718,12 +720,16 @@ svg.small {
     animation: bounceIntoExistence 2s forwards;
     z-index: 10;
     box-shadow: 0 0 18px #000; }
+  .popup .inputs {
+    padding: 10px 0; }
+    .popup .inputs input[type="text"] {
+      width: 210px;
+      margin-top: 10px; }
   .popup .message {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 30px;
-    min-height: 100px; }
+    min-height: 60px; }
   .popup .buttons {
     align-items: flex-end;
     height: 50px;
@@ -774,7 +780,6 @@ svg.small {
       background: rgba(0, 0, 0, 0.3);
       box-shadow: inset 0 0 2px #333;
       transition: 0.2s all;
-      cursor: pointer;
       position: relative;
       z-index: 4; }
       .playingField > div #myHandName:hover,
@@ -992,12 +997,13 @@ svg.small {
       .information-pane .history .history-overview p {
         font-size: 12px;
         color: #333;
-        margin: 2px 0; }
+        margin: 2px 0;
+        font-family: roboto;
+        font-weight: bold; }
   .information-pane .lobbyTitle {
     margin-top: 20px; }
     .information-pane .lobbyTitle span {
       transition: 0.4s;
-      cursor: pointer;
       color: #afafaf; }
       .information-pane .lobbyTitle span:hover {
         color: #fff; }
@@ -1024,8 +1030,11 @@ svg.small {
     .information-pane .chat ul {
       flex-direction: column; }
     .information-pane .chat li {
-      font-size: 15px;
-      list-style: none; }
+      margin: 2px 0;
+      font-size: 12px;
+      list-style: none;
+      font-family: roboto;
+      font-weight: bold; }
   .information-pane .lobby {
     width: 100%;
     height: 200px;
@@ -1045,10 +1054,12 @@ svg.small {
     .information-pane .lobby ul {
       flex-direction: column; }
     .information-pane .lobby li {
-      font-size: 15px;
-      list-style: none; }
+      font-size: 14px;
+      list-style: none;
+      font-family: roboto;
+      font-weight: bold;
+      color: #333; }
       .information-pane .lobby li svg {
-        cursor: pointer;
         margin-left: 5px;
         transition: all 0.2s; }
         .information-pane .lobby li svg:hover {
@@ -1094,9 +1105,6 @@ svg.small {
 button.button {
   border-left: none;
   border-right: none; }
-
-button.button:hover {
-  cursor: pointer; }
 
 /* -------------- icon -------------- */
 .button:before {
@@ -1443,7 +1451,6 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
   border: 3px solid #333;
   position: relative;
   transition: all .6s;
-  cursor: pointer;
   animation: glow 8s infinite;
   display: flex;
   align-items: center;
@@ -1509,7 +1516,6 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
     background-size: 5px 10px;
     width: 30px;
     height: 40px;
-    cursor: pointer;
     display: flex;
     border-radius: 50%;
     position: absolute;
@@ -1524,7 +1530,6 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
     background-size: 5px 10px;
     width: 30px;
     height: 40px;
-    cursor: pointer;
     display: flex;
     border-radius: 50%;
     position: absolute;
