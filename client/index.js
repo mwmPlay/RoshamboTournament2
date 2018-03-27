@@ -93,9 +93,9 @@ function log(message, socket) {
 			challengedBy: '',
 			player1Name: '',
 			player2Name: '',
-			myTowelId: '',
 			myTowel: '',
 			myTowelTarget: '',
+			myTowelEmblemIcon: '',
 			otherUsers: [],
 			chatMessages: [],
 			newMessages: 0,
@@ -172,7 +172,7 @@ function log(message, socket) {
 					newValue.forEach(function(playedHand) {
 						app.showDown(playedHand);
 					});
-
+					
 					// scroll the history overview down
 					this.scrollElementDown('.history-overview');
 				},
@@ -258,7 +258,7 @@ function log(message, socket) {
 			},
 			toggleMusic: function(){
 				app.ui.musicOn = !app.ui.musicOn;
-
+				
 				if(app.ui.musicOn){
 					soundEffects.backgroundMusic.play();
 				} else {
@@ -276,10 +276,6 @@ function log(message, socket) {
 				var modifier = Math.random() > 0.5 ? -1 : 1;
 				return Math.floor(Math.random() * (5)) * modifier;
 			},
-			onDragStart: function(event) {
-				// store the id of the towel so it can be moved on drop
-				this.myTowelId = event.target.id;
-			},
 			lobbySwitch: function(tabClickedName){
 				this.ui.playerUI = tabClickedName;
 				
@@ -289,17 +285,27 @@ function log(message, socket) {
 					this.$els.chatMessageInput.focus();
 				}
 			},
+			onDragStart: function(event) {
+				// store the type of the towel so it can be moved on drop
+				event.dataTransfer.setData("Text", event.target.getAttribute('type'));
+			},
 			onDrop: function(event) {
-				// trade the id for the actual element
-				var towelElem = document.getElementById(this.myTowelId);
-				this.myTowelId = '';
+				// restore previously used towel
+				if (this.myTowel) {
+					this.addTowelToDeck('thisPlayer', this.myTowel);
+				}
 				
-				// move the towel to the hand
-				event.target.appendChild(towelElem);
+				var towelName = event.dataTransfer.getData("Text");
 				
-				// set the values in the model
-				this.myTowel = towelElem.getAttribute('type');
+				// remove used towel from player
+				var towelIndex = this.thisPlayer.towels.findIndex(function(towel) {
+					return towel.name === towelName
+				});
+				var usedTowel = this.thisPlayer.towels.splice(towelIndex, 1)[0];
+				
+				this.myTowel = towelName;
 				this.myTowelTarget = event.target.getAttribute('type');
+				this.myTowelEmblemIcon = usedTowel.emblemIcon;
 			},
 			handButtonTooltip: function (hand) {
 				var tooltip = '';
