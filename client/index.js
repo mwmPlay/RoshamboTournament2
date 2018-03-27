@@ -93,9 +93,11 @@ function log(message, socket) {
 			challengedBy: '',
 			player1Name: '',
 			player2Name: '',
+			myDraggedTowel: '',
 			myTowel: '',
 			myTowelTarget: '',
 			myTowelEmblemIcon: '',
+			myTowelOnEnemy: false,
 			otherUsers: [],
 			chatMessages: [],
 			newMessages: 0,
@@ -287,7 +289,13 @@ function log(message, socket) {
 			},
 			onDragStart: function(event) {
 				// store the type of the towel so it can be moved on drop
-				event.dataTransfer.setData("Text", event.target.getAttribute('type'));
+				this.myDraggedTowel = event.target.getAttribute('type');
+			},
+			onDragOver: function(event, isEnemy) {
+				// only allow drop if the towel is for the enemy and we are dropping on the enemy and vice versa
+				if(logic.staticData.towelPrototypes[this.myDraggedTowel].dropOnEnemy === isEnemy) {
+					event.preventDefault();
+				}
 			},
 			onDrop: function(event) {
 				// restore previously used towel
@@ -295,17 +303,16 @@ function log(message, socket) {
 					this.addTowelToDeck('thisPlayer', this.myTowel);
 				}
 				
-				var towelName = event.dataTransfer.getData("Text");
-				
 				// remove used towel from player
 				var towelIndex = this.thisPlayer.towels.findIndex(function(towel) {
-					return towel.name === towelName
+					return towel.name === app.myDraggedTowel
 				});
 				var usedTowel = this.thisPlayer.towels.splice(towelIndex, 1)[0];
 				
-				this.myTowel = towelName;
+				this.myTowel = this.myDraggedTowel;
 				this.myTowelTarget = event.target.getAttribute('type');
 				this.myTowelEmblemIcon = usedTowel.emblemIcon;
+				this.myTowelOnEnemy = usedTowel.dropOnEnemy;
 			},
 			handButtonTooltip: function (hand) {
 				var tooltip = '';

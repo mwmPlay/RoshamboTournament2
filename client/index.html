@@ -38,7 +38,7 @@
 		<div id="playboard">
 			<div class="enemyplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" v-bind:rotate="hand.rotation" v-if="hand.health > 0 && !gameOver" class="hand top" v-for="hand in enemyPlayer.hands">
+					<div v-bind:type="hand.name" v-bind:rotate="hand.rotation" v-if="hand.health > 0 && !gameOver" class="hand top" v-for="hand in enemyPlayer.hands" v-on:drop.prevent="onDrop" v-on:dragover="onDragOver($event, true)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -64,6 +64,20 @@
 								<p v-for="handResult in handPrototypes[hand.name].result">
 									{{handResult.damage}} damage to {{handResult.name}}
 								</p>
+							</div>
+						</div>
+						<div class="towel" v-if="myTowelTarget === hand.name && myTowelOnEnemy">
+							<div class="towel-twirl-left">
+
+							</div>
+							<div class="towel-twirl-right">
+
+							</div>
+							<div class="towel-start">
+
+							</div>
+							<div class="emblem">
+								<i v-bind:class="myTowelEmblemIcon"></i>
 							</div>
 						</div>
 					</div>
@@ -154,7 +168,7 @@
 
 			<div class="thisplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop" v-on:dragover.prevent>
+					<div v-bind:type="hand.name" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop" v-on:dragover="onDragOver($event, false)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -182,7 +196,7 @@
 								</p>
 							</div>
 						</div>
-						<div class="towel" v-if="myTowelTarget === hand.name">
+						<div class="towel" v-if="myTowelTarget === hand.name && !myTowelOnEnemy">
 							<div class="towel-twirl-left">
 
 							</div>
