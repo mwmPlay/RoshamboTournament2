@@ -117,7 +117,7 @@
 							{{player1Name}} played:
 						</p>
 						<div id="myHandName">
-							<div v-if="myHandName != ''" v-bind:type="myHandName" class="hand top">
+							<div v-if="myHandName != ''" v-bind:type="myHandName" class="hand top showdown-hand">
 								<div class="title-section">
 									<p class="specialText">{{myHandName}}</p>
 								</div>
@@ -127,6 +127,36 @@
 									</div>
 								</div>
 								<div class="information-section">
+									<div class="health">
+										<i class="fas fa-heart"></i>
+										<p class="specialText">
+											{{showdownUI.thisPlayerDamageTaken}}
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>	
+						<div id="myTowel">
+							<div class="towel showInner" v-if="mySelectedTowel != '' && showdownUI.showTowels" v-bind:type="mySelectedTowel.name">
+								<div class="towel-twirl-left">
+		
+								</div>
+								<div class="towel-twirl-right">
+		
+								</div>
+								<div class="towel-start">
+		
+								</div>
+								<div class="emblem">
+									<i v-bind:class="mySelectedTowel.emblemIcon"></i>
+								</div>
+								<div class="explanation">
+									<h4>
+										{{mySelectedTowel.title}}
+									</h4>
+									<p>
+										{{mySelectedTowel.description}}
+									</p>
 								</div>
 							</div>
 						</div>
@@ -158,7 +188,36 @@
 									</div>
 								</div>
 								<div class="information-section">
-									
+									<div class="health">
+										<i class="fas fa-heart"></i>
+										<p class="specialText">
+											{{showdownUI.enemyPlayerDamageTaken}}
+										</p>
+									</div>
+								</div>	
+							</div>
+							<div id="otherTowel">
+								<div class="towel showInner" v-if="otherSelectedTowel != '' && showdownUI.showTowels" v-bind:type="otherSelectedTowel.name">
+									<div class="towel-twirl-left">
+			
+									</div>
+									<div class="towel-twirl-right">
+			
+									</div>
+									<div class="towel-start">
+			
+									</div>
+									<div class="emblem">
+										<i v-bind:class="otherSelectedTowel.emblemIcon"></i>
+									</div>
+									<div class="explanation">
+										<h4>
+											{{otherSelectedTowel.title}}
+										</h4>
+										<p>
+											{{otherSelectedTowel.description}}
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -168,7 +227,7 @@
 
 			<div class="thisplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop" v-on:dragover="onDragOver($event, false)">
+					<div v-bind:type="hand.name" v-bind:is-selected="selectedCard(hand.name)" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop" v-on:dragover="onDragOver($event, false)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>

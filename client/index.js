@@ -13,34 +13,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	soundEffects.buttonClick = buttonClick;
 	var newMessage = document.getElementById("newmessage-sound");
 	soundEffects.newMessage = newMessage;
+	var scissorsSound = document.getElementById("scissors-sound");
+	soundEffects.scissorsSound = scissorsSound;
+	var rockSound = document.getElementById("rock-sound");
+	soundEffects.rockSound = rockSound;
+	var paperSound = document.getElementById("paper-sound");
+	soundEffects.paperSound = paperSound;
+	var spockSound = document.getElementById("spock-sound");
+	soundEffects.spockSound = spockSound;
+	var lizardSound = document.getElementById("lizard-sound");
+	soundEffects.lizardSound = lizardSound;
 
 	//backgroundMusic.play(); // << turn off while developing to prevent suicide
-
-  /* $('.handsdeck').on('mouseenter', '.hand[type="scissors"]', function(){
-		var scissorsSound = document.getElementById("scissors-sound");
-		soundEffects.scissorsSound = scissorsSound;
-		scissorsSound.play();
-	})
-	.on('mouseenter', '.hand[type="rock"]', function(){
-		var rockSound = document.getElementById("rock-sound");
-		soundEffects.rockSound = rockSound;
-		rockSound.play();
-	})
-	.on('mouseenter', '.hand[type="paper"]', function(){
-		var paperSound = document.getElementById("paper-sound");
-		soundEffects.paperSound = paperSound;
-		paperSound.play();
-	})
-	.on('mouseenter', '.hand[type="spock"]', function(){
-		var spockSound = document.getElementById("spock-sound");
-		soundEffects.spockSound = spockSound;
-		spockSound.play();
-	})
-	.on('mouseenter', '.hand[type="lizard"]', function(){
-		var lizardSound = document.getElementById("lizard-sound");
-		soundEffects.lizardSound = lizardSound;
-		lizardSound.play();
-	});*/
 });
 
 // clone any object, severing all references within
@@ -88,6 +72,16 @@ function log(message, socket) {
 				pickedUserName: '',
 				musicOn: true
 			},
+			showdownUI: {
+				enemyPlayerDamageTaken: 0,
+				thisPlayerDamageTaken: 0,
+				enemyPlayerTowelDamageTaken: 0,
+				thisPlayerTowelDamageTaken: 0,
+				showTowels: false
+			},
+			gameSettings: {
+				towelShowdownSpeed: 2500
+			},
 			playedHands: [],
 			username: '',
 			challengedBy: '',
@@ -112,6 +106,24 @@ function log(message, socket) {
 			},
 			otherHandName: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHandName : '';
+			},
+			mySelectedTowel: function() {
+				if(this.playedHands.length > 0) {
+					var towelName = this.playedHands[this.playedHands.length - 1].myTowel;
+				} else {
+					return '';
+				}
+
+				return this.getTowelPrototypeByName(towelName);
+			},
+			otherSelectedTowel: function() {
+				if(this.playedHands.length > 0) {
+					var towelName = this.playedHands[this.playedHands.length - 1].otherTowel;
+				} else {
+					return '';
+				}
+
+				return this.getTowelPrototypeByName(towelName);
 			},
 			otherHasChosen: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
@@ -171,8 +183,9 @@ function log(message, socket) {
 					this.drawTowels();
 					
 					// run the current history
-					newValue.forEach(function(playedHand) {
-						app.showDown(playedHand);
+					newValue.forEach(function(playedHand, index) {
+						var finalHand = index === newValue.length - 1;
+						app.showDown(playedHand, finalHand);
 					});
 					
 					// scroll the history overview down
@@ -185,6 +198,19 @@ function log(message, socket) {
 			}
 		},
 		methods: {
+			getTowelPrototypeByName: function(towelName) {
+				for(var towelPrototypeKey in logic.staticData.towelPrototypes) {
+					var towelPrototype = logic.staticData.towelPrototypes[towelPrototypeKey];
+					if(towelPrototype.name === towelName){
+						return towelPrototype;
+					} 
+				}
+
+				return '';
+			},
+			selectedCard: function(cardType){
+				return this.playedHands.length > 0 && this.playedHands[this.playedHands.length - 1].myHandName ===  cardType;
+			},
 			scrollElementDown: function(element){
 				// move the element to the bottom after the DOM has updated
 				Vue.nextTick(function() {
@@ -192,7 +218,7 @@ function log(message, socket) {
 					container.scrollTop = container.scrollHeight;
 				});
 			},
-			showDown: function(playedHand) {
+			showDown: function(playedHand, finalHand) { //FinalHand property is needed in order to know what hand should be shown to the player
 				if (playedHand.myHandName && playedHand.otherHandName && this.thisUserIsPlaying) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
 					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
@@ -204,16 +230,43 @@ function log(message, socket) {
 					if (playedHand.myHandName !== playedHand.otherHandName) {
 						damageToMyself = otherHandPrototype.result[playedHand.myHandName].damage;
 						damageToOther = myHandPrototype.result[playedHand.otherHandName].damage;
-						
+
 						// do damage
 						myHand.health -= damageToMyself;
 						otherHand.health -= damageToOther;
+						
+						// Showdown is handled here
+						if(finalHand) {		
+							//reset previous values
+							app.showdownUI = {
+								enemyPlayerDamageTaken: 0,
+								thisPlayerDamageTaken: 0,
+								enemyPlayerTowelDamageTaken: 0,
+								thisPlayerTowelDamageTaken: 0,
+								showTowels: false
+							};
+
+							app.showdownUI.enemyPlayerDamageTaken -= damageToOther;
+							app.showdownUI.thisPlayerDamageTaken -= damageToMyself;
+
+							var winningHandName = damageToMyself > damageToOther ? otherHandPrototype.name : myHandPrototype.name;
+							soundEffects[winningHandName + 'Sound'].play();
+
+							setTimeout(function(){
+								var sdUI = app.showdownUI;
+								sdUI.showTowels = true;
+								sdUI.enemyPlayerDamageTaken += sdUI.enemyPlayerTowelDamageTaken;
+								sdUI.thisPlayerDamageTaken += sdUI.thisPlayerTowelDamageTaken;
+							}, app.gameSettings.towelShowdownSpeed);
+						}
 					}
 					
 					// do my towel
 					if (playedHand.myTowel === 'disproportionatebludgeoning' && damageToOther > 0) {
 						// disproportionatebludgeoning: 2 dmg, but only if there was damage
 						otherHand.health -= 2;
+
+						app.showdownUI.enemyPlayerTowelDamageTaken -= 2;
 					} else if (playedHand.myTowel === 'magnificentalleviation' && playedHand.myTowelTarget) {
 						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
 						var targetHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myTowelTarget });
@@ -236,6 +289,8 @@ function log(message, socket) {
 					if (playedHand.otherTowel === 'disproportionatebludgeoning' && damageToMyself > 0) {
 						// disproportionatebludgeoning: 2 dmg, but only if there was damage
 						myHand.health -= 2;
+
+						app.showdownUI.thisPlayerTowelDamageTaken -= 2;
 					} else if (playedHand.otherTowel === 'magnificentalleviation' && playedHand.otherTowelTarget) {
 						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
 						var targetHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherTowelTarget });

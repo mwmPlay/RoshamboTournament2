@@ -11,7 +11,6 @@
     border: 3px solid #333;
     position: relative;
     transition: all .6s;
-    animation: glow 8s infinite;
 
     @include flexCenter;
     @include towerStyling;
@@ -20,8 +19,10 @@
         transform: scale(1.1);
     }
 
-    &:active {
+    &:active,
+    &.showInner {
         height: 120px;
+        animation: glow 8s infinite;
 
         .towel-start {
             top: 0;
@@ -156,4 +157,18 @@
         border-top-right-radius: 50%;
         @include towerStyling;
     }
+}
+
+.playingField #myTowel {
+    z-index: 3;
+    position: absolute;
+    top: 40px;
+    left: -150px;
+}
+
+.playingField #otherTowel {
+    z-index: 3;
+    position: absolute;
+    top: 40px;
+    left: 150px;
 }

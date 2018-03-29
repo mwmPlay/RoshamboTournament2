@@ -41,10 +41,12 @@
         animation: slideUp 500ms;
     }*/
 
-    animation: cardDealed 500ms;
+    &:not(.showdown-hand) {
+        animation: cardDealed 500ms;
+    }
 
-    .is-selected {
-        animation: glow 100ms infinite;
+    &[is-selected="true"] {
+        animation: glow 8s infinite;
     }
 
     .title-section {
@@ -194,4 +196,8 @@
             top: 7px;
         }
     }
+}
+
+.playingField .hand .health {
+    background: #9a1c1c;
 }

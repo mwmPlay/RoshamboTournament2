@@ -506,8 +506,7 @@ svg.small {
     }
     &.bottom {
         animation: slideUp 500ms;
-    }*/
-  animation: cardDealed 500ms; }
+    }*/ }
   .hand * {
     pointer-events: none; }
   .hand[rotate="1"] {
@@ -590,8 +589,10 @@ svg.small {
     transform: rotate(-10deg); }
     .hand[rotate="-10"]:hover {
       transform: rotate(-10deg) scale(1.05); }
-  .hand .is-selected {
-    animation: glow 100ms infinite; }
+  .hand:not(.showdown-hand) {
+    animation: cardDealed 500ms; }
+  .hand[is-selected="true"] {
+    animation: glow 8s infinite; }
   .hand .title-section {
     height: 30px;
     display: flex;
@@ -696,6 +697,9 @@ svg.small {
     .hand:hover .damage-info {
       opacity: 1;
       top: 7px; }
+
+.playingField .hand .health {
+  background: #9a1c1c; }
 
 .popup {
   position: absolute;
@@ -806,7 +810,7 @@ svg.small {
 
 .enemyplayerside,
 .thisplayerside {
-  height: 300px;
+  height: 280px;
   justify-content: space-between;
   display: flex; }
 
@@ -1451,7 +1455,6 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
   border: 3px solid #333;
   position: relative;
   transition: all .6s;
-  animation: glow 8s infinite;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1459,22 +1462,23 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
   background-size: 5px 10px; }
   .towel:hover {
     transform: scale(1.1); }
-  .towel:active {
-    height: 120px; }
-    .towel:active .towel-start {
+  .towel:active, .towel.showInner {
+    height: 120px;
+    animation: glow 8s infinite; }
+    .towel:active .towel-start, .towel.showInner .towel-start {
       top: 0; }
-    .towel:active .towel-twirl-right {
+    .towel:active .towel-twirl-right, .towel.showInner .towel-twirl-right {
       right: 0;
       opacity: 0;
       transition: .1s; }
-    .towel:active .towel-twirl-left {
+    .towel:active .towel-twirl-left, .towel.showInner .towel-twirl-left {
       left: 0;
       opacity: 0;
       transition: .1s; }
-    .towel:active .emblem {
+    .towel:active .emblem, .towel.showInner .emblem {
       opacity: 0;
       transition: .1s; }
-    .towel:active .explanation {
+    .towel:active .explanation, .towel.showInner .explanation {
       opacity: 1;
       transition: .4s .6s; }
   .towel .explanation {
@@ -1568,5 +1572,17 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
     border-top-right-radius: 50%;
     background: #fff;
     background-size: 5px 10px; }
+
+.playingField #myTowel {
+  z-index: 3;
+  position: absolute;
+  top: 40px;
+  left: -150px; }
+
+.playingField #otherTowel {
+  z-index: 3;
+  position: absolute;
+  top: 40px;
+  left: 150px; }
 
 /*# sourceMappingURL=index.css.map */
