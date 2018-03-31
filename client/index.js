@@ -227,13 +227,13 @@ function log(message, socket) {
 							damageToOther: 0,
 							healingToMyTarget: 0,
 							damageToMyTarget: 0,
-							freezeToMyTarget: 0,
+							freezeToMyTarget: 0
 						},
 						other: {
 							damageToOther: 0,
 							healingToMyTarget: 0,
 							damageToMyTarget: 0,
-							freezeToMyTarget: 0,
+							freezeToMyTarget: 0
 						}
 					};
 					
@@ -268,21 +268,26 @@ function log(message, socket) {
 					myHand.health -= resultOfActions.other.damageToOther;
 					otherHand.health -= resultOfActions.myself.damageToOther;
 					
-					// perform other results (do not heal above proto's health and can't heal the dead)
-					if (resultOfActions.myself.healingToMyTarget > 0) {
-						var targetHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myTowelTarget });
-						var targetHandPrototype = this.handPrototypes[playedHand.myTowelTarget];
-						
-						if (targetHand.health > 0) {
-							targetHand.health = targetHand.health > targetHandPrototype.health - resultOfActions.myself.healingToMyTarget ? targetHandPrototype.health : targetHand.health + resultOfActions.myself.healingToMyTarget;
-						}
-					}
-					if (resultOfActions.other.healingToMyTarget > 0) {
-						var targetHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherTowelTarget });
-						var targetHandPrototype = this.handPrototypes[playedHand.otherTowelTarget];
-						
-						if (targetHand.health > 0) {
-							targetHand.health = targetHand.health > targetHandPrototype.health - resultOfActions.other.healingToMyTarget ? targetHandPrototype.health : targetHand.health + resultOfActions.other.healingToMyTarget;
+					// perform other results
+					for (var player in { myself: '', other: '' }) {
+						if (resultOfActions[player].healingToMyTarget > 0 || resultOfActions[player].damageToMyTarget > 0 || resultOfActions[player].freezeToMyTarget > 0) {
+							var towelTarget = player === 'myself' ? playedHand.myTowelTarget : playedHand.otherTowelTarget;
+							var towelName = player === 'myself' ? playedHand.myTowel : playedHand.otherTowel;
+							var dropOnEnemy = logic.staticData.towelPrototypes[towelName].dropOnEnemy;
+							var playerTarget = (dropOnEnemy && player === 'myself') || (!dropOnEnemy && player === 'other') ? this.enemyPlayer : this.thisPlayer;
+							var targetHand = playerTarget.hands.find(function (hand) { return hand.name === towelTarget });
+							var targetHandPrototype = this.handPrototypes[towelTarget];
+							
+							if (resultOfActions[player].healingToMyTarget > 0 && targetHand.health > 0) {
+								// do not heal above proto's health and can't heal the dead
+								targetHand.health = targetHand.health > targetHandPrototype.health - resultOfActions.myself.healingToMyTarget ? targetHandPrototype.health : targetHand.health + resultOfActions.myself.healingToMyTarget;
+							}
+							if (resultOfActions[player].damageToMyTarget > 0) {
+								targetHand.health -= resultOfActions[player].damageToMyTarget;
+							}
+							if (resultOfActions[player].freezeToMyTarget > 0) {
+								targetHand.freeze += resultOfActions[player].freezeToMyTarget;
+							}
 						}
 					}
 					
