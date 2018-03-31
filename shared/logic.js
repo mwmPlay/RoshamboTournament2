@@ -165,28 +165,44 @@
 				title: 'Towel of impending doom',
 				description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
 				emblemIcon: "fab fa-hotjar",
-				dropOnEnemy: true
+				dropOnEnemy: true,
+				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
+					resultOfActions[thisPlayer].damageToMyTarget = 3;
+				}
 			},
 			unfathomabledarkness: {
 				name: 'unfathomabledarkness',
 				title: 'Towel of unfathomable darkness',
 				description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
 				emblemIcon: "fas fa-adjust",
-				dropOnEnemy: true
+				dropOnEnemy: true,
+				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
+					resultOfActions[thisPlayer].freezeToMyTarget = 2;
+				}
 			},
 			disproportionatebludgeoning: {
 				name: 'disproportionatebludgeoning',
 				title: 'Towel of disproportionate bludgeoning',
 				description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
 				emblemIcon: "fas fa-stop",
-				dropOnEnemy: false
+				dropOnEnemy: false,
+				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
+					// 2 dmg to other, but only if the player did damage to the other
+					if (resultOfActions[thisPlayer].damageToOther > 0) {
+						resultOfActions[thisPlayer].damageToOther += 2;
+					}
+				}
 			},
 			magnificentalleviation: {
 				name: 'magnificentalleviation',
 				title: 'Towel of magnificent alleviation',
 				description: "This towel had aloe vera spilled on it and now it has healing properties.",
 				emblemIcon: "fas fa-heart",
-				dropOnEnemy: false
+				dropOnEnemy: false,
+				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
+					// +2 health
+					resultOfActions[thisPlayer].healingToMyTarget = 2;
+				}
 			}
 		}
 	};

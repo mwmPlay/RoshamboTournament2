@@ -216,37 +216,38 @@ function log(message, socket) {
 					container.scrollTop = container.scrollHeight;
 				});
 			},
-			showDown: function(playedHand, finalHand) { //FinalHand property is needed in order to know what hand should be shown to the player
+			showDown: function(playedHand, finalHand) {
 				if (playedHand.myHandName && playedHand.otherHandName && this.thisUserIsPlaying) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
 					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
 					var myHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myHandName });
 					var otherHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherHandName });
-					var damageToMyself = 0;
-					var damageToOther = 0;
+					var resultOfActions = {
+						myself: {
+							damageToOther: 0,
+							healingToMyTarget: 0,
+							damageToMyTarget: 0,
+							freezeToMyTarget: 0,
+						},
+						other: {
+							damageToOther: 0,
+							healingToMyTarget: 0,
+							damageToMyTarget: 0,
+							freezeToMyTarget: 0,
+						}
+					};
 					
 					// calculate regular card damage
 					if (playedHand.myHandName !== playedHand.otherHandName) {
-						damageToMyself = otherHandPrototype.result[playedHand.myHandName].damage;
-						damageToOther = myHandPrototype.result[playedHand.otherHandName].damage;
+						resultOfActions.myself.damageToOther = myHandPrototype.result[playedHand.otherHandName].damage;
+						resultOfActions.other.damageToOther = otherHandPrototype.result[playedHand.myHandName].damage;
 					}
 					
 					// do my towel
-					if (playedHand.myTowel === 'disproportionatebludgeoning' && damageToOther > 0) {
-						// disproportionatebludgeoning: 2 dmg, but only if there was damage
-						damageToOther += 2;
-					} else if (playedHand.myTowel === 'magnificentalleviation' && playedHand.myTowelTarget) {
-						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
-						var targetHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myTowelTarget });
-						var targetHandPrototype = this.handPrototypes[playedHand.myTowelTarget];
+					if (playedHand.myTowel && playedHand.myTowelTarget) {
+						logic.staticData.towelPrototypes[playedHand.myTowel].doAction(resultOfActions, 'myself', 'other');
 						
-						if (targetHand.health > 0) {
-							targetHand.health = targetHand.health > targetHandPrototype.health - 2 ? targetHandPrototype.health : targetHand.health + 2;
-						}
-					}
-					
-					// remove towel after use
-					if (playedHand.myTowel) {
+						// remove towel after use
 						var towelIndex = this.thisPlayer.towels.findIndex(function(towel) {
 							return towel.name === playedHand.myTowel;
 						});
@@ -254,41 +255,47 @@ function log(message, socket) {
 					}
 					
 					// do other towel
-					if (playedHand.otherTowel === 'disproportionatebludgeoning' && damageToMyself > 0) {
-						// disproportionatebludgeoning: 2 dmg, but only if there was damage
-						damageToMyself += 2;
-					} else if (playedHand.otherTowel === 'magnificentalleviation' && playedHand.otherTowelTarget) {
-						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
+					if (playedHand.otherTowel && playedHand.otherTowelTarget) {
+						logic.staticData.towelPrototypes[playedHand.otherTowel].doAction(resultOfActions, 'other', 'myself');
+						
+						// remove towel after use
+						if (playedHand.otherTowel) {
+							this.enemyPlayer.towels.splice(0, 1);
+						}
+					}
+					
+					// do damage, now that the result of all actions is known
+					myHand.health -= resultOfActions.other.damageToOther;
+					otherHand.health -= resultOfActions.myself.damageToOther;
+					
+					// perform other results (do not heal above proto's health and can't heal the dead)
+					if (resultOfActions.myself.healingToMyTarget > 0) {
+						var targetHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myTowelTarget });
+						var targetHandPrototype = this.handPrototypes[playedHand.myTowelTarget];
+						
+						if (targetHand.health > 0) {
+							targetHand.health = targetHand.health > targetHandPrototype.health - resultOfActions.myself.healingToMyTarget ? targetHandPrototype.health : targetHand.health + resultOfActions.myself.healingToMyTarget;
+						}
+					}
+					if (resultOfActions.other.healingToMyTarget > 0) {
 						var targetHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherTowelTarget });
 						var targetHandPrototype = this.handPrototypes[playedHand.otherTowelTarget];
 						
 						if (targetHand.health > 0) {
-							targetHand.health = targetHand.health > targetHandPrototype.health - 2 ? targetHandPrototype.health : targetHand.health + 2;
+							targetHand.health = targetHand.health > targetHandPrototype.health - resultOfActions.other.healingToMyTarget ? targetHandPrototype.health : targetHand.health + resultOfActions.other.healingToMyTarget;
 						}
 					}
-					
-					// remove towel after use
-					if (playedHand.otherTowel) {
-						this.enemyPlayer.towels.splice(0, 1);
-					}
-					
-					// do damage
-					myHand.health -= damageToMyself;
-					otherHand.health -= damageToOther;
 					
 					// Showdown UI is handled here (only for the final hand, no need to show previous hands again)
 					if(finalHand) {
 						//reset previous values
 						app.showdownUI = {
-							enemyPlayerDamageTaken: 0,
-							thisPlayerDamageTaken: 0,
+							enemyPlayerDamageTaken: -resultOfActions.myself.damageToOther,
+							thisPlayerDamageTaken: -resultOfActions.other.damageToOther,
 							showTowels: false
 						};
 						
-						app.showdownUI.enemyPlayerDamageTaken -= damageToOther;
-						app.showdownUI.thisPlayerDamageTaken -= damageToMyself;
-						
-						var winningHandName = damageToMyself > damageToOther ? otherHandPrototype.name : myHandPrototype.name;
+						var winningHandName = resultOfActions.other.damageToOther > resultOfActions.myself.damageToOther ? otherHandPrototype.name : myHandPrototype.name;
 						soundEffects[winningHandName + 'Sound'].play();
 						
 						setTimeout(function(){
