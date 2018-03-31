@@ -75,8 +75,6 @@ function log(message, socket) {
 			showdownUI: {
 				enemyPlayerDamageTaken: 0,
 				thisPlayerDamageTaken: 0,
-				enemyPlayerTowelDamageTaken: 0,
-				thisPlayerTowelDamageTaken: 0,
 				showTowels: false
 			},
 			gameSettings: {
@@ -227,46 +225,16 @@ function log(message, socket) {
 					var damageToMyself = 0;
 					var damageToOther = 0;
 					
+					// calculate regular card damage
 					if (playedHand.myHandName !== playedHand.otherHandName) {
 						damageToMyself = otherHandPrototype.result[playedHand.myHandName].damage;
 						damageToOther = myHandPrototype.result[playedHand.otherHandName].damage;
-
-						// do damage
-						myHand.health -= damageToMyself;
-						otherHand.health -= damageToOther;
-						
-						// Showdown is handled here
-						if(finalHand) {		
-							//reset previous values
-							app.showdownUI = {
-								enemyPlayerDamageTaken: 0,
-								thisPlayerDamageTaken: 0,
-								enemyPlayerTowelDamageTaken: 0,
-								thisPlayerTowelDamageTaken: 0,
-								showTowels: false
-							};
-
-							app.showdownUI.enemyPlayerDamageTaken -= damageToOther;
-							app.showdownUI.thisPlayerDamageTaken -= damageToMyself;
-
-							var winningHandName = damageToMyself > damageToOther ? otherHandPrototype.name : myHandPrototype.name;
-							soundEffects[winningHandName + 'Sound'].play();
-
-							setTimeout(function(){
-								var sdUI = app.showdownUI;
-								sdUI.showTowels = true;
-								sdUI.enemyPlayerDamageTaken += sdUI.enemyPlayerTowelDamageTaken;
-								sdUI.thisPlayerDamageTaken += sdUI.thisPlayerTowelDamageTaken;
-							}, app.gameSettings.towelShowdownSpeed);
-						}
 					}
 					
 					// do my towel
 					if (playedHand.myTowel === 'disproportionatebludgeoning' && damageToOther > 0) {
 						// disproportionatebludgeoning: 2 dmg, but only if there was damage
-						otherHand.health -= 2;
-
-						app.showdownUI.enemyPlayerTowelDamageTaken -= 2;
+						damageToOther += 2;
 					} else if (playedHand.myTowel === 'magnificentalleviation' && playedHand.myTowelTarget) {
 						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
 						var targetHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myTowelTarget });
@@ -288,9 +256,7 @@ function log(message, socket) {
 					// do other towel
 					if (playedHand.otherTowel === 'disproportionatebludgeoning' && damageToMyself > 0) {
 						// disproportionatebludgeoning: 2 dmg, but only if there was damage
-						myHand.health -= 2;
-
-						app.showdownUI.thisPlayerTowelDamageTaken -= 2;
+						damageToMyself += 2;
 					} else if (playedHand.otherTowel === 'magnificentalleviation' && playedHand.otherTowelTarget) {
 						// magnificentalleviation: 2 health, but not above proto and can't heal the dead
 						var targetHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherTowelTarget });
@@ -304,6 +270,31 @@ function log(message, socket) {
 					// remove towel after use
 					if (playedHand.otherTowel) {
 						this.enemyPlayer.towels.splice(0, 1);
+					}
+					
+					// do damage
+					myHand.health -= damageToMyself;
+					otherHand.health -= damageToOther;
+					
+					// Showdown UI is handled here (only for the final hand, no need to show previous hands again)
+					if(finalHand) {
+						//reset previous values
+						app.showdownUI = {
+							enemyPlayerDamageTaken: 0,
+							thisPlayerDamageTaken: 0,
+							showTowels: false
+						};
+						
+						app.showdownUI.enemyPlayerDamageTaken -= damageToOther;
+						app.showdownUI.thisPlayerDamageTaken -= damageToMyself;
+						
+						var winningHandName = damageToMyself > damageToOther ? otherHandPrototype.name : myHandPrototype.name;
+						soundEffects[winningHandName + 'Sound'].play();
+						
+						setTimeout(function(){
+							var sdUI = app.showdownUI;
+							sdUI.showTowels = true;
+						}, app.gameSettings.towelShowdownSpeed);
 					}
 				}
 			},
