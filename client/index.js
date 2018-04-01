@@ -106,22 +106,22 @@ function log(message, socket) {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHandName : '';
 			},
 			mySelectedTowel: function() {
-				if(this.playedHands.length > 0) {
+				if(this.playedHands.length > 0 && this.playedHands[this.playedHands.length - 1].myTowel) {
 					var towelName = this.playedHands[this.playedHands.length - 1].myTowel;
 				} else {
 					return '';
 				}
-
-				return this.getTowelPrototypeByName(towelName);
+				
+				return logic.staticData.towelPrototypes[towelName];
 			},
 			otherSelectedTowel: function() {
-				if(this.playedHands.length > 0) {
+				if(this.playedHands.length > 0 && this.playedHands[this.playedHands.length - 1].otherTowel) {
 					var towelName = this.playedHands[this.playedHands.length - 1].otherTowel;
 				} else {
 					return '';
 				}
-
-				return this.getTowelPrototypeByName(towelName);
+				
+				return logic.staticData.towelPrototypes[towelName];
 			},
 			otherHasChosen: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
@@ -196,16 +196,6 @@ function log(message, socket) {
 			}
 		},
 		methods: {
-			getTowelPrototypeByName: function(towelName) {
-				for(var towelPrototypeKey in logic.staticData.towelPrototypes) {
-					var towelPrototype = logic.staticData.towelPrototypes[towelPrototypeKey];
-					if(towelPrototype.name === towelName){
-						return towelPrototype;
-					} 
-				}
-
-				return '';
-			},
 			selectedCard: function(cardType){
 				return this.playedHands.length > 0 && this.playedHands[this.playedHands.length - 1].myHandName ===  cardType;
 			},
