@@ -49,6 +49,10 @@
         animation: glow 8s infinite;
     }
 
+    &[is-frozen="true"] {
+        pointer-events: none;
+    }
+
     .title-section {
         height: 30px;
         @include flexCenter;

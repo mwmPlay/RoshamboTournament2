@@ -197,7 +197,7 @@ function log(message, socket) {
 		},
 		methods: {
 			selectedCard: function(cardType){
-				return this.playedHands.length > 0 && this.playedHands[this.playedHands.length - 1].myHandName ===  cardType;
+				return this.playedHands.length > 0 && this.playedHands[this.playedHands.length - 1].myHandName === cardType;
 			},
 			scrollElementDown: function(element){
 				// move the element to the bottom after the DOM has updated
@@ -254,9 +254,13 @@ function log(message, socket) {
 						}
 					}
 					
-					// do damage, now that the result of all actions is known
+					// now that the result of all actions is known, do damage
 					myHand.health -= resultOfActions.other.damageToOther;
 					otherHand.health -= resultOfActions.myself.damageToOther;
+					
+					// and handle freezing and defrosting
+					logic.freezeAndDefrostHands(this.thisPlayer.hands, playedHand.myHandName);
+					logic.freezeAndDefrostHands(this.enemyPlayer.hands, playedHand.otherHandName);
 					
 					// perform other results
 					for (var player in { myself: '', other: '' }) {

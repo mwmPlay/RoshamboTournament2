@@ -177,7 +177,8 @@
 				emblemIcon: "fas fa-adjust",
 				dropOnEnemy: true,
 				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
-					resultOfActions[thisPlayer].freezeToMyTarget = 2;
+					// each round 2 freeze drops off, so 4 freeze is needed for 2 rounds
+					resultOfActions[thisPlayer].freezeToMyTarget = 4;
 				}
 			},
 			disproportionatebludgeoning: {
@@ -259,4 +260,16 @@
 	exports.validateUsername = function(username) {
 		return username && username.length <= 20;
 	};
+	
+	exports.freezeAndDefrostHands = function(hands, playedHandName) {
+		hands.forEach(function(hand) {
+			if (hand.name === playedHandName) {
+				// add 1 freeze to the played hand
+				hand.freeze++;
+			} else if (hand.name !== playedHandName && hand.freeze > 1) {
+				// subtract 2 freeze from hands that weren't played, unless they are at 1 freeze
+				hand.freeze -= 2;
+			}
+		});
+	}
 }(typeof exports === 'undefined' ? this.logic = {} : exports));

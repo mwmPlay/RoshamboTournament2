@@ -593,6 +593,8 @@ svg.small {
     animation: cardDealed 500ms; }
   .hand[is-selected="true"] {
     animation: glow 8s infinite; }
+  .hand[is-frozen="true"] {
+    pointer-events: none; }
   .hand .title-section {
     height: 30px;
     display: flex;
