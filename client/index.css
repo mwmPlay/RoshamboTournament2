@@ -54,6 +54,14 @@
   100% {
     box-shadow: 0 0 40px red; } }
 
+@keyframes maintainedFreezeGlow {
+  0% {
+    box-shadow: 0 0 -10px #fff; }
+  40% {
+    box-shadow: 0 0 40px #fff; }
+  100% {
+    box-shadow: 0 0 40px #fff; } }
+
 @keyframes slideUp {
   from {
     bottom: -180px; }
@@ -594,7 +602,14 @@ svg.small {
   .hand[is-selected="true"] {
     animation: glow 8s infinite; }
   .hand[is-frozen="true"] {
-    pointer-events: none; }
+    pointer-events: none;
+    animation: maintainedFreezeGlow 1s forwards;
+    filter: grayscale(60%); }
+  .hand[appearance="droppable"] {
+    border: 2px dashed #1a18b7; }
+  .hand[appearance="droppableAndHover"] {
+    border: 2px dashed #1a18b7;
+    background: #43afe2; }
   .hand .title-section {
     height: 30px;
     display: flex;
@@ -670,9 +685,10 @@ svg.small {
         font-size: 23px;
         margin-top: 2px; }
     .hand .information-section .freeze {
-      right: 10px; }
+      right: 10px;
+      background: radial-gradient(ellipse at center, #4d5ab9 0%, #4d5ab9 47%, #4d5ab9 47%, #ffffff 47%, #ffffff 48%); }
       .hand .information-section .freeze svg {
-        color: #3232ff;
+        color: #0000ff;
         font-size: 25px; }
   .hand .damage-info {
     position: absolute;
@@ -803,11 +819,13 @@ svg.small {
     padding: 0 20px; }
     .playingField .resultShowdown p {
       text-align: center; }
-  .playingField .thisPlayerShowdown p {
+  .playingField .thisPlayerShowdown > p {
     text-align: center;
+    margin-top: 10px;
     margin-bottom: 10px; }
-  .playingField .enemyPlayerShowdown p {
+  .playingField .enemyPlayerShowdown > p {
     text-align: center;
+    margin-top: 10px;
     margin-bottom: 10px; }
 
 .enemyplayerside,

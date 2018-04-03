@@ -51,6 +51,17 @@
 
     &[is-frozen="true"] {
         pointer-events: none;
+        animation: maintainedFreezeGlow 1s forwards; 
+        filter: grayscale(60%);
+    }
+
+    &[appearance="droppable"] {
+        border: 2px dashed #1a18b7;
+    }
+    
+    &[appearance="droppableAndHover"] {
+        border: 2px dashed #1a18b7;
+        background: #43afe2;
     }
 
     .title-section {
@@ -155,10 +166,11 @@
         }
 
         .freeze {
-            right: 10px;
+            right: 10px;        
+            background: radial-gradient(ellipse at center, #4d5ab9 0%,#4d5ab9 47%,#4d5ab9 47%,#ffffff 47%,#ffffff 48%);
 
             svg {
-                color: #3232ff;
+                color: #0000ff;
                 font-size: 25px;
             }
         }

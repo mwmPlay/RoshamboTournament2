@@ -340,20 +340,53 @@ function log(message, socket) {
 				}
 			},
 			onDragStart: function(event) {
+				var enemyHandsAppearance, thisHandsAppearance;
+
 				// store the type of the towel so it can be moved on drop
 				this.myDraggedTowel = event.target.getAttribute('type');
+
+				if(logic.staticData.towelPrototypes[this.myDraggedTowel].dropOnEnemy) {
+					thisHandsAppearance = 'none';
+					enemyHandsAppearance = 'droppable';
+				} else {
+					thisHandsAppearance = 'droppable';
+					enemyHandsAppearance = 'none';
+				}
+
+				this.enemyPlayer.hands.forEach(function(hand){
+					if(hand.freeze < 2) hand.appearance = enemyHandsAppearance;
+				});
+
+				this.thisPlayer.hands.forEach(function(hand){
+					if(hand.freeze < 2) hand.appearance = thisHandsAppearance;
+				});
 			},
-			onDragOver: function(event, isEnemy) {
+			onDragOver: function(event, isEnemy, hand) {
 				// only allow drop if the towel is for the enemy and we are dropping on the enemy and vice versa
 				if(logic.staticData.towelPrototypes[this.myDraggedTowel].dropOnEnemy === isEnemy) {
+					hand.appearance = 'droppableAndHover';
 					event.preventDefault();
-				}
+				} 
 			},
-			onDrop: function(event) {
+			onDragLeave: function(hand){
+				hand.appearance = 'droppable';
+			},
+			onDragEnd: function(){
+				this.enemyPlayer.hands.forEach(function(hand){
+					hand.appearance = 'none';
+				});
+
+				this.thisPlayer.hands.forEach(function(hand){
+					hand.appearance = 'none';
+				});
+			},
+			onDrop: function(event, hand) {
 				// restore previously used towel
 				if (this.myTowel) {
 					this.addTowelToDeck('thisPlayer', this.myTowel);
 				}
+
+				hand.appearance = 'none';
 				
 				// remove used towel from player
 				var towelIndex = this.thisPlayer.towels.findIndex(function(towel) {
@@ -365,6 +398,14 @@ function log(message, socket) {
 				this.myTowelTarget = event.target.getAttribute('type');
 				this.myTowelEmblemIcon = usedTowel.emblemIcon;
 				this.myTowelOnEnemy = usedTowel.dropOnEnemy;
+
+				this.enemyPlayer.hands.forEach(function(hand){
+					hand.appearance = 'none';
+				});
+
+				this.thisPlayer.hands.forEach(function(hand){
+					hand.appearance = 'none';
+				});
 			},
 			handButtonTooltip: function (hand) {
 				var tooltip = '';

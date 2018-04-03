@@ -38,7 +38,7 @@
 		<div id="playboard">
 			<div class="enemyplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" v-bind:is-frozen="hand.freeze > 1" v-bind:rotate="hand.rotation" v-if="hand.health > 0 && !gameOver" class="hand top" v-for="hand in enemyPlayer.hands" v-on:drop.prevent="onDrop" v-on:dragover="onDragOver($event, true)">
+					<div v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:rotate="hand.rotation" v-if="hand.health > 0 && !gameOver" class="hand top" v-for="hand in enemyPlayer.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand)" v-on:dragover="onDragOver($event, true, hand)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -55,7 +55,7 @@
 								</p>
 							</div>
 							<div class="freeze">
-								<i class="fas fa-snowflake"></i>
+								<i class="fab fa-empire"></i>
 								<p class="specialText">
 									{{hand.freeze/2}}
 								</p>
@@ -227,7 +227,7 @@
 
 			<div class="thisplayerside">
 				<div class="handsdeck">
-					<div v-bind:type="hand.name" v-bind:is-frozen="hand.freeze > 1" v-bind:is-selected="selectedCard(hand.name)" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop" v-on:dragover="onDragOver($event, false)">
+					<div v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:is-selected="selectedCard(hand.name)" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="myHandName !== ''" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand)" v-on:dragover="onDragOver($event, false, hand)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -244,7 +244,7 @@
 								</p>
 							</div>
 							<div class="freeze">
-								<i class="fas fa-snowflake"></i>
+								<i class="fab fa-empire"></i>
 								<p class="specialText">
 									{{hand.freeze/2}}
 								</p>
@@ -272,7 +272,7 @@
 					</div>
 				</div>
 				<div class="spelldeck">
-					<div class="towel" v-if="!gameOver" v-for="(towel, towelIndex) in thisPlayer.towels" v-bind:type="towel.name"  v-bind:id="'towel'+towelIndex" draggable="true" v-on:dragstart="onDragStart">
+					<div class="towel" v-if="!gameOver" v-for="(towel, towelIndex) in thisPlayer.towels" v-bind:type="towel.name"  v-bind:id="'towel'+towelIndex" draggable="true" v-on:dragstart="onDragStart"  v-on:dragend="onDragEnd">
 						<div class="towel-twirl-left">
 
 						</div>

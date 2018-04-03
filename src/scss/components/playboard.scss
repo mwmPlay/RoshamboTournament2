@@ -82,15 +82,17 @@
 	}
 
 	.thisPlayerShowdown {
-		p {
-			text-align: center;
+		> p {
+			text-align: center;    
+			margin-top: 10px;
 			margin-bottom: 10px;
 		}
 	}
 
 	.enemyPlayerShowdown {
-		p {
-			text-align: center;
+		> p {
+			text-align: center;    
+			margin-top: 10px;
 			margin-bottom: 10px;
 		}
 	}

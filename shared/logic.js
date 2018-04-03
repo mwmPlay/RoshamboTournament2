@@ -7,6 +7,7 @@
 				name: 'rock',
 				health: 7,
 				freeze: 0,
+				appearance: 'none',
 				result: {
 					paper: {
 						name: 'paper',
@@ -38,6 +39,7 @@
 				name: 'paper',
 				health: 5,
 				freeze: 0,
+				appearance: 'none',
 				result: {
 					rock: {
 						name: 'rock',
@@ -69,6 +71,7 @@
 				name: 'scissors',
 				health: 5,
 				freeze: 0,
+				appearance: 'none',
 				result: {
 					rock: {
 						name: 'rock',
@@ -100,6 +103,7 @@
 				name: 'lizard',
 				health: 5,
 				freeze: 0,
+				appearance: 'none',
 				result: {
 					rock: {
 						name: 'rock',
@@ -131,6 +135,7 @@
 				name: 'spock',
 				health: 5,
 				freeze: 0,
+				appearance: 'none',
 				result: {
 					rock: {
 						name: 'rock',
