@@ -203,6 +203,14 @@ function log(message, socket) {
 			},
 			chatMessages: function() {
 				this.scrollElementDown('.chat-messages');
+			},
+			'ui.promptMessage': function(newValue) {
+				if (newValue != '') {
+					Vue.nextTick(function() {
+						var input = app.$el.querySelector('#username');
+						input.focus();
+					});
+				}
 			}
 		},
 		methods: {
