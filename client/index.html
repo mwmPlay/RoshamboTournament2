@@ -135,31 +135,31 @@
 									</div>
 								</div>
 							</div>
-						</div>	
-						<div id="myTowel">
-							<div class="towel showInner" v-if="mySelectedTowel != '' && showdownUI.showTowels" v-bind:type="mySelectedTowel.name">
-								<div class="towel-twirl-left">
-		
-								</div>
-								<div class="towel-twirl-right">
-		
-								</div>
-								<div class="towel-start">
-		
-								</div>
-								<div class="emblem">
-									<i v-bind:class="mySelectedTowel.emblemIcon"></i>
-								</div>
-								<div class="explanation">
-									<h4>
-										{{mySelectedTowel.title}}
-									</h4>
-									<p>
-										{{mySelectedTowel.description}}
-									</p>
+							<div id="myTowel">
+								<div class="towel showInner" v-if="mySelectedTowel != '' && showdownUI.showTowels === 'self'" v-bind:type="mySelectedTowel.name">
+									<div class="towel-twirl-left">
+			
+									</div>
+									<div class="towel-twirl-right">
+			
+									</div>
+									<div class="towel-start">
+			
+									</div>
+									<div class="emblem">
+										<i v-bind:class="mySelectedTowel.emblemIcon"></i>
+									</div>
+									<div class="explanation">
+										<h4>
+											{{mySelectedTowel.title}}
+										</h4>
+										<p>
+											{{mySelectedTowel.description}}
+										</p>
+									</div>
 								</div>
 							</div>
-						</div>
+						</div>	
 					</div>
 					<div class="resultShowdown">
 						<p class="specialText">
@@ -167,7 +167,7 @@
 						</p>
 						<div class="showdown-box">
 							<p class="specialText" id="handResult">
-								{{handResult(myHandName, otherHandName)}}
+								{{showdownUI.showdownMessage}}
 							</p>
 							<p  class="specialText" v-if="otherHasChosen && otherHandName === '' && thisUserIsPlaying">The other player has chosen a hand, it will be shown once you choose your hand</p>
 							<p  class="specialText" v-if="otherHasChosen && otherHandName === '' && !thisUserIsPlaying">One player has chosen a hand, it will be shown once the other player has chosen as well</p>
@@ -197,7 +197,7 @@
 								</div>	
 							</div>
 							<div id="otherTowel">
-								<div class="towel showInner" v-if="otherSelectedTowel != '' && showdownUI.showTowels" v-bind:type="otherSelectedTowel.name">
+								<div class="towel showInner" v-if="otherSelectedTowel != '' && showdownUI.showTowels !== 'none'" v-bind:type="otherSelectedTowel.name">
 									<div class="towel-twirl-left">
 			
 									</div>
@@ -426,4 +426,17 @@
 </audio>
 <audio controls preload="auto" id="newmessage-sound">
 	<source src="media/newmessagesound.mp3" type="audio/mpeg">
+</audio>
+
+<audio controls preload="auto" id="disproportionatebludgeoning-sound">
+	<source src="media/disproportionatebludgeoning.mp3" type="audio/mpeg">
+</audio>
+<audio controls preload="auto" id="impendingdoom-sound">
+	<source src="media/impendingdoom.mp3" type="audio/mpeg">
+</audio>
+<audio controls preload="auto" id="magnificentalleviation-sound">
+	<source src="media/magnificentalleviation.mp3" type="audio/mpeg">
+</audio>
+<audio controls preload="auto" id="unfathomabledarkness-sound">
+	<source src="media/unfathomabledarkness.mp3" type="audio/mpeg">
 </audio>

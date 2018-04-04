@@ -170,6 +170,7 @@
 				title: 'Towel of impending doom',
 				description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
 				emblemIcon: "fab fa-hotjar",
+				descriptionInAction: "to receive three extra damage.",
 				dropOnEnemy: true,
 				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
 					resultOfActions[thisPlayer].damageToMyTarget = 3;
@@ -180,6 +181,7 @@
 				title: 'Towel of unfathomable darkness',
 				description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
 				emblemIcon: "fas fa-adjust",
+				descriptionInAction: "to be frozen for three rounds.",
 				dropOnEnemy: true,
 				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
 					// each round 2 freeze drops off, so 4 freeze is needed for 2 rounds
@@ -191,6 +193,7 @@
 				title: 'Towel of disproportionate bludgeoning',
 				description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
 				emblemIcon: "fas fa-stop",
+				descriptionInAction: "to do 2 extra damage.",
 				dropOnEnemy: false,
 				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
 					// 2 dmg to other, but only if the player did damage to the other
@@ -204,6 +207,7 @@
 				title: 'Towel of magnificent alleviation',
 				description: "This towel had aloe vera spilled on it and now it has healing properties.",
 				emblemIcon: "fas fa-heart",
+				descriptionInAction: "to be healed by 2 HP.",
 				dropOnEnemy: false,
 				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
 					// +2 health

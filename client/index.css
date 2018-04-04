@@ -1482,9 +1482,10 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
   background-size: 5px 10px; }
   .towel:hover {
     transform: scale(1.1); }
-  .towel:active, .towel.showInner {
-    height: 120px;
+  .towel:active {
     animation: glow 8s infinite; }
+  .towel:active, .towel.showInner {
+    height: 120px; }
     .towel:active .towel-start, .towel.showInner .towel-start {
       top: 0; }
     .towel:active .towel-twirl-right, .towel.showInner .towel-twirl-right {
@@ -1597,7 +1598,7 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
   z-index: 3;
   position: absolute;
   top: 40px;
-  left: -150px; }
+  left: -170px; }
 
 .playingField #otherTowel {
   z-index: 3;

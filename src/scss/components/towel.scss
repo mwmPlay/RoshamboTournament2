@@ -1,4 +1,4 @@
-@mixin towerStyling {
+@mixin towelStyling {
     background: #fff;
   //   background: linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0, linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0, linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px, linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px, #a0a0a0;
     background-size: 5px 10px;
@@ -11,18 +11,20 @@
     border: 3px solid #333;
     position: relative;
     transition: all .6s;
-
     @include flexCenter;
-    @include towerStyling;
+    @include towelStyling;
 
     &:hover {
         transform: scale(1.1);
     }
 
+    &:active {
+        animation: glow 8s infinite;
+    }
+
     &:active,
     &.showInner {
         height: 120px;
-        animation: glow 8s infinite;
 
         .towel-start {
             top: 0;
@@ -96,7 +98,7 @@
     }
 
     .towel-twirl-left {
-        @include towerStyling;
+        @include towelStyling;
         width: 30px;
         height: 40px;
         display: flex;
@@ -111,7 +113,7 @@
     }
 
     .towel-twirl-right {
-        @include towerStyling;
+        @include towelStyling;
         width: 30px;
         height: 40px;
         display: flex;
@@ -143,7 +145,7 @@
         border-bottom: 3px solid #333;
         border-bottom-left-radius: 50%;
         border-bottom-right-radius: 50%;
-        @include towerStyling;
+        @include towelStyling;
     } 
 
     &:after {
@@ -154,8 +156,8 @@
         position: absolute;
         border-top: 3px solid #333;
         border-top-left-radius: 50%;
-        border-top-right-radius: 50%;
-        @include towerStyling;
+        border-top-right-radius: 50%; 
+        @include towelStyling;
     }
 }
 
@@ -163,7 +165,7 @@
     z-index: 3;
     position: absolute;
     top: 40px;
-    left: -150px;
+    left: -170px; 
 }
 
 .playingField #otherTowel {

@@ -14,15 +14,24 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	var newMessage = document.getElementById("newmessage-sound");
 	soundEffects.newMessage = newMessage;
 	var scissorsSound = document.getElementById("scissors-sound");
-	soundEffects.scissorsSound = scissorsSound;
+	soundEffects.scissors = scissorsSound;
 	var rockSound = document.getElementById("rock-sound");
-	soundEffects.rockSound = rockSound;
+	soundEffects.rock = rockSound;
 	var paperSound = document.getElementById("paper-sound");
-	soundEffects.paperSound = paperSound;
+	soundEffects.paper = paperSound;
 	var spockSound = document.getElementById("spock-sound");
-	soundEffects.spockSound = spockSound;
+	soundEffects.spock = spockSound;
 	var lizardSound = document.getElementById("lizard-sound");
-	soundEffects.lizardSound = lizardSound;
+	soundEffects.lizard = lizardSound;
+
+	var disproportionatebludgeoningSound = document.getElementById("disproportionatebludgeoning-sound");
+	soundEffects.disproportionatebludgeoning = disproportionatebludgeoningSound;
+	var impendingdoomSound = document.getElementById("impendingdoom-sound");
+	soundEffects.impendingdoom = impendingdoomSound;
+	var magnificentalleviationSound = document.getElementById("magnificentalleviation-sound");
+	soundEffects.magnificentalleviation = magnificentalleviationSound;
+	var unfathomabledarknessSound = document.getElementById("unfathomabledarkness-sound");
+	soundEffects.unfathomabledarkness = unfathomabledarknessSound;
 
 	//backgroundMusic.play(); // << turn off while developing to prevent suicide
 });
@@ -75,10 +84,11 @@ function log(message, socket) {
 			showdownUI: {
 				enemyPlayerDamageTaken: 0,
 				thisPlayerDamageTaken: 0,
-				showTowels: false
+				showTowels: 'none',
+				showdownMessage: ''
 			},
 			gameSettings: {
-				towelShowdownSpeed: 2500
+				towelShowdownSpeed: 3000
 			},
 			playedHands: [],
 			username: '',
@@ -207,6 +217,8 @@ function log(message, socket) {
 				});
 			},
 			showDown: function(playedHand, finalHand) {
+				var _this = this;
+
 				if (playedHand.myHandName && playedHand.otherHandName && this.thisUserIsPlaying) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
 					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
@@ -287,20 +299,33 @@ function log(message, socket) {
 					
 					// Showdown UI is handled here (only for the final hand, no need to show previous hands again)
 					if(finalHand) {
+						var lastHand = this.playedHands[this.playedHands.length - 1];
+
 						//reset previous values
 						app.showdownUI = {
 							enemyPlayerDamageTaken: -resultOfActions.myself.damageToOther,
 							thisPlayerDamageTaken: -resultOfActions.other.damageToOther,
-							showTowels: false
+							showTowels: 'none'
 						};
+
+						app.showdownUI.showdownMessage = _this.handResult(
+															lastHand.otherHandName, 
+															lastHand.myHandName);
 						
 						var winningHandName = resultOfActions.other.damageToOther > resultOfActions.myself.damageToOther ? otherHandPrototype.name : myHandPrototype.name;
-						soundEffects[winningHandName + 'Sound'].play();
+						soundEffects[winningHandName].play();
 						
 						setTimeout(function(){
-							var sdUI = app.showdownUI;
-							sdUI.showTowels = true;
+							app.showdownUI.showdownMessage = _this.player2Name + ' uses ' + lastHand.otherTowel + ' causing ' + lastHand.otherTowelTarget + ' ' + lastHand.descriptionInAction;
+							app.showdownUI.showTowels = 'enemy';
+							soundEffects[lastHand.otherTowel].play();
 						}, app.gameSettings.towelShowdownSpeed);
+
+						setTimeout(function(){
+							app.showdownUI.showdownMessage = _this.player1Name + ' uses ' + lastHand.myTowel + ' causing ' + lastHand.myTowelTarget + ' ' + lastHand.descriptionInAction;
+							app.showdownUI.showTowels = 'self';
+							soundEffects[lastHand.myTowel].play();
+						}, app.gameSettings.towelShowdownSpeed * 2);
 					}
 				}
 			},
