@@ -233,6 +233,12 @@
 		playedHands[playedHands.length - 1][key] = value;
 	};
 	
+	exports.surrender = function(player) {
+		// discard all hands and towels
+		player.hands.splice(0);
+		player.towels.splice(0);
+	}
+	
 	exports.savePlayerNamesToSession = function(session, player1Name, player2Name) {
 		if (session.username === player2Name) {
 			// player 2 sees things upside down
@@ -256,8 +262,9 @@
 	};
 	
 	exports.clearSession = function(session) {
+		session.surrendered = '';
 		session.playedHands.splice(0);
-		session.towels.splice(0);
+		this.repos.initialTowels.splice(0);
 		session.player1Name = '';
 		session.player2Name = '';
 	};

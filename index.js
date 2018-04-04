@@ -99,6 +99,7 @@ io.on('connection', function(socket) {
 				otherUsers: [],
 				player1Name: player1 && player2 ? player1.username : '',
 				player2Name: player1 && player2 ? player2.username : '',
+				surrendered: '',
 				towels: []
 			};
 			
@@ -214,6 +215,18 @@ io.on('connection', function(socket) {
 		} else {
 			socket.broadcast.emit('handChosen', playedHand.username);
 		}
+	});
+	
+	socket.on('surrender', function() {
+		log('surrender', socket);
+		var session = sessionsBySocketId[socket.id];
+		
+		for (existingUsername in sessionsByUsername) {
+			sessionsByUsername[existingUsername].surrendered = session.username;
+		}
+		
+		// let everyone else know
+		socket.broadcast.emit('surrender', session.username);
 	});
 	
 	socket.on('endGame', function() {

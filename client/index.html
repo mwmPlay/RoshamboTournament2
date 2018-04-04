@@ -301,6 +301,9 @@
 			<div class="toolbar">
 				<div class="controls">
 					<!-- <a href="#" data-icon="♚" type="button" v-if="!gameInProgress" class="button orange shield glossy">New Tournament</a> -->
+					<a href="#" data-icon="♚" type="button" v-if="thisUserIsPlaying && gameInProgress && !gameOver" class="button orange shield glossy" @click="surrender">
+						Surrender
+					</a>
 					<a href="#" data-icon="♚" type="button" v-if="thisUserIsPlaying && gameInProgress && gameOver" class="button orange shield glossy" @click="endGame">
 						End Game
 					</a>

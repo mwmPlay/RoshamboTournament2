@@ -81,6 +81,7 @@ function log(message, socket) {
 				towelShowdownSpeed: 2500
 			},
 			playedHands: [],
+			surrendered: '',
 			username: '',
 			challengedBy: '',
 			player1Name: '',
@@ -201,6 +202,13 @@ function log(message, socket) {
 						input.focus();
 					});
 				}
+			},
+			surrendered: function(newValue) {
+				if (this.player1Name === newValue) {
+					logic.surrender(this.thisPlayer);
+				} else if (this.player2Name === newValue) {
+					logic.surrender(this.enemyPlayer);
+				}
 			}
 		},
 		methods: {
@@ -317,6 +325,10 @@ function log(message, socket) {
 				this.clearGameData();
 				// send to server to do the same
 				socket.emit('endGame');
+			},
+			surrender: function() {
+				this.surrendered = this.player1Name;
+				socket.emit('surrender');
 			},
 			toggleMusic: function(){
 				app.ui.musicOn = !app.ui.musicOn;
@@ -515,6 +527,8 @@ function log(message, socket) {
 					app.playedHands.push(playedHand);
 				});
 				
+				this.surrendered = session.surrendered;
+				
 				session.otherUsers.forEach(function(otherUser) {
 					app.otherUsers.push(otherUser);
 				});
@@ -684,6 +698,11 @@ function log(message, socket) {
 		// draw it all
 		app.drawHands();
 		app.drawTowels();
+	});
+	
+	socket.on('surrender', function(username) {
+		log('surrender by: ' + username, socket);
+		app.surrendered = username;
 	});
 	
 	socket.on('gameEnded', function() {
