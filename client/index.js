@@ -233,8 +233,6 @@ function log(message, socket) {
 				});
 			},
 			showDown: function(playedHand, finalHand) {
-				var _this = this;
-
 				if (playedHand.myHandName && playedHand.otherHandName && this.thisUserIsPlaying) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
 					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
@@ -324,7 +322,7 @@ function log(message, socket) {
 							showTowels: 'none'
 						};
 
-						app.showdownUI.showdownMessage = _this.handResult(
+						app.showdownUI.showdownMessage = app.handResult(
 															lastHand.otherHandName, 
 															lastHand.myHandName);
 						
@@ -332,13 +330,13 @@ function log(message, socket) {
 						soundEffects[winningHandName].play();
 						
 						setTimeout(function(){
-							app.showdownUI.showdownMessage = _this.player2Name + ' uses ' + lastHand.otherTowel + ' causing ' + lastHand.otherTowelTarget + ' ' + lastHand.descriptionInAction;
+							app.showdownUI.showdownMessage = app.player2Name + ' uses ' + lastHand.otherTowel + ' causing ' + lastHand.otherTowelTarget + ' ' + lastHand.descriptionInAction;
 							app.showdownUI.showTowels = 'enemy';
 							soundEffects[lastHand.otherTowel].play();
 						}, app.gameSettings.towelShowdownSpeed);
 
 						setTimeout(function(){
-							app.showdownUI.showdownMessage = _this.player1Name + ' uses ' + lastHand.myTowel + ' causing ' + lastHand.myTowelTarget + ' ' + lastHand.descriptionInAction;
+							app.showdownUI.showdownMessage = app.player1Name + ' uses ' + lastHand.myTowel + ' causing ' + lastHand.myTowelTarget + ' ' + lastHand.descriptionInAction;
 							app.showdownUI.showTowels = 'self';
 							soundEffects[lastHand.myTowel].play();
 						}, app.gameSettings.towelShowdownSpeed * 2);
@@ -585,17 +583,16 @@ function log(message, socket) {
 				}
 				
 				var i = 3;
-				var _this = this;
 				var dealCardInterval = 300;
 				
 				soundEffects.shuffling.play();
 				
 				for (var handKey in this.handPrototypes) {
 					if (immediate) {
-						_this.addHandToDeck('enemyPlayer', handKey);
+						app.addHandToDeck('enemyPlayer', handKey);
 					} else {
 						setTimeout(function(handKey) {
-							_this.addHandToDeck('enemyPlayer', handKey);
+							app.addHandToDeck('enemyPlayer', handKey);
 						},
 						i*dealCardInterval,
 						handKey);
@@ -606,10 +603,10 @@ function log(message, socket) {
 				
 				for (var handKey in this.handPrototypes) {
 					if (immediate) {
-						_this.addHandToDeck('thisPlayer', handKey);
+						app.addHandToDeck('thisPlayer', handKey);
 					} else {
 						setTimeout(function(handKey) {
-							_this.addHandToDeck('thisPlayer', handKey);
+							app.addHandToDeck('thisPlayer', handKey);
 						}, 
 						i*dealCardInterval,
 						handKey);
