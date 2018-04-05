@@ -10,7 +10,7 @@
 
 <body>
 	<div id="rps">
-		<div class="popup" v-if="ui.messageToUser != ''">
+		<div class="popup" v-if="ui.messageToUser !== ''">
 			<div class="prompt">
 				<div class="message">
 					<p class="specialText">{{ui.messageToUser}}</p>
@@ -20,7 +20,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="popup" v-if="ui.promptMessage != ''">
+		<div class="popup" v-if="ui.promptMessage !== ''">
 			<div class="prompt">
 				<div class="message">
 					<p class="specialText">{{ui.promptMessage}}</p>
@@ -34,7 +34,17 @@
 				</div>
 			</div>
 		</div>
-
+		<div class="popup" v-if="winMessage !== ''">
+			<div class="prompt">
+				<div class="message">
+					<p class="specialText">{{winMessage}}</p>
+				</div>
+				<div class="buttons" v-if="thisUserIsPlaying">
+					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="endGame">End Game</a>
+				</div>
+			</div>
+		</div>
+		
 		<div id="playboard">
 			<div class="enemyplayerside">
 				<div class="handsdeck">
@@ -303,9 +313,6 @@
 					<!-- <a href="#" data-icon="♚" type="button" v-if="!gameInProgress" class="button orange shield glossy">New Tournament</a> -->
 					<a href="#" data-icon="♚" type="button" v-if="thisUserIsPlaying && gameInProgress && !gameOver" class="button orange shield glossy" @click="surrender">
 						Surrender
-					</a>
-					<a href="#" data-icon="♚" type="button" v-if="thisUserIsPlaying && gameInProgress && gameOver" class="button orange shield glossy" @click="endGame">
-						End Game
 					</a>
 					<a href="#" data-icon="♚" type="button" class="button orange shield glossy" @click="toggleMusic()">
 						Music

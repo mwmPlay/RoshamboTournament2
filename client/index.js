@@ -138,10 +138,23 @@ function log(message, socket) {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
 			},
 			gameInProgress: function() {
-				return this.player1Name && this.player2Name;
+				return !(!this.player1Name || !this.player2Name);
 			},
-			gameOver: function() {
-				var result = true;
+			player1Lost: function() {
+				var result = this.gameInProgress;
+				
+				for (var i = 0; i < this.thisPlayer.hands.length; i++) {
+					if (this.thisPlayer.hands[i].health > 0) {
+						result = false;
+						break;
+					}
+				}
+				
+				// this player cannot play anymore, we're done
+				return result;
+			},
+			player2Lost: function() {
+				var result = this.gameInProgress;
 				
 				for (var i = 0; i < this.enemyPlayer.hands.length; i++) {
 					if (this.enemyPlayer.hands[i].health > 0) {
@@ -150,18 +163,21 @@ function log(message, socket) {
 					}
 				}
 				
-				// enemy cannot play anymore, we're done
-				if (result) {
-					return result;
-				}
+				// enemy player cannot play anymore, we're done
+				return result;
+			},
+			gameOver: function() {
+				return this.player1Lost || this.player2Lost;
+			},
+			winMessage: function() {
+				var result = "";
 				
-				// reset and check if this player can still play
-				result = true;
-				
-				for (var i = 0; i < this.thisPlayer.hands.length; i++) {
-					if (this.thisPlayer.hands[i].health > 0) {
-						result = false;
-						break;
+				if (this.gameOver) {
+					var winner = this.player1Lost ? this.player2Name : this.player1Name;
+					result = winner + " wins!";
+					
+					if (this.surrendered) {
+						result += " " + this.surrendered + " has surrendered!";
 					}
 				}
 				
@@ -314,32 +330,34 @@ function log(message, socket) {
 					// Showdown UI is handled here (only for the final hand, no need to show previous hands again)
 					if(finalHand) {
 						var lastHand = this.playedHands[this.playedHands.length - 1];
-
+						
 						//reset previous values
 						app.showdownUI = {
 							enemyPlayerDamageTaken: -resultOfActions.myself.damageToOther,
 							thisPlayerDamageTaken: -resultOfActions.other.damageToOther,
 							showTowels: 'none'
 						};
-
-						app.showdownUI.showdownMessage = app.handResult(
-															lastHand.otherHandName, 
-															lastHand.myHandName);
+						
+						app.showdownUI.showdownMessage = app.handResult(lastHand.otherHandName, lastHand.myHandName);
 						
 						var winningHandName = resultOfActions.other.damageToOther > resultOfActions.myself.damageToOther ? otherHandPrototype.name : myHandPrototype.name;
 						soundEffects[winningHandName].play();
 						
-						setTimeout(function(){
-							app.showdownUI.showdownMessage = app.player2Name + ' uses ' + lastHand.otherTowel + ' causing ' + lastHand.otherTowelTarget + ' ' + lastHand.descriptionInAction;
-							app.showdownUI.showTowels = 'enemy';
-							soundEffects[lastHand.otherTowel].play();
-						}, app.gameSettings.towelShowdownSpeed);
-
-						setTimeout(function(){
-							app.showdownUI.showdownMessage = app.player1Name + ' uses ' + lastHand.myTowel + ' causing ' + lastHand.myTowelTarget + ' ' + lastHand.descriptionInAction;
-							app.showdownUI.showTowels = 'self';
-							soundEffects[lastHand.myTowel].play();
-						}, app.gameSettings.towelShowdownSpeed * 2);
+						if (lastHand.otherTowel) {
+							setTimeout(function(){
+								app.showdownUI.showdownMessage = app.player2Name + ' uses ' + lastHand.otherTowel + ' causing ' + lastHand.otherTowelTarget + ' ' + lastHand.descriptionInAction;
+								app.showdownUI.showTowels = 'enemy';
+								soundEffects[lastHand.otherTowel].play();
+							}, app.gameSettings.towelShowdownSpeed);
+						}
+						
+						if (lastHand.myTowel) {
+							setTimeout(function(){
+								app.showdownUI.showdownMessage = app.player1Name + ' uses ' + lastHand.myTowel + ' causing ' + lastHand.myTowelTarget + ' ' + lastHand.descriptionInAction;
+								app.showdownUI.showTowels = 'self';
+								soundEffects[lastHand.myTowel].play();
+							}, app.gameSettings.towelShowdownSpeed * 2);
+						}
 					}
 				}
 			},
