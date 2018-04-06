@@ -605,6 +605,8 @@ svg.small {
     pointer-events: none;
     animation: maintainedFreezeGlow 1s forwards;
     filter: grayscale(60%); }
+  .hand[disabled="disabled"] {
+    pointer-events: none; }
   .hand[appearance="droppable"] {
     border: 2px dashed #1a18b7; }
   .hand[appearance="droppableAndHover"] {

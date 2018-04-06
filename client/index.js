@@ -167,7 +167,7 @@ function log(message, socket) {
 				return result;
 			},
 			gameOver: function() {
-				return this.player1Lost || this.player2Lost;
+				return this.player1Lost !== this.player2Lost;
 			},
 			winMessage: function() {
 				var result = "";
@@ -249,7 +249,7 @@ function log(message, socket) {
 				});
 			},
 			showDown: function(playedHand, finalHand) {
-				if (playedHand.myHandName && playedHand.otherHandName && this.thisUserIsPlaying) {
+				if (playedHand.myHandName && playedHand.otherHandName) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
 					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
 					var myHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myHandName });
@@ -557,49 +557,40 @@ function log(message, socket) {
 				this.player1Name = session.player1Name;
 				this.player2Name = session.player2Name;
 				
-				session.towels.forEach(function(towel) {
-					logic.repos.initialTowels.push(towel);
-				});
-				
-				this.drawHands(true);
-				this.drawTowels();
-				
-				session.playedHands.forEach(function(playedHand) {
-					app.playedHands.push(playedHand);
-				});
-				
-				this.surrendered = session.surrendered;
+				if (this.gameInProgress) {
+					session.towels.forEach(function(towel) {
+						logic.repos.initialTowels.push(towel);
+					});
+					
+					this.drawHands(true);
+					this.drawTowels();
+					
+					session.playedHands.forEach(function(playedHand) {
+						app.playedHands.push(playedHand);
+					});
+					
+					this.surrendered = session.surrendered;
+				}
 				
 				session.otherUsers.forEach(function(otherUser) {
 					app.otherUsers.push(otherUser);
 				});
 			},
 			drawTowels: function(){
-				if (!this.thisUserIsPlaying) {
-					// only draw towels if I am actually playing
-					return;
-				}
-				
-				for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
-					app.addTowelToDeck('thisPlayer', logic.repos.initialTowels[i]);
+				if (this.thisUserIsPlaying) {
+					// only draw my towels if I am actually playing
+					for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
+						app.addTowelToDeck('thisPlayer', logic.repos.initialTowels[i]);
+					}
+				} else {
+					// otherwise draw mock towels
+					logic.addMockTowels(this.thisPlayer.towels);
 				}
 				
 				// draw mock towels for the enemy
-				for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
-					this.enemyPlayer.towels.push({
-						name: 'unknown',
-						title: 'Unknown towel',
-						description: "This towel's identity is secret.",
-						emblemIcon: "fas fa-question"
-					});
-				}
+				logic.addMockTowels(this.enemyPlayer.towels);
 			},
 			drawHands: function(immediate){
-				if (!this.thisUserIsPlaying) {
-					// only draw hands if I am actually playing
-					return;
-				}
-				
 				var i = 3;
 				var dealCardInterval = 300;
 				
@@ -726,14 +717,16 @@ function log(message, socket) {
 		logic.repos.initialTowels.splice(0);
 		app.challengedBy = '';
 		
-		// randomly pick from available towels
-		for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
-			var randomTowel = pickRandomProperty(logic.staticData.towelPrototypes);
-			logic.repos.initialTowels.push(randomTowel);
+		if (app.thisUserIsPlaying) {
+			// randomly pick from available towels
+			for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
+				var randomTowel = pickRandomProperty(logic.staticData.towelPrototypes);
+				logic.repos.initialTowels.push(randomTowel);
+			}
+			
+			// and let server know that
+			socket.emit('towelsChosen', JSON.stringify(logic.repos.initialTowels));
 		}
-		
-		// and let server know that
-		socket.emit('towelsChosen', JSON.stringify(logic.repos.initialTowels));
 		
 		// draw it all
 		app.drawHands();

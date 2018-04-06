@@ -55,6 +55,10 @@
         filter: grayscale(60%);
     }
 
+    &[disabled="disabled"] {
+        pointer-events: none;
+    }
+
     &[appearance="droppable"] {
         border: 2px dashed #1a18b7;
     }

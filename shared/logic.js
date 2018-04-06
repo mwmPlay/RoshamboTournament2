@@ -241,7 +241,7 @@
 		// discard all hands and towels
 		player.hands.splice(0);
 		player.towels.splice(0);
-	}
+	};
 	
 	exports.savePlayerNamesToSession = function(session, player1Name, player2Name) {
 		if (session.username === player2Name) {
@@ -287,5 +287,16 @@
 				hand.freeze -= 2;
 			}
 		});
-	}
+	};
+	
+	exports.addMockTowels = function(towels) {
+		for (var i = 0; i < this.staticData.initialTowelAmount; i++) {
+			towels.push({
+				name: 'unknown',
+				title: 'Unknown towel',
+				description: "This towel's identity is secret.",
+				emblemIcon: "fas fa-question"
+			});
+		}
+	};
 }(typeof exports === 'undefined' ? this.logic = {} : exports));
