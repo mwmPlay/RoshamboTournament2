@@ -27,7 +27,7 @@
 				</div>
 				<div class="inputs">
 					<p class="specialText">Your name is: {{ui.pickedUserName}}</p>
-					<input v-model="ui.pickedUserName" type="text" id="username" />
+					<input v-model="ui.pickedUserName" type="text" id="username" @keyup.enter="userPickedAName()" />
 				</div>
 				<div class="buttons">
 					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="userPickedAName()">Okay</a>
