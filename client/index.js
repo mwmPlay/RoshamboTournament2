@@ -592,6 +592,7 @@ function log(message, socket) {
 				// draw mock towels for the enemy
 				logic.addMockTowels(this.enemyPlayer.towels);
 			},
+			// TODO: we need to separate the drawn hands from the actual hands? otherwise a delay causes all kinds of issues
 			drawHands: function(immediate){
 				var i = 3;
 				var dealCardInterval = 300;
@@ -731,7 +732,7 @@ function log(message, socket) {
 		}
 		
 		// draw it all
-		app.drawHands();
+		app.drawHands(true);
 		app.drawTowels();
 	});
 	
