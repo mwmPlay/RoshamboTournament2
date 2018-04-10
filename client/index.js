@@ -344,16 +344,18 @@ function log(message, socket) {
 						soundEffects[winningHandName].play();
 						
 						if (lastHand.otherTowel) {
-							setTimeout(function(){
-								app.showdownUI.showdownMessage = app.player2Name + ' uses ' + lastHand.otherTowel + ' causing ' + lastHand.otherTowelTarget + ' ' + lastHand.descriptionInAction;
+							setTimeout(function() {
+								var towelPrototype = logic.staticData.towelPrototypes[lastHand.otherTowel];
+								app.showdownUI.showdownMessage = app.player2Name + ' uses ' + lastHand.otherTowel + ' causing ' + lastHand.otherTowelTarget + ' ' + towelPrototype.descriptionInAction;
 								app.showdownUI.showTowels = 'enemy';
 								soundEffects[lastHand.otherTowel].play();
 							}, app.gameSettings.towelShowdownSpeed);
 						}
 						
 						if (lastHand.myTowel) {
-							setTimeout(function(){
-								app.showdownUI.showdownMessage = app.player1Name + ' uses ' + lastHand.myTowel + ' causing ' + lastHand.myTowelTarget + ' ' + lastHand.descriptionInAction;
+							setTimeout(function() {
+								var towelPrototype = logic.staticData.towelPrototypes[lastHand.myTowel];
+								app.showdownUI.showdownMessage = app.player1Name + ' uses ' + lastHand.myTowel + ' causing ' + lastHand.myTowelTarget + ' ' + towelPrototype.descriptionInAction;
 								app.showdownUI.showTowels = 'self';
 								soundEffects[lastHand.myTowel].play();
 							}, app.gameSettings.towelShowdownSpeed * 2);
