@@ -429,8 +429,10 @@ function log(message, socket) {
 					event.preventDefault();
 				} 
 			},
-			onDragLeave: function(hand){
-				hand.appearance = 'droppable';
+			onDragLeave: function(hand, isEnemy){
+				if(logic.staticData.towelPrototypes[this.myDraggedTowel].dropOnEnemy === isEnemy) {
+					hand.appearance = 'droppable';
+				}
 			},
 			onDragEnd: function(){
 				this.enemyPlayer.hands.forEach(function(hand){

@@ -741,7 +741,7 @@ svg.small {
     width: 500px;
     flex-direction: column;
     padding: 30px;
-    animation: bounceIntoExistence 2s forwards;
+    animation: bounceIn 0.6s forwards;
     z-index: 10;
     box-shadow: 0 0 18px #000; }
   .popup .inputs {
@@ -896,7 +896,7 @@ svg.small {
 
 #new-messages-counter {
   transform: scale(0);
-  animation: bounceIntoExistence 1s forwards; }
+  animation: bounceIn 0.6s forwards; }
 
 .information-pane {
   flex: 0 0 350px;
