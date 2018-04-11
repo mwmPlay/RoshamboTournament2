@@ -569,6 +569,7 @@ function log(message, socket) {
 					this.drawHands(true);
 					this.drawTowels();
 					
+					app.playedHands.splice(0);
 					session.playedHands.forEach(function(playedHand) {
 						app.playedHands.push(playedHand);
 					});
@@ -576,6 +577,7 @@ function log(message, socket) {
 					this.surrendered = session.surrendered;
 				}
 				
+				app.otherUsers.splice(0);
 				session.otherUsers.forEach(function(otherUser) {
 					app.otherUsers.push(otherUser);
 				});
