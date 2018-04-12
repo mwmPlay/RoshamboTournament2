@@ -582,7 +582,11 @@ function log(message, socket) {
 					app.otherUsers.push(otherUser);
 				});
 			},
-			drawTowels: function(){
+			drawTowels: function() {
+				if(!this.gameInProgress) {
+					return;
+				}
+				
 				if (this.thisUserIsPlaying) {
 					// only draw my towels if I am actually playing
 					for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
