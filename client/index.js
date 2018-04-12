@@ -384,10 +384,18 @@ function log(message, socket) {
 			},
 			clearGameData: function() {
 				logic.clearSession(this);
+				
+				// clear hands and towels
 				this.enemyPlayer.hands.splice(0);
 				this.enemyPlayer.towels.splice(0);
 				this.thisPlayer.hands.splice(0);
 				this.thisPlayer.towels.splice(0);
+				
+				// clear showdown UI
+				this.showdownUI.enemyPlayerDamageTaken = 0;
+				this.showdownUI.thisPlayerDamageTaken = 0;
+				this.showdownUI.showTowels = 'none';
+				this.showdownUI.showdownMessage = '';
 			},
 			randomRotationDegree: function() {
 				var modifier = Math.random() > 0.5 ? -1 : 1;
