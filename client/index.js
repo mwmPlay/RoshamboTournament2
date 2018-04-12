@@ -407,7 +407,11 @@ function log(message, socket) {
 				if(tabClickedName === 'flamebox') {
 					app.newMessages = 0;
 					this.scrollElementDown('.chat-messages');
-					this.$els.chatMessageInput.focus();
+					
+					Vue.nextTick(function() {
+						var input = app.$el.querySelector('#chatMessageInput');
+						input.focus();
+					});
 				}
 			},
 			onDragStart: function(event) {
