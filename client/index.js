@@ -316,7 +316,7 @@ function log(message, socket) {
 							
 							if (resultOfActions[player].healingToMyTarget > 0 && targetHand.health > 0) {
 								// do not heal above proto's health and can't heal the dead
-								targetHand.health = targetHand.health > targetHandPrototype.health - resultOfActions.myself.healingToMyTarget ? targetHandPrototype.health : targetHand.health + resultOfActions.myself.healingToMyTarget;
+								targetHand.health = targetHand.health > targetHandPrototype.health - resultOfActions[player].healingToMyTarget ? targetHandPrototype.health : targetHand.health + resultOfActions[player].healingToMyTarget;
 							}
 							if (resultOfActions[player].damageToMyTarget > 0) {
 								targetHand.health -= resultOfActions[player].damageToMyTarget;
