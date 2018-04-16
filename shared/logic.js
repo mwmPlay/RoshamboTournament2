@@ -168,12 +168,12 @@
 			impendingdoom: {
 				name: 'impendingdoom',
 				title: 'Towel of impending doom',
-				description: "This towel's fabric is so irritating that it does 3 damage to any hand it's thrown at.",
+				description: "This towel's fabric is so irritating that it does 1 damage to any hand it's thrown at.",
 				emblemIcon: "fab fa-hotjar",
 				descriptionInAction: "to receive three extra damage.",
 				dropOnEnemy: true,
 				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
-					resultOfActions[thisPlayer].damageToMyTarget = 3;
+					resultOfActions[thisPlayer].damageToMyTarget = 1;
 				}
 			},
 			unfathomabledarkness: {
@@ -191,7 +191,7 @@
 			disproportionatebludgeoning: {
 				name: 'disproportionatebludgeoning',
 				title: 'Towel of disproportionate bludgeoning',
-				description: "This towel is so heavy that when wrapped around a hand it deals extra damage.",
+				description: "This towel is so heavy that when wrapped around a hand it deals extra damage. This only works when the hand does at least 1 damage.",
 				emblemIcon: "fas fa-stop",
 				descriptionInAction: "to do 2 extra damage.",
 				dropOnEnemy: false,
@@ -205,7 +205,7 @@
 			magnificentalleviation: {
 				name: 'magnificentalleviation',
 				title: 'Towel of magnificent alleviation',
-				description: "This towel had aloe vera spilled on it and now it has healing properties.",
+				description: "This towel heals any card it is used on by 2 HP. Hands can't have more HP than what they started with.",
 				emblemIcon: "fas fa-heart",
 				descriptionInAction: "to be healed by 2 HP.",
 				dropOnEnemy: false,

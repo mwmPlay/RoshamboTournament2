@@ -134,6 +134,9 @@ function log(message, socket) {
 				
 				return logic.staticData.towelPrototypes[towelName];
 			},
+			isSpectator: function(){
+				return this.username !== this.player1Name && this.username !== this.player2Name;
+			},
 			otherHasChosen: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
 			},
@@ -330,12 +333,10 @@ function log(message, socket) {
 					// Showdown UI is handled here (only for the final hand, no need to show previous hands again)
 					if(finalHand) {
 						var lastHand = this.playedHands[this.playedHands.length - 1];
-						
-						//reset previous values
+
 						app.showdownUI = {
 							enemyPlayerDamageTaken: -resultOfActions.myself.damageToOther,
-							thisPlayerDamageTaken: -resultOfActions.other.damageToOther,
-							showTowels: 'none'
+							thisPlayerDamageTaken: -resultOfActions.other.damageToOther
 						};
 						
 						app.showdownUI.showdownMessage = app.handResult(lastHand.otherHandName, lastHand.myHandName);
@@ -392,6 +393,9 @@ function log(message, socket) {
 				this.thisPlayer.towels.splice(0);
 				
 				// clear showdown UI
+				this.clearShowdownUI();
+			},
+			clearShowdownUI: function(){
 				this.showdownUI.enemyPlayerDamageTaken = 0;
 				this.showdownUI.thisPlayerDamageTaken = 0;
 				this.showdownUI.showTowels = 'none';
@@ -411,7 +415,7 @@ function log(message, socket) {
 					Vue.nextTick(function() {
 						var input = app.$el.querySelector('#chatMessageInput');
 						input.focus();
-					});
+					}); 
 				}
 			},
 			onDragStart: function(event) {
@@ -516,6 +520,8 @@ function log(message, socket) {
 				}
 			},
 			playHand: function(myHandName) {
+				app.clearShowdownUI();
+
 				log('hand played by me: ' + myHandName, socket);
 				
 				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', myHandName);

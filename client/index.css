@@ -681,7 +681,8 @@ svg.small {
       .hand .information-section .freeze p {
         position: absolute; }
     .hand .information-section .health {
-      left: 10px; }
+      left: 10px;
+      background-image: url("/media/t.png") !important; }
       .hand .information-section .health svg {
         color: rgba(206, 31, 31, 0.9);
         font-size: 23px;
@@ -720,6 +721,20 @@ svg.small {
 
 .playingField .hand .health {
   background: #9a1c1c; }
+
+/* Temporary */
+.board-mid .card-text {
+  position: absolute;
+  top: -25px;
+  left: 17px;
+  font-size: 16px;
+  z-index: 9; }
+
+.board-mid .card-image {
+  position: absolute;
+  top: -45px;
+  left: -5px;
+  width: 60px; }
 
 .popup {
   position: absolute;
@@ -855,28 +870,32 @@ svg.small {
   justify-content: space-around;
   border: 1px solid #333;
   box-shadow: 0 0 2px #333; }
+  .handsdeck .player-name {
+    position: absolute;
+    top: 15px;
+    font-size: 16px; }
   .handsdeck > .hand {
     top: 50px; }
     .handsdeck > .hand:nth-of-type(1) {
-      left: 50px; }
+      left: -120px; }
     .handsdeck > .hand:nth-of-type(2) {
-      left: 200px; }
+      left: 30px; }
     .handsdeck > .hand:nth-of-type(3) {
-      left: 350px; }
+      left: 180px; }
     .handsdeck > .hand:nth-of-type(4) {
-      left: 500px; }
+      left: 330px; }
     .handsdeck > .hand:nth-of-type(5) {
-      left: 650px; }
+      left: 480px; }
     .handsdeck > .hand:nth-of-type(6) {
-      left: 800px; }
+      left: 630px; }
     .handsdeck > .hand:nth-of-type(7) {
-      left: 950px; }
+      left: 780px; }
     .handsdeck > .hand:nth-of-type(8) {
-      left: 1100px; }
+      left: 930px; }
     .handsdeck > .hand:nth-of-type(9) {
-      left: 1250px; }
+      left: 1080px; }
     .handsdeck > .hand:nth-of-type(10) {
-      left: 1400px; }
+      left: 1230px; }
 
 .spelldeck {
   width: 350px;

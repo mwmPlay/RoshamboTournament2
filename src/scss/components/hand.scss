@@ -161,6 +161,7 @@
 
         .health {
             left: 10px;
+            background-image: url('/media/t.png') !important;
 
             svg {
                 color: rgba(206, 31, 31, 0.9);
@@ -220,4 +221,20 @@
 
 .playingField .hand .health {
     background: #9a1c1c;
+}
+
+/* Temporary */
+.board-mid .card-text {
+    position: absolute;
+    top: -25px;
+    left: 17px;
+    font-size: 16px;
+    z-index: 9;
+}
+
+.board-mid .card-image {
+    position: absolute;
+    top: -45px;
+    left: -5px;
+    width: 60px;
 }
