@@ -49,7 +49,7 @@
 			<div class="enemyplayerside">
 				<div class="handsdeck">
 					<div class="player-name">
-						<p v-if="isSpectator" class="specialText">{{player2Name}}</p>
+						<p v-if="!thisUserIsPlaying" class="specialText">{{player2Name}}</p>
 					</div>
 					<div v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:rotate="hand.rotation" v-if="hand.health > 0 && !gameOver" class="hand top" v-for="hand in enemyPlayer.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand, true)" v-on:dragover="onDragOver($event, true, hand)">
 						<div class="title-section">
@@ -239,7 +239,7 @@
 			<div class="thisplayerside">
 				<div class="handsdeck">
 					<div class="player-name">
-						<p v-if="isSpectator" class="specialText">{{player1Name}}</p>
+						<p v-if="!thisUserIsPlaying" class="specialText">{{player1Name}}</p>
 					</div>
 					<div v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:is-selected="selectedCard(hand.name)" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="(myHandName !== '' && otherHandName === '') || !thisUserIsPlaying" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand, false)" v-on:dragover="onDragOver($event, false, hand)">
 						<div class="title-section">

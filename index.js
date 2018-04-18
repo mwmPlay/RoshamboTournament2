@@ -39,8 +39,7 @@ http.listen(3000, function() {
 var sessions = {};
 var sessionsByUsername = {};
 var sessionsBySocketId = {};
-var player1 = null;
-var player2 = null;
+var game = {};
 
 // socket event handlers
 io.on('connection', function(socket) {
@@ -55,7 +54,7 @@ io.on('connection', function(socket) {
 			log('disconnected user found: ' + session.username, socket);
 			
 			// remove session from all otherUsers arrays
-			for (existingUsername in sessionsByUsername) {
+			for (var existingUsername in sessionsByUsername) {
 				logic.removeFromOtherUsers(sessionsByUsername[existingUsername].otherUsers, session.username);
 			}
 			
@@ -95,15 +94,11 @@ io.on('connection', function(socket) {
 				username: username,
 				socketId: socket.id,
 				challengedBy: '',
-				playedHands: [],
 				otherUsers: [],
-				player1Name: player1 && player2 ? player1.username : '',
-				player2Name: player1 && player2 ? player2.username : '',
-				surrendered: '',
-				towels: []
+				gameId: ''
 			};
 			
-			for (existingUsername in sessionsByUsername) {
+			for (var existingUsername in sessionsByUsername) {
 				// put existing users in new session
 				session.otherUsers.push({
 					name: existingUsername
@@ -128,6 +123,7 @@ io.on('connection', function(socket) {
 		}
 	});
 	
+	// TODO: re-add other users to this session and refactor to logic as this is the 2nd usage of the same code (see authenticate: 100)
 	socket.on('resumeSession', function(sessionId) {
 		log('resume session: ' + sessionId, socket);
 		var session = sessions[sessionId];
@@ -136,7 +132,7 @@ io.on('connection', function(socket) {
 			session.socketId = socket.id;
 			
 			// re-add this user to the existing sessions
-			for (existingUsername in sessionsByUsername) {
+			for (var existingUsername in sessionsByUsername) {
 				sessionsByUsername[existingUsername].otherUsers.push({
 					name: session.username
 				});
@@ -156,46 +152,47 @@ io.on('connection', function(socket) {
 		}
 	});
 	
-	socket.on('towelsChosen', function(towelsJson) {
-		log('towelsChosen: ' + towelsJson, socket);
-		var towels = JSON.parse(towelsJson);
-		var session = sessionsBySocketId[socket.id];
-		session.towels = towels;
+	socket.on('towelsChosen', function(chosenTowelsJson) {
+		log('towelsChosen: ' + chosenTowelsJson, socket);
+		
+		var chosenTowels = JSON.parse(chosenTowelsJson);
+		var game = games[chosenTowels.gameId];
+		var mySession = sessionsBySocketId[socket.id];
+		var whoPlayed = game.player1.username === mySession.username ? 'player1' : 'player2';
+		
+		game[whoPlayed].towels = chosenTowels.towels;
 	});
 	
 	socket.on('playHand', function(playedHandJson) {
 		log('play hand: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);
+		var game = games[playedHand.gameId];
+		var mySession = sessionsBySocketId[socket.id];
+		var whoPlayed = game.player1.username === mySession.username ? 'player1' : 'player2';
+		var otherPlayer = whoPlayed === 'player1' ? 'player2' : 'player1';
 		
-		if (playedHand.username === player1.username && playedHand.otherUsername === player2.username) {
-			logic.savePlayedHandToHistory(player1.playedHands, 'myHandName', playedHand.myHandName);
-			logic.savePlayedHandToHistory(player1.playedHands, 'myTowel', playedHand.myTowel);
-			logic.savePlayedHandToHistory(player1.playedHands, 'myTowelTarget', playedHand.myTowelTarget);
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherHasChosen', true);
-		} else if (playedHand.username === player2.username && playedHand.otherUsername === player1.username) {
-			logic.savePlayedHandToHistory(player2.playedHands, 'myHandName', playedHand.myHandName);
-			logic.savePlayedHandToHistory(player2.playedHands, 'myTowel', playedHand.myTowel);
-			logic.savePlayedHandToHistory(player2.playedHands, 'myTowelTarget', playedHand.myTowelTarget);
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherHasChosen', true);
-		}
+		logic.savePlayedHandToHistory(game[whoPlayed].playedHands, 'myHandName', playedHand.myHandName);
+		logic.savePlayedHandToHistory(game[whoPlayed].playedHands, 'myTowel', playedHand.myTowel);
+		logic.savePlayedHandToHistory(game[whoPlayed].playedHands, 'myTowelTarget', playedHand.myTowelTarget);
+		logic.savePlayedHandToHistory(game[otherPlayer].playedHands, 'otherHasChosen', true);
 		
-		var player1sHand = player1.playedHands[player1.playedHands.length - 1];
-		var player2sHand = player2.playedHands[player2.playedHands.length - 1];
+		var player1sHand = game.player1.playedHands[game.player1.playedHands.length - 1];
+		var player2sHand = game.player2.playedHands[game.player2.playedHands.length - 1];
 		
 		if (player1sHand.myHandName && player2sHand.myHandName) {
-			// both players have played, time to emit the actual hands and store them in the sessions
+			// both players have played, time to emit the actual hands and store them in the games
 			
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowel', player2sHand.myTowel);
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherTowelTarget', player2sHand.myTowelTarget);
-			logic.savePlayedHandToHistory(player1.playedHands, 'otherHandName', player2sHand.myHandName);
+			logic.savePlayedHandToHistory(game.player1.playedHands, 'otherTowel', player2sHand.myTowel);
+			logic.savePlayedHandToHistory(game.player1.playedHands, 'otherTowelTarget', player2sHand.myTowelTarget);
+			logic.savePlayedHandToHistory(game.player1.playedHands, 'otherHandName', player2sHand.myHandName);
 			
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowel', player1sHand.myTowel);
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherTowelTarget', player1sHand.myTowelTarget);
-			logic.savePlayedHandToHistory(player2.playedHands, 'otherHandName', player1sHand.myHandName);
+			logic.savePlayedHandToHistory(game.player2.playedHands, 'otherTowel', player1sHand.myTowel);
+			logic.savePlayedHandToHistory(game.player2.playedHands, 'otherTowelTarget', player1sHand.myTowelTarget);
+			logic.savePlayedHandToHistory(game.player2.playedHands, 'otherHandName', player1sHand.myHandName);
 			
 			playedHandJson = JSON.stringify({
-				username: player1.username,
-				otherUsername: player2.username,
+				gameId: game.id,
+				username: game.player1.username,
 				myHandName: player1sHand.myHandName,
 				myTowel: player1sHand.myTowel,
 				myTowelTarget: player1sHand.myTowelTarget
@@ -204,8 +201,8 @@ io.on('connection', function(socket) {
 			io.emit('playHand', playedHandJson);
 			
 			playedHandJson = JSON.stringify({
-				username: player2.username,
-				otherUsername: player1.username,
+				gameId: game.id,
+				username: game.player2.username,
 				myHandName: player2sHand.myHandName,
 				myTowel: player2sHand.myTowel,
 				myTowelTarget: player2sHand.myTowelTarget
@@ -213,35 +210,28 @@ io.on('connection', function(socket) {
 			
 			io.emit('playHand', playedHandJson);
 		} else {
-			socket.broadcast.emit('handChosen', playedHand.username);
+			socket.broadcast.emit('handChosen', mySession.username);
 		}
 	});
 	
-	socket.on('surrender', function() {
+	socket.on('surrender', function(gameId) {
 		log('surrender', socket);
 		var session = sessionsBySocketId[socket.id];
+		var game = games[gameId];
 		
-		for (existingUsername in sessionsByUsername) {
-			sessionsByUsername[existingUsername].surrendered = session.username;
-		}
+		game.surrendered = session.username;
 		
 		// let everyone else know
 		socket.broadcast.emit('surrender', session.username);
 	});
 	
-	socket.on('endGame', function() {
+	socket.on('endGame', function(gameId) {
 		log('endGame', socket);
 		
-		// clear both players' sessions
-		logic.clearSession(sessions[player1.id]);
-		logic.clearSession(sessions[player2.id]);
-		
-		// clear player 1 and 2
-		player1 = null;
-		player2 = null;
+		delete games[gameId];
 		
 		// let everyone else know
-		socket.broadcast.emit('gameEnded');
+		socket.broadcast.emit('gameEnded', gameId);
 	});
 	
 	socket.on('challengeUser', function(username) {
@@ -250,15 +240,11 @@ io.on('connection', function(socket) {
 		var session = sessionsBySocketId[socket.id];
 		var otherSession = sessionsByUsername[username];
 		
-		if (session && otherSession) {
-			// save challenge in other user's session
-			otherSession.challengedBy = session.username;
-			
-			// emit challenge to other user
-			socket.to(otherSession.socketId).emit('challengedByUser', session.username);
-		} else {
-			// emit error?
-		}
+		// save challenge in other user's session
+		otherSession.challengedBy = session.username;
+		
+		// emit challenge to other user
+		socket.to(otherSession.socketId).emit('challengedByUser', session.username);
 	});
 	
 	socket.on('challengeAccepted', function(username) {
@@ -267,32 +253,44 @@ io.on('connection', function(socket) {
 		var session = sessionsBySocketId[socket.id];
 		var otherSession = sessionsByUsername[username];
 		
-		if (session && otherSession) {
-			// the original challenger is player 1
-			player1 = otherSession;
-			
-			// the accepter is player 2
-			player2 = session;
-			
-			// start the game!
-			log('game started: ' + player1.username + ' vs ' + player2.username, socket);
-			
-			for (existingUsername in sessionsByUsername) {
-				// clear any previously played hands
-				sessionsByUsername[existingUsername].playedHands.splice(0);
-				
-				// we know both players' names now, everyone should know this, so store it in their sessions
-				logic.savePlayerNamesToSession(sessionsByUsername[existingUsername], player1.username, player2.username)
+		// remove challenge in current user's session
+		session.challengedBy = '';
+		
+		// the original challenger is player 1
+		var player1sName = otherSession.username;
+		
+		// the accepter is player 2
+		var player2sName = session.username;
+		
+		// start the game!
+		log('game started: ' + player1sName + ' vs ' + player2sName, socket);
+		
+		// create the game
+		var gameId = Guid.create();
+		var game = {
+			id: gameId,
+			surrendered: '',
+			player1: {
+				username: player1sName,
+				towels: [],
+				playedHands: []
+			},
+			player2: {
+				username: player2sName,
+				towels: [],
+				playedHands: []
 			}
-			
-			// and send it to everyone
-			io.emit('gameStarted', JSON.stringify({
-				player1Name: player1.username,
-				player2Name: player2.username
-			}));
-		} else {
-			// emit error?
-		}
+		};
+		
+		// store it
+		games[gameId] = game;
+		
+		// also switch both player's focus to their game
+		session.gameId = gameId;
+		otherSession.gameId = gameId;
+		
+		// finally, send it to everyone
+		io.emit('gameStarted', JSON.stringify(game);
 	});
 	
 	socket.on('challengeRejected', function(username) {
@@ -301,15 +299,11 @@ io.on('connection', function(socket) {
 		var session = sessionsBySocketId[socket.id];
 		var otherSession = sessionsByUsername[username];
 		
-		if (session && otherSession) {
-			// remove challenge in current user's session
-			session.challengedBy = '';
-			
-			// emit rejection to other user
-			socket.to(otherSession.socketId).emit('challengeRejected', username);
-		} else {
-			// emit error?
-		}
+		// remove challenge in current user's session
+		session.challengedBy = '';
+		
+		// emit rejection to other user
+		socket.to(otherSession.socketId).emit('challengeRejected', username);
 	});
 	
 	socket.on('chatMessage', function(chatMessage) {

@@ -104,7 +104,9 @@ function log(message, socket) {
 			otherUsers: [],
 			chatMessages: [],
 			newMessages: 0,
-			chatMessage: ''
+			chatMessage: '',
+			gameId: '',
+			games: {},
 		},
 		computed: {
 			handPrototypes: function() {
@@ -133,9 +135,6 @@ function log(message, socket) {
 				}
 				
 				return logic.staticData.towelPrototypes[towelName];
-			},
-			isSpectator: function(){
-				return this.username !== this.player1Name && this.username !== this.player2Name;
 			},
 			otherHasChosen: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
@@ -237,6 +236,34 @@ function log(message, socket) {
 					logic.surrender(this.thisPlayer);
 				} else if (this.player2Name === newValue) {
 					logic.surrender(this.enemyPlayer);
+				}
+			},
+			gameId: function(newValue) {
+				if (newValue) {
+					var game = this.games[newValue];
+					
+					this.player1Name = game.player1.username;
+					this.player2Name = game.player2.username;
+					var player = this.player2Name === this.username ? 'player2' : 'player1';
+					
+					if (this.thisUserIsPlaying) {
+						game[player].towels.forEach(function(towel) {
+							logic.repos.initialTowels.push(towel);
+						});
+					}
+					
+					this.drawHands(true);
+					this.drawTowels();
+					
+					this.playedHands.splice(0);
+					game[player].playedHands.forEach(function(playedHand) {
+						app.playedHands.push(playedHand);
+					});
+					
+					this.surrendered = game.surrendered;
+				} else {
+					// clear all game data, but don't change game id again, or we start an infinite loop
+					this.clearGameData(true);
 				}
 			}
 		},
@@ -365,14 +392,15 @@ function log(message, socket) {
 				}
 			},
 			endGame: function() {
+				// send to server to do the same there
+				socket.emit('endGame', this.gameId);
+				
 				// clear all game data
 				this.clearGameData();
-				// send to server to do the same
-				socket.emit('endGame');
 			},
 			surrender: function() {
 				this.surrendered = this.player1Name;
-				socket.emit('surrender');
+				socket.emit('surrender', this.gameId);
 			},
 			toggleMusic: function(){
 				app.ui.musicOn = !app.ui.musicOn;
@@ -383,8 +411,16 @@ function log(message, socket) {
 					soundEffects.backgroundMusic.pause();
 				}
 			},
-			clearGameData: function() {
-				logic.clearSession(this);
+			clearGameData: function(skipGameId) {
+				if (!skipGameId) {
+					this.gameId = '';
+				}
+				
+				this.surrendered = '';
+				this.playedHands.splice(0);
+				this.repos.initialTowels.splice(0);
+				this.player1Name = '';
+				this.player2Name = '';
 				
 				// clear hands and towels
 				this.enemyPlayer.hands.splice(0);
@@ -520,17 +556,16 @@ function log(message, socket) {
 				}
 			},
 			playHand: function(myHandName) {
-				app.clearShowdownUI();
-
 				log('hand played by me: ' + myHandName, socket);
+				
+				app.clearShowdownUI();
 				
 				logic.savePlayedHandToHistory(this.playedHands, 'myHandName', myHandName);
 				logic.savePlayedHandToHistory(this.playedHands, 'myTowel', this.myTowel);
 				logic.savePlayedHandToHistory(this.playedHands, 'myTowelTarget', this.myTowelTarget);
 				
 				var playedHandJson = JSON.stringify({
-					username: this.player1Name,
-					otherUsername: this.player2Name,
+					gameId: this.gameId,
 					myHandName: myHandName,
 					myTowel: this.myTowel,
 					myTowelTarget: this.myTowelTarget
@@ -552,10 +587,11 @@ function log(message, socket) {
 			},
 			acceptChallenge: function() {
 				socket.emit('challengeAccepted', this.challengedBy);
+				this.challengedBy = '';
 			},
 			rejectChallenge: function() {
-				this.challengedBy = '';
 				socket.emit('challengeRejected', this.challengedBy);
+				this.challengedBy = '';
 			},
 			userPickedAName: function(){
 				app.ui.promptMessage = '';
@@ -576,29 +612,13 @@ function log(message, socket) {
 			},
 			resumeSession: function(session) {
 				this.username = session.username;
-				this.player1Name = session.player1Name;
-				this.player2Name = session.player2Name;
 				
-				if (this.gameInProgress) {
-					session.towels.forEach(function(towel) {
-						logic.repos.initialTowels.push(towel);
-					});
-					
-					this.drawHands(true);
-					this.drawTowels();
-					
-					app.playedHands.splice(0);
-					session.playedHands.forEach(function(playedHand) {
-						app.playedHands.push(playedHand);
-					});
-					
-					this.surrendered = session.surrendered;
-				}
-				
-				app.otherUsers.splice(0);
+				this.otherUsers.splice(0);
 				session.otherUsers.forEach(function(otherUser) {
-					app.otherUsers.push(otherUser);
+					this.otherUsers.push(otherUser);
 				});
+				
+				this.gameId = session.gameId;
 			},
 			drawTowels: function() {
 				if(!this.gameInProgress) {
@@ -660,10 +680,28 @@ function log(message, socket) {
 		app.ui.messageToUser = 'Server appears to be down!';
 	});
 	
-	socket.on('handChosen', function(player2Name) {
-		log('hand was chosen, but not yet played by other: ' + player2Name, socket);
-		if (player2Name === app.player2Name || app.username !== app.player1Name) {
-			// show chosen message if the player is my opponent or if I am a spectator
+	socket.on('handChosen', function(playerName) {
+		log('hand was chosen, but not yet played by other: ' + playerName, socket);
+		
+		// find the game id and the other player
+		var otherPlayer;
+		var gameId;
+		for (gameId in app.games) {
+			var game = app.games[gameId];
+			
+			if (game.player1.username === playerName) {
+				otherPlayer = game.player2;
+				break;
+			} else if (game.player2.username === playerName) {
+				otherPlayer = game.player1;
+				break;
+			}
+		}
+		
+		logic.savePlayedHandToHistory(otherPlayer.playedHands, 'otherHasChosen', true);
+		
+		if (app.gameId === gameId && app.player2Name === playerName) {
+			// I am watching or playing this game and the player is my 'opponent', update me
 			logic.savePlayedHandToHistory(app.playedHands, 'otherHasChosen', true);
 		}
 	});
@@ -672,16 +710,29 @@ function log(message, socket) {
 		log('hand was played by other: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);
 		
-		if (playedHand.username === app.player2Name && playedHand.otherUsername === app.player1Name) {
-			// save hand if it is from my opponent to me (this is also when I am a spectator and the hand is from player 2)
-			logic.savePlayedHandToHistory(app.playedHands, 'otherTowel', playedHand.myTowel);
-			logic.savePlayedHandToHistory(app.playedHands, 'otherTowelTarget', playedHand.myTowelTarget);
-			logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
-		} else if (app.username !== app.player1Name) {
-			// or if I am a spectator of the match (and the hand is from player 1)
-			logic.savePlayedHandToHistory(app.playedHands, 'myTowel', playedHand.myTowel);
-			logic.savePlayedHandToHistory(app.playedHands, 'myTowelTarget', playedHand.myTowelTarget);
-			logic.savePlayedHandToHistory(app.playedHands, 'myHandName', playedHand.myHandName);
+		var game = app.games[playedHand.gameId];
+		var whoPlayed = game.player1.username === playedHand.username ? 'player1' : 'player2';
+		var otherPlayer = whoPlayed === 'player1' ? 'player2' : 'player1';
+		
+		logic.savePlayedHandToHistory(app.games[whoPlayed].playedHands, 'myHandName', playedHand.myHandName);
+		logic.savePlayedHandToHistory(app.games[whoPlayed].playedHands, 'myTowel', playedHand.myTowel);
+		logic.savePlayedHandToHistory(app.games[whoPlayed].playedHands, 'myTowelTarget', playedHand.myTowelTarget);
+		logic.savePlayedHandToHistory(app.games[otherPlayer].playedHands, 'otherHandName', playedHand.myHandName);
+		logic.savePlayedHandToHistory(app.games[otherPlayer].playedHands, 'otherTowel', playedHand.myTowel);
+		logic.savePlayedHandToHistory(app.games[otherPlayer].playedHands, 'otherTowelTarget', playedHand.myTowelTarget);
+		
+		if (app.gameId === gameId) {
+			if (playedHand.username === app.player2Name) {
+				// save hand if it is from my opponent to me (this is also when I am a spectator and the hand is from player 2)
+				logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
+				logic.savePlayedHandToHistory(app.playedHands, 'otherTowel', playedHand.myTowel);
+				logic.savePlayedHandToHistory(app.playedHands, 'otherTowelTarget', playedHand.myTowelTarget);
+			} else {
+				// or if I am a spectator of the match (and the hand is from player 1)
+				logic.savePlayedHandToHistory(app.playedHands, 'myHandName', playedHand.myHandName);
+				logic.savePlayedHandToHistory(app.playedHands, 'myTowel', playedHand.myTowel);
+				logic.savePlayedHandToHistory(app.playedHands, 'myTowelTarget', playedHand.myTowelTarget);
+			}
 		}
 		
 		if (playedHand.myTowel && app.thisUserIsPlaying) {
@@ -730,46 +781,73 @@ function log(message, socket) {
 			app.newMessages++;
 			soundEffects.newMessage.play();
 		}
-
+		
 		app.chatMessages.push(chatMessage);
 	});
 	
-	socket.on('gameStarted', function(partialSessionJson) {
-		log('gameStarted: ' + partialSessionJson, socket);
+	socket.on('gameStarted', function(gameJson) {
+		log('gameStarted: ' + gameJson, socket);
+		var game = JSON.parse(gameJson);
 		
-		// save partial session details
-		var partialSession = JSON.parse(partialSessionJson);
-		logic.savePlayerNamesToSession(app, partialSession.player1Name, partialSession.player2Name);
-		
-		// clear history and towels and challenge
-		app.playedHands.splice(0);
-		logic.repos.initialTowels.splice(0);
-		app.challengedBy = '';
-		
-		if (app.thisUserIsPlaying) {
-			// randomly pick from available towels
-			for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
-				var randomTowel = pickRandomProperty(logic.staticData.towelPrototypes);
-				logic.repos.initialTowels.push(randomTowel);
-			}
-			
-			// and let server know that
-			socket.emit('towelsChosen', JSON.stringify(logic.repos.initialTowels));
+		if (app.username === game.player1.username || app.username === game.player2.username) {
+			// I am one of the players, switch my channel to the match
+			app.gameId = game.id;
 		}
 		
-		// draw it all
-		app.drawHands(true);
-		app.drawTowels();
+		if (app.gameId) {
+			logic.savePlayerNamesToSession(app, game.player1.username, game.player2.username);
+			
+			// clear history and towels and challenge
+			app.playedHands.splice(0);
+			logic.repos.initialTowels.splice(0);
+			app.challengedBy = '';
+			
+			if (app.thisUserIsPlaying) {
+				// randomly pick from available towels
+				for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
+					var randomTowel = pickRandomProperty(logic.staticData.towelPrototypes);
+					logic.repos.initialTowels.push(randomTowel);
+				}
+				
+				// and let server know that
+				socket.emit('towelsChosen', JSON.stringify(logic.repos.initialTowels));
+			}
+			
+			// draw it all
+			app.drawHands(true);
+			app.drawTowels();
+		}
 	});
 	
 	socket.on('surrender', function(username) {
 		log('surrender by: ' + username, socket);
-		app.surrendered = username;
+		
+		var game;
+		for (var gameId in app.games) {
+			game = app.games[gameId];
+			
+			if (game.player1.username === playerName) {
+				break;
+			} else if (game.player2.username === playerName) {
+				break;
+			}
+		}
+		
+		game.surrendered = username;
+		
+		if (app.gameId == game.id) {
+			app.surrendered = username;
+		}
 	});
 	
-	socket.on('gameEnded', function() {
+	socket.on('gameEnded', function(gameId) {
 		log('gameEnded', socket);
-		app.clearGameData();
+		
+		delete games[gameId];
+		
+		if (app.gameId == game.id) {
+			app.clearGameData();
+		}
 	});
 	
 	socket.on('authenticateFail', function(message) {
