@@ -265,14 +265,6 @@
 		}
 	};
 	
-	exports.clearSession = function(session) {
-		session.surrendered = '';
-		session.playedHands.splice(0);
-		this.repos.initialTowels.splice(0);
-		session.player1Name = '';
-		session.player2Name = '';
-	};
-	
 	exports.validateUsername = function(username) {
 		return username && username.length <= 20;
 	};
