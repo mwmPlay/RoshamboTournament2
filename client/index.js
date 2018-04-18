@@ -251,6 +251,15 @@ function log(message, socket) {
 					container.scrollTop = container.scrollHeight;
 				});
 			},
+			calcFreezeHeightUI: function(freezeAmt) {
+				var freezePercentage = (freezeAmt / 2) * 100;
+				return freezePercentage > 100 ? 100 : freezePercentage;
+			},
+			calcHealthHeightUI: function(hand){
+				var handPrototype = this.handPrototypes[hand.name];
+				var healthPercentage =  (handPrototype.health - hand.health) / handPrototype.health;
+				return ((1 - healthPercentage) * 100).toFixed();
+			},
 			showDown: function(playedHand, finalHand) {
 				if (playedHand.myHandName && playedHand.otherHandName) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];

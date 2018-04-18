@@ -61,15 +61,19 @@
 							</div>
 						</div>
 						<div class="information-section">
-							<div class="health">
-								<i class="fas fa-heart"></i>
+							<div class="bar bar-health" v-bind:warning="hand.health < 3">
+								<div class="value" v-bind:style="{ height: calcHealthHeightUI(hand) + '%' }">
+									
+								</div>
 								<p class="specialText">
 									{{hand.health}}
 								</p>
 							</div>
-							<div class="freeze">
-								<i class="fab fa-empire"></i>
-								<p class="specialText">
+							<div class="bar bar-freeze">
+								<div class="value" v-bind:style="{ height: calcFreezeHeightUI(hand.freeze) + '%' }">
+								
+								</div>
+								<p v-if="hand.freeze > 1" class="specialText">
 									{{hand.freeze/2}}
 								</p>
 							</div>
@@ -140,8 +144,10 @@
 									</div>
 								</div>
 								<div class="information-section">
-									<div class="health">
-										<i class="fas fa-heart"></i>
+									<div class="bar bar-health" v-bind:warning="true">
+										<div class="value" v-bind:style="100">
+											
+										</div>
 										<p class="specialText">
 											{{showdownUI.thisPlayerDamageTaken}}
 										</p>
@@ -201,10 +207,14 @@
 									</div>
 								</div>
 								<div class="information-section">
-									<p class="card-text specialText">
-										{{showdownUI.enemyPlayerDamageTaken}}
-									</p>
-									<img class="card-image" src="/media/t.png" />
+									<div class="bar bar-health" v-bind:warning="true">
+										<div class="value" v-bind:style="100">
+											
+										</div>
+										<p class="specialText">
+											{{showdownUI.enemyPlayerDamageTaken}}
+										</p>
+									</div>
 								</div>	
 							</div>
 							<div id="otherTowel">
@@ -251,18 +261,23 @@
 							</div>
 						</div>
 						<div class="information-section">
-							<div class="health">
-								<i class="fas fa-heart"></i>
+							<div class="bar bar-health" v-bind:warning="hand.health < 3">
+								<div class="value" v-bind:style="{ height: calcHealthHeightUI(hand) + '%' }">
+									
+								</div>
 								<p class="specialText">
 									{{hand.health}}
 								</p>
 							</div>
-							<div class="freeze">
-								<i class="fab fa-empire"></i>
-								<p class="specialText">
+							<div class="bar bar-freeze">
+								<div class="value" v-bind:style="{ height: calcFreezeHeightUI(hand.freeze) + '%' }">
+								
+								</div>
+								<p v-if="hand.freeze > 1" class="specialText">
 									{{hand.freeze/2}}
 								</p>
 							</div>
+
 							<div class="damage-info">
 								<p v-for="handResult in handPrototypes[hand.name].result">
 									{{handResult.damage}} damage to {{handResult.name}}
