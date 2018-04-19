@@ -39,7 +39,7 @@ http.listen(3000, function() {
 var sessions = {};
 var sessionsByUsername = {};
 var sessionsBySocketId = {};
-var game = {};
+var games = {};
 
 // socket event handlers
 io.on('connection', function(socket) {
@@ -142,8 +142,12 @@ io.on('connection', function(socket) {
 			sessionsBySocketId[socket.id] = session;
 			sessionsByUsername[session.username] = session;
 			
-			// update the client with the last known session state
-			socket.emit('resumeSession', JSON.stringify(session));
+			// add the games, but to a cloned session so the original is not polluted
+			var clonedSession = logic.clone(session);
+			clonedSession.games = games;
+			
+			// update the client with the last known session state and games
+			socket.emit('resumeSession', JSON.stringify(clonedSession));
 			
 			// and announce the re-join to the others
 			socket.broadcast.emit('playerJoined', session.username);
@@ -228,6 +232,15 @@ io.on('connection', function(socket) {
 	socket.on('endGame', function(gameId) {
 		log('endGame', socket);
 		
+		// reset gameId in both players' sessions
+		var game = games[gameId];
+		var session = sessionsBySocketId[socket.id];
+		var otherPlayername = game.player1.username === session.username ? game.player2.username : game.player1.username;
+		var otherSession = sessionsByUsername[otherPlayername];
+		session.gameId = '';
+		otherSession.gameId = '';
+		
+		// remove from the list of games
 		delete games[gameId];
 		
 		// let everyone else know
@@ -290,7 +303,7 @@ io.on('connection', function(socket) {
 		otherSession.gameId = gameId;
 		
 		// finally, send it to everyone
-		io.emit('gameStarted', JSON.stringify(game);
+		io.emit('gameStarted', JSON.stringify(game));
 	});
 	
 	socket.on('challengeRejected', function(username) {

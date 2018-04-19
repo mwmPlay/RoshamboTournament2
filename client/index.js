@@ -36,11 +36,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	//backgroundMusic.play(); // << turn off while developing to prevent suicide
 });
 
-// clone any object, severing all references within
-function clone(object) {
-	return JSON.parse(JSON.stringify(object));
-}
-
 function pickRandomProperty(obj) {
     var result;
     var count = 0;
@@ -106,7 +101,17 @@ function log(message, socket) {
 			newMessages: 0,
 			chatMessage: '',
 			gameId: '',
-			games: {},
+			games: {
+				'': {
+					id: '',
+					player1: {
+						username: 'watch'
+					},
+					player2: {
+						username: 'nothing'
+					}
+				}
+			}
 		},
 		computed: {
 			handPrototypes: function() {
@@ -205,8 +210,6 @@ function log(message, socket) {
 					});
 					
 					// and of towels
-					this.enemyPlayer.towels.splice(0);
-					this.thisPlayer.towels.splice(0);
 					this.drawTowels();
 					
 					// run the current history
@@ -242,8 +245,12 @@ function log(message, socket) {
 				if (newValue) {
 					var game = this.games[newValue];
 					
-					this.player1Name = game.player1.username;
-					this.player2Name = game.player2.username;
+					logic.savePlayerNamesToSession(this, game.player1.username, game.player2.username);
+					
+					// clear history and towels and challenge
+					app.playedHands.splice(0);
+					app.challengedBy = '';
+					
 					var player = this.player2Name === this.username ? 'player2' : 'player1';
 					
 					if (this.thisUserIsPlaying) {
@@ -427,7 +434,7 @@ function log(message, socket) {
 				
 				this.surrendered = '';
 				this.playedHands.splice(0);
-				this.repos.initialTowels.splice(0);
+				logic.repos.initialTowels.splice(0);
 				this.player1Name = '';
 				this.player2Name = '';
 				
@@ -611,21 +618,25 @@ function log(message, socket) {
 				cardSound.play();
 				
 				var hand = this.handPrototypes[type];
-				var handClone = clone(hand);
+				var handClone = logic.clone(hand);
 				handClone.rotation = this.randomRotationDegree();
 				this[player].hands.push(handClone);
 			},
 			addTowelToDeck: function(player, type){
 				var towel = logic.staticData.towelPrototypes[type];
-				this[player].towels.push(clone(towel));
+				this[player].towels.push(logic.clone(towel));
 			},
 			resumeSession: function(session) {
 				this.username = session.username;
 				
 				this.otherUsers.splice(0);
 				session.otherUsers.forEach(function(otherUser) {
-					this.otherUsers.push(otherUser);
+					app.otherUsers.push(otherUser);
 				});
+				
+				for (gameId in session.games) {
+					Vue.set(app.games, gameId, session.games[gameId]);
+				}
 				
 				this.gameId = session.gameId;
 			},
@@ -634,9 +645,13 @@ function log(message, socket) {
 					return;
 				}
 				
+				// clear towels on both sides before (re-)adding them
+				this.thisPlayer.towels.splice(0);
+				this.enemyPlayer.towels.splice(0);
+				
 				if (this.thisUserIsPlaying) {
 					// only draw my towels if I am actually playing
-					for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
+					for(var i = 0; i < logic.repos.initialTowels.length; i++) {
 						app.addTowelToDeck('thisPlayer', logic.repos.initialTowels[i]);
 					}
 				} else {
@@ -723,24 +738,24 @@ function log(message, socket) {
 		var whoPlayed = game.player1.username === playedHand.username ? 'player1' : 'player2';
 		var otherPlayer = whoPlayed === 'player1' ? 'player2' : 'player1';
 		
-		logic.savePlayedHandToHistory(app.games[whoPlayed].playedHands, 'myHandName', playedHand.myHandName);
-		logic.savePlayedHandToHistory(app.games[whoPlayed].playedHands, 'myTowel', playedHand.myTowel);
-		logic.savePlayedHandToHistory(app.games[whoPlayed].playedHands, 'myTowelTarget', playedHand.myTowelTarget);
-		logic.savePlayedHandToHistory(app.games[otherPlayer].playedHands, 'otherHandName', playedHand.myHandName);
-		logic.savePlayedHandToHistory(app.games[otherPlayer].playedHands, 'otherTowel', playedHand.myTowel);
-		logic.savePlayedHandToHistory(app.games[otherPlayer].playedHands, 'otherTowelTarget', playedHand.myTowelTarget);
+		logic.savePlayedHandToHistory(game[whoPlayed].playedHands, 'myTowel', playedHand.myTowel);
+		logic.savePlayedHandToHistory(game[whoPlayed].playedHands, 'myTowelTarget', playedHand.myTowelTarget);
+		logic.savePlayedHandToHistory(game[whoPlayed].playedHands, 'myHandName', playedHand.myHandName);
+		logic.savePlayedHandToHistory(game[otherPlayer].playedHands, 'otherTowel', playedHand.myTowel);
+		logic.savePlayedHandToHistory(game[otherPlayer].playedHands, 'otherTowelTarget', playedHand.myTowelTarget);
+		logic.savePlayedHandToHistory(game[otherPlayer].playedHands, 'otherHandName', playedHand.myHandName);
 		
-		if (app.gameId === gameId) {
+		if (app.gameId === playedHand.gameId) {
 			if (playedHand.username === app.player2Name) {
 				// save hand if it is from my opponent to me (this is also when I am a spectator and the hand is from player 2)
-				logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
 				logic.savePlayedHandToHistory(app.playedHands, 'otherTowel', playedHand.myTowel);
 				logic.savePlayedHandToHistory(app.playedHands, 'otherTowelTarget', playedHand.myTowelTarget);
-			} else {
+				logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
+			} else if (!app.thisUserIsPlaying) {
 				// or if I am a spectator of the match (and the hand is from player 1)
-				logic.savePlayedHandToHistory(app.playedHands, 'myHandName', playedHand.myHandName);
 				logic.savePlayedHandToHistory(app.playedHands, 'myTowel', playedHand.myTowel);
 				logic.savePlayedHandToHistory(app.playedHands, 'myTowelTarget', playedHand.myTowelTarget);
+				logic.savePlayedHandToHistory(app.playedHands, 'myHandName', playedHand.myHandName);
 			}
 		}
 		
@@ -798,33 +813,31 @@ function log(message, socket) {
 		log('gameStarted: ' + gameJson, socket);
 		var game = JSON.parse(gameJson);
 		
+		// add to the list of games to watch
+		Vue.set(app.games, game.id, game);
+		
 		if (app.username === game.player1.username || app.username === game.player2.username) {
 			// I am one of the players, switch my channel to the match
 			app.gameId = game.id;
-		}
-		
-		if (app.gameId) {
-			logic.savePlayerNamesToSession(app, game.player1.username, game.player2.username);
 			
-			// clear history and towels and challenge
-			app.playedHands.splice(0);
+			// randomly pick from available towels
 			logic.repos.initialTowels.splice(0);
-			app.challengedBy = '';
-			
-			if (app.thisUserIsPlaying) {
-				// randomly pick from available towels
-				for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
-					var randomTowel = pickRandomProperty(logic.staticData.towelPrototypes);
-					logic.repos.initialTowels.push(randomTowel);
-				}
-				
-				// and let server know that
-				socket.emit('towelsChosen', JSON.stringify(logic.repos.initialTowels));
+			for(var i = 0; i < logic.staticData.initialTowelAmount; i++) {
+				var randomTowel = pickRandomProperty(logic.staticData.towelPrototypes);
+				logic.repos.initialTowels.push(randomTowel);
 			}
 			
-			// draw it all
-			app.drawHands(true);
-			app.drawTowels();
+			// show to player
+			/*Vue.nextTick(function() {
+				app.drawTowels();
+			});*/
+			
+			// and let server know that
+			var towelsJson = JSON.stringify({
+				gameId: app.gameId,
+				towels: logic.repos.initialTowels
+			});
+			socket.emit('towelsChosen', towelsJson);
 		}
 	});
 	
@@ -835,9 +848,9 @@ function log(message, socket) {
 		for (var gameId in app.games) {
 			game = app.games[gameId];
 			
-			if (game.player1.username === playerName) {
+			if (game.player1.username === username) {
 				break;
-			} else if (game.player2.username === playerName) {
+			} else if (game.player2.username === username) {
 				break;
 			}
 		}
@@ -852,9 +865,9 @@ function log(message, socket) {
 	socket.on('gameEnded', function(gameId) {
 		log('gameEnded', socket);
 		
-		delete games[gameId];
+		Vue.delete(app.games, gameId);
 		
-		if (app.gameId == game.id) {
+		if (app.gameId == gameId) {
 			app.clearGameData();
 		}
 	});

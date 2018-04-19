@@ -221,6 +221,11 @@
 		initialTowels: []
 	};
 	
+	// clone any object, severing all references within
+	exports.clone = function(object) {
+		return JSON.parse(JSON.stringify(object));
+	};
+	
 	exports.savePlayedHandToHistory = function(playedHands, key, value) {
 		if (playedHands.length === 0 || (playedHands[playedHands.length - 1].myHandName !== '' && playedHands[playedHands.length - 1].otherHandName !== '')) {
 			playedHands.push({

@@ -375,8 +375,9 @@
 			<div class="lobbyTitle">
 				<p class="specialText">
 					<span v-bind:class="{ selected: ui.playerUI === 'lobby' }" @click="lobbySwitch('lobby')">Lobby</span> / 
+					<span v-bind:class="{ selected: ui.playerUI === 'games' }" @click="lobbySwitch('games')">Games</span> / 
 					<span v-bind:class="{ selected: ui.playerUI === 'flamebox' }" @click="lobbySwitch('flamebox')">
-						flamebox: 
+						Flamebox: 
 						<span id="new-messages-counter" v-show="newMessages > 0">({{newMessages}})</span>
 					</span>
 				</p>
@@ -385,7 +386,7 @@
 				<ul class="users-overview">
 					<li class="otherUser" v-for="otherUser in otherUsers">
 						{{otherUser.name}}
-						<span v-if="!gameInProgress && challengedBy !== otherUser.name" @click="challengeUser(otherUser.name)" title="Challenge this player">
+						<span v-if="!thisUserIsPlaying && challengedBy !== otherUser.name" @click="challengeUser(otherUser.name)" title="Challenge this player">
 							<i class="fas fa-crosshairs"></i>
 						</span>
 
@@ -400,6 +401,14 @@
 								</div>
 							</div>
 						</div>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="chat" v-show="ui.playerUI === 'games'">
+				<ul>
+					<li v-for="game in games" v-bind:class="{ selected: gameId === game.id }">
+						{{game.player1.username}} - {{game.player2.username}}
 					</li>
 				</ul>
 			</div>
