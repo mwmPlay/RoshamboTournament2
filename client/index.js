@@ -411,6 +411,8 @@ function log(message, socket) {
 				// send to server to do the same there
 				socket.emit('endGame', this.gameId);
 				
+				Vue.delete(app.games, this.gameId);
+				
 				// clear all game data
 				this.clearGameData();
 			},
@@ -591,6 +593,20 @@ function log(message, socket) {
 				this.myTowelTarget = '';
 				
 				socket.emit('playHand', playedHandJson);
+			},
+			userIsPlaying: function(username) {
+				var result = false;
+				
+				for (var gameId in this.games) {
+					var game = this.games[gameId];
+					
+					if (game.player1.username === username || game.player2.username == username) {
+						result = true;
+						break;
+					}
+				}
+				
+				return result;
 			},
 			challengeUser: function(username) {
 				socket.emit('challengeUser', username);
@@ -826,11 +842,6 @@ function log(message, socket) {
 				var randomTowel = pickRandomProperty(logic.staticData.towelPrototypes);
 				logic.repos.initialTowels.push(randomTowel);
 			}
-			
-			// show to player
-			/*Vue.nextTick(function() {
-				app.drawTowels();
-			});*/
 			
 			// and let server know that
 			var towelsJson = JSON.stringify({

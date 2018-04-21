@@ -386,7 +386,7 @@
 				<ul class="users-overview">
 					<li class="otherUser" v-for="otherUser in otherUsers">
 						{{otherUser.name}}
-						<span v-if="!thisUserIsPlaying && challengedBy !== otherUser.name" @click="challengeUser(otherUser.name)" title="Challenge this player">
+						<span v-if="!thisUserIsPlaying && challengedBy !== otherUser.name && !userIsPlaying(otherUser.name)" @click="challengeUser(otherUser.name)" title="Challenge this player">
 							<i class="fas fa-crosshairs"></i>
 						</span>
 
