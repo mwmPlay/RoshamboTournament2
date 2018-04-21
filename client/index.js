@@ -101,17 +101,7 @@ function log(message, socket) {
 			newMessages: 0,
 			chatMessage: '',
 			gameId: '',
-			games: {
-				'': {
-					id: '',
-					player1: {
-						username: 'watch'
-					},
-					player2: {
-						username: 'nothing'
-					}
-				}
-			}
+			games: {}
 		},
 		computed: {
 			handPrototypes: function() {
@@ -655,6 +645,7 @@ function log(message, socket) {
 				}
 				
 				this.gameId = session.gameId;
+				this.challengedBy = session.challengedBy;
 			},
 			drawTowels: function() {
 				if(!this.gameInProgress) {

@@ -1039,6 +1039,8 @@ svg.small {
       margin-top: 5px;
       margin-bottom: 0;
       display: flex; }
+      .information-pane .history ul li.selected {
+        color: darkred; }
     .information-pane .history .history-overview {
       margin-top: 5px;
       border: 2px solid #333;
@@ -1082,6 +1084,8 @@ svg.small {
       margin-top: 5px;
       margin-bottom: 0;
       display: flex; }
+      .information-pane .chat ul li.selected {
+        color: darkred; }
     .information-pane .chat ul {
       flex-direction: column; }
     .information-pane .chat li {
@@ -1090,12 +1094,12 @@ svg.small {
       list-style: none;
       font-family: roboto;
       font-weight: bold; }
-  .information-pane .lobby {
+  .information-pane .lobby, .information-pane .games {
     width: 100%;
     height: 200px;
     flex-direction: column;
     display: flex; }
-    .information-pane .lobby ul {
+    .information-pane .lobby ul, .information-pane .games ul {
       overflow: auto;
       background: #dedede;
       border-radius: 3px;
@@ -1106,18 +1110,20 @@ svg.small {
       margin-top: 5px;
       margin-bottom: 0;
       display: flex; }
-    .information-pane .lobby ul {
+      .information-pane .lobby ul li.selected, .information-pane .games ul li.selected {
+        color: darkred; }
+    .information-pane .lobby ul, .information-pane .games ul {
       flex-direction: column; }
-    .information-pane .lobby li {
+    .information-pane .lobby li, .information-pane .games li {
       font-size: 14px;
       list-style: none;
       font-family: roboto;
       font-weight: bold;
       color: #333; }
-      .information-pane .lobby li svg {
+      .information-pane .lobby li svg, .information-pane .games li svg {
         margin-left: 5px;
         transition: all 0.2s; }
-        .information-pane .lobby li svg:hover {
+        .information-pane .lobby li svg:hover, .information-pane .games li svg:hover {
           color: darkred; }
 
 /* -------------- THE button -------------- */

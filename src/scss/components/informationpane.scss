@@ -15,6 +15,10 @@
         margin-top: 5px;
         margin-bottom: 0;
         display: flex;
+		
+		li.selected {
+			color: darkred;
+		}
     }
 }
 
@@ -205,7 +209,7 @@
         }
     }
 
-    .lobby {
+    .lobby, .games {
         @include pane;
 
 		ul {
