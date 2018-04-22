@@ -20,6 +20,15 @@ function log(message, socket) {
 	console.log(message);
 }
 
+// returns a clone of the session with games and tournaments added, the original session remains unharmed
+function addListsToSession(session) {
+	var clonedSession = logic.clone(session);
+	clonedSession.games = games;
+	clonedSession.tournaments = tournaments;
+	
+	return clonedSession;
+}
+
 // default page
 app.get('/', function(req, res) {
 	//res.send('<h1>Hello world</h1>');
@@ -40,6 +49,7 @@ var sessions = {};
 var sessionsByUsername = {};
 var sessionsBySocketId = {};
 var games = {};
+var tournaments = {};
 
 // socket event handlers
 io.on('connection', function(socket) {
@@ -115,8 +125,11 @@ io.on('connection', function(socket) {
 			sessionsByUsername[username] = session;
 			sessionsBySocketId[socket.id] = session;
 			
-			// send success to the authenticating client
-			socket.emit('authenticateSuccess', JSON.stringify(session));
+			// add the games and tournaments, but to a cloned session so the original is not polluted
+			var clonedSession = addListsToSession(session);
+			
+			// send success to the authenticating client with details of the session and games and tournaments
+			socket.emit('authenticateSuccess', JSON.stringify(clonedSession));
 			
 			// and announce the join to the others
 			socket.broadcast.emit('playerJoined', username);
@@ -142,11 +155,10 @@ io.on('connection', function(socket) {
 			sessionsBySocketId[socket.id] = session;
 			sessionsByUsername[session.username] = session;
 			
-			// add the games, but to a cloned session so the original is not polluted
-			var clonedSession = logic.clone(session);
-			clonedSession.games = games;
+			// add the games and tournaments, but to a cloned session so the original is not polluted
+			var clonedSession = addListsToSession(session);
 			
-			// update the client with the last known session state and games
+			// update the client with the last known session state and games and tournaments
 			socket.emit('resumeSession', JSON.stringify(clonedSession));
 			
 			// and announce the re-join to the others
@@ -229,6 +241,7 @@ io.on('connection', function(socket) {
 		socket.broadcast.emit('surrender', session.username);
 	});
 	
+	// TODO: move winner and maybe also loser along in the bracket of the tournament, unless the ended game is the finals
 	socket.on('endGame', function(gameId) {
 		log('endGame', socket);
 		
@@ -245,6 +258,66 @@ io.on('connection', function(socket) {
 		
 		// let everyone else know
 		socket.broadcast.emit('gameEnded', gameId);
+	});
+	
+	socket.on('createTournament', function(name) {
+		log('createTournament', socket);
+		
+		var session = sessionsBySocketId[socket.id];
+		
+		// create new tournament, with the current user as its admin and currently only player (admin is only one who can start and end tournament)
+		var tournamentId = Guid.create();
+		var tournament = {
+			id: tournamentId,
+			name: name,
+			admin: session.username,
+			players: [session.username],
+			started: false,
+			bracket: []
+		};
+		
+		// add to the indexed list of tournaments
+		tournaments[tournamentId] = tournament;
+		
+		// let everyone else know
+		socket.broadcast.emit('tournamentCreated', tournament);
+	});
+	
+	socket.on('joinTournament', function(tournamentId) {
+		log('joinTournament: ' + tournamentId, socket);
+		
+		// add player to tournament
+		var session = sessionsBySocketId[socket.id];
+		var tournament = tournaments[tournamentId];
+		tournament.players.push(session.username);
+		
+		// let everyone else know
+		socket.broadcast.emit('joinedTournament', JSON.stringify({ tournamentId: tournamentId, username: session.username }));
+	});
+	
+	socket.on('startTournament', function(tournamentId) {
+		log('startTournament: ' + tournamentId, socket);
+		
+		// flip the started bit, so noone can join anymore
+		var tournament = tournaments[tournamentId];
+		tournament.started = true;
+		
+		// let everyone else know (so noone can join anymore)
+		socket.broadcast.emit('tournamentStarted', tournamentId);
+		
+		// create the bracket
+		
+		// start the first games of the bracket
+		// TODO: refactor game creation and emitting from challengeAccepted to a separate function and call that here in a loop
+	});
+	
+	socket.on('endTournament', function(tournamentId) {
+		log('endTournament: ' + tournamentId, socket);
+		
+		delete tournaments[tournamentId];
+		
+		// let everyone else know
+		socket.broadcast.emit('tournamentEnded', tournamentId);
 	});
 	
 	socket.on('challengeUser', function(username) {
