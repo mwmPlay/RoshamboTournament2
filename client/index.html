@@ -407,10 +407,10 @@
 			
 			<div class="games" v-show="ui.playerUI === 'games'">
 				<ul>
-					<li v-bind:class="{ selected: gameId === '' }">
+					<li v-bind:class="{ selected: gameId === '', disabled: thisUserIsPlaying }" @click="gameId = ''">
 						- watch nothing -
 					</li>
-					<li v-for="game in games" v-bind:class="{ selected: gameId === game.id }">
+					<li v-for="game in games" v-bind:class="{ selected: gameId === game.id, disabled: thisUserIsPlaying }" @click="gameId = game.id">
 						{{game.player1.username}} vs {{game.player2.username}}
 					</li>
 				</ul>

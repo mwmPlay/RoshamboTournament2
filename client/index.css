@@ -1041,6 +1041,8 @@ svg.small {
       display: flex; }
       .information-pane .history ul li.selected {
         color: darkred; }
+      .information-pane .history ul li.disabled {
+        pointer-events: none; }
     .information-pane .history .history-overview {
       margin-top: 5px;
       border: 2px solid #333;
@@ -1086,6 +1088,8 @@ svg.small {
       display: flex; }
       .information-pane .chat ul li.selected {
         color: darkred; }
+      .information-pane .chat ul li.disabled {
+        pointer-events: none; }
     .information-pane .chat ul {
       flex-direction: column; }
     .information-pane .chat li {
@@ -1112,6 +1116,8 @@ svg.small {
       display: flex; }
       .information-pane .lobby ul li.selected, .information-pane .games ul li.selected {
         color: darkred; }
+      .information-pane .lobby ul li.disabled, .information-pane .games ul li.disabled {
+        pointer-events: none; }
     .information-pane .lobby ul, .information-pane .games ul {
       flex-direction: column; }
     .information-pane .lobby li, .information-pane .games li {

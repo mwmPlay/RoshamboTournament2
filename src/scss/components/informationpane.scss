@@ -19,6 +19,10 @@
 		li.selected {
 			color: darkred;
 		}
+		
+		li.disabled {
+			pointer-events: none;
+		}
     }
 }
 
