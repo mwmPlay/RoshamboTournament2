@@ -79,7 +79,8 @@ function log(message, socket) {
 			showdownUI: {
 				enemyPlayerDamageTaken: 0,
 				thisPlayerDamageTaken: 0,
-				showTowels: 'none',
+				enemyShowTowel: 'none',
+				selfShowTowel: 'none',
 				showdownMessage: ''
 			},
 			gameSettings: {
@@ -284,6 +285,32 @@ function log(message, socket) {
 				var healthPercentage =  (handPrototype.health - hand.health) / handPrototype.health;
 				return ((1 - healthPercentage) * 100).toFixed();
 			},
+			towelOnHand: function(handName, player){
+				var lastHand = this.playedHands[this.playedHands.length - 1];
+				var enemyTowelPrototype = logic.staticData.towelPrototypes[this.showdownUI.enemyShowTowel];
+				var myTowelPrototype = logic.staticData.towelPrototypes[this.showdownUI.selfShowTowel];
+
+				if(lastHand.otherTowelTarget === handName) {
+					if(player === 'self' && enemyTowelPrototype !== undefined && !enemyTowelPrototype.dropOnEnemy) {
+						return this.showdownUI.enemyShowTowel;
+					} else if(player === 'enemy' && myTowelPrototype !== undefined && !myTowelPrototype.dropOnEnemy) {
+						return this.showdownUI.enemyShowTowel;
+					} else {
+						return '';
+					}
+				} else if(lastHand.myTowelTarget === handName) {
+					console.log(myTowelPrototype, logic.staticData.towelPrototypes, this.showdownUI.enemyShowTowel, this.showdownUI.myShowTowel);
+					if(player === 'self' && enemyTowelPrototype !== undefined && enemyTowelPrototype.dropOnEnemy) {
+						return this.showdownUI.selfShowTowel;
+					} else if(player === 'enemy' && myTowelPrototype !== undefined && myTowelPrototype.dropOnEnemy) {
+						return this.showdownUI.selfShowTowel;
+					} else {
+						return '';
+					}
+				} else {
+					return '';
+				}
+			},
 			showDown: function(playedHand, finalHand) {
 				if (playedHand.myHandName && playedHand.otherHandName) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
@@ -367,11 +394,8 @@ function log(message, socket) {
 					if(finalHand) {
 						var lastHand = this.playedHands[this.playedHands.length - 1];
 
-						app.showdownUI = {
-							enemyPlayerDamageTaken: -resultOfActions.myself.damageToOther,
-							thisPlayerDamageTaken: -resultOfActions.other.damageToOther
-						};
-						
+						app.showdownUI.enemyPlayerDamageTaken = -resultOfActions.myself.damageToOther;
+						app.showdownUI.thisPlayerDamageTaken = -resultOfActions.other.damageToOther;
 						app.showdownUI.showdownMessage = app.handResult(lastHand.otherHandName, lastHand.myHandName);
 						
 						var winningHandName = resultOfActions.other.damageToOther > resultOfActions.myself.damageToOther ? otherHandPrototype.name : myHandPrototype.name;
@@ -381,7 +405,7 @@ function log(message, socket) {
 							setTimeout(function() {
 								var towelPrototype = logic.staticData.towelPrototypes[lastHand.otherTowel];
 								app.showdownUI.showdownMessage = app.player2Name + ' uses ' + lastHand.otherTowel + ' causing ' + lastHand.otherTowelTarget + ' ' + towelPrototype.descriptionInAction;
-								app.showdownUI.showTowels = 'enemy';
+								app.showdownUI.enemyShowTowel = lastHand.otherTowel;
 								soundEffects[lastHand.otherTowel].play();
 							}, app.gameSettings.towelShowdownSpeed);
 						}
@@ -390,7 +414,7 @@ function log(message, socket) {
 							setTimeout(function() {
 								var towelPrototype = logic.staticData.towelPrototypes[lastHand.myTowel];
 								app.showdownUI.showdownMessage = app.player1Name + ' uses ' + lastHand.myTowel + ' causing ' + lastHand.myTowelTarget + ' ' + towelPrototype.descriptionInAction;
-								app.showdownUI.showTowels = 'self';
+								app.showdownUI.selfShowTowel = lastHand.myTowel;
 								soundEffects[lastHand.myTowel].play();
 							}, app.gameSettings.towelShowdownSpeed * 2);
 						}
@@ -442,7 +466,8 @@ function log(message, socket) {
 			clearShowdownUI: function(){
 				this.showdownUI.enemyPlayerDamageTaken = 0;
 				this.showdownUI.thisPlayerDamageTaken = 0;
-				this.showdownUI.showTowels = 'none';
+				this.showdownUI.enemyShowTowel = 'none';
+				this.showdownUI.selfShowTowel = 'none';
 				this.showdownUI.showdownMessage = '';
 			},
 			randomRotationDegree: function() {

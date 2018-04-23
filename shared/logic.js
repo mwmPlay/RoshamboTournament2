@@ -170,7 +170,7 @@
 				title: 'Towel of impending doom',
 				description: "This towel's fabric is so irritating that it does 1 damage to any hand it's thrown at.",
 				emblemIcon: "fab fa-hotjar",
-				descriptionInAction: "to receive three extra damage.",
+				descriptionInAction: "to receive one extra damage.",
 				dropOnEnemy: true,
 				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
 					resultOfActions[thisPlayer].damageToMyTarget = 1;

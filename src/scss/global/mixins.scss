@@ -70,16 +70,50 @@ $glowColor: #e6c523;
     100% { box-shadow: 0 0 0px $glowColor; }
 }
 
-@keyframes maintainedGlow {
-    0% { box-shadow: 0 0 -10px red; }
-    40% { box-shadow: 0 0 40px red; }
-    100% { box-shadow: 0 0 40px red; }
-}
-
 @keyframes maintainedFreezeGlow {
     0% { box-shadow: 0 0 -10px #fff; }
     40% { box-shadow: 0 0 40px #fff; }
     100% { box-shadow: 0 0 40px #fff; }
+}
+
+$positiveTowelEffectColor: #069801;
+@keyframes positiveTowelEffect {
+    0% { 
+        box-shadow: 0 0 0px $positiveTowelEffectColor; 
+        background:  rgba(6, 152, 1, 0);
+    }
+    50% { 
+        box-shadow: 0 0 10px $positiveTowelEffectColor; 
+        background:  rgba(6, 152, 1, 0.4);
+    }
+    60% { 
+        box-shadow: 0 0 15px $positiveTowelEffectColor; 
+        background:  rgba(6, 152, 1, 0.6);
+    }
+    100% { 
+        box-shadow: 0 0 0px $positiveTowelEffectColor; 
+        background:  rgba(6, 152, 1, 0);
+    }
+}
+
+$negativeTowelEffectColor: #b52e1a;
+@keyframes negativeTowelEffect {
+    0% { 
+        box-shadow: 0 0 0px $negativeTowelEffectColor; 
+        background:  rgba(181, 46, 26, 0);
+    }
+    50% { 
+        box-shadow: 0 0 10px $negativeTowelEffectColor; 
+        background:  rgba(181, 46, 26, 0.4);
+    }
+    60% { 
+        box-shadow: 0 0 15px $negativeTowelEffectColor; 
+        background:  rgba(181, 46, 26, 0.6);
+    }
+    100% { 
+        box-shadow: 0 0 0px $negativeTowelEffectColor; 
+        background:  rgba(181, 46, 26, 0);
+    }
 }
 
 @keyframes slideUp {
