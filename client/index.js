@@ -286,7 +286,7 @@ function log(message, socket) {
 				return ((1 - healthPercentage) * 100).toFixed();
 			},
 			towelOnHand: function(handName, player){
-				var lastHand = this.playedHands[this.playedHands.length - 1];
+				var lastHand = this.playedHands[this.playedHands.length - 1] || {};
 				var enemyTowelPrototype = logic.staticData.towelPrototypes[this.showdownUI.enemyShowTowel];
 				var myTowelPrototype = logic.staticData.towelPrototypes[this.showdownUI.selfShowTowel];
 
@@ -299,7 +299,6 @@ function log(message, socket) {
 						return '';
 					}
 				} else if(lastHand.myTowelTarget === handName) {
-					console.log(myTowelPrototype, logic.staticData.towelPrototypes, this.showdownUI.enemyShowTowel, this.showdownUI.myShowTowel);
 					if(player === 'self' && enemyTowelPrototype !== undefined && enemyTowelPrototype.dropOnEnemy) {
 						return this.showdownUI.selfShowTowel;
 					} else if(player === 'enemy' && myTowelPrototype !== undefined && myTowelPrototype.dropOnEnemy) {
