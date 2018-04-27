@@ -8,15 +8,15 @@
   },
   "author": "Ramon van de Scheur & Matthijs van der Zon",
   "dependencies": {
-    "express": "^4.15.2",
+    "express": "^4.16.3",
     "guid": "0.0.12",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.1.0"
   },
   "devDependencies": {
     "grunt": "^1.0.2",
-    "grunt-sass": "^2.1.0",
-    "load-grunt-tasks": "^3.5.2",
     "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-watch": "^1.0.0"
+    "grunt-contrib-watch": "^1.0.1",
+    "grunt-sass": "^2.1.0",
+    "load-grunt-tasks": "^3.5.2"
   }
 }
