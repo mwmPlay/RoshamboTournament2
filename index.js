@@ -9,6 +9,7 @@ var Guid = require('guid');
 
 // the business logic shared between clients and server
 var logic = require('./shared/logic.js');
+var tournamentLogic = require('./shared/tournamentLogic.js');
 
 // log4node
 function log(message, socket) {
@@ -241,7 +242,6 @@ io.on('connection', function(socket) {
 		socket.broadcast.emit('surrender', session.username);
 	});
 	
-	// TODO: move winner and maybe also loser along in the bracket of the tournament, unless the ended game is the finals
 	socket.on('endGame', function(gameId) {
 		log('endGame', socket);
 		
@@ -258,6 +258,23 @@ io.on('connection', function(socket) {
 		
 		// let everyone else know
 		socket.broadcast.emit('gameEnded', gameId);
+		
+		// move winner and maybe also loser along in the bracket of the tournament, unless the ended game is the finals
+		/*for (tournamentId in tournaments) {
+			var tournament = tournaments[tournamentId];
+			var match = tournamentLogic.findMatchByActualPlayerNames(tournament.bracket, session.username, otherSession.username);
+			
+			if (match) {
+				// TODO: determine winner
+				var winner = '';
+				var newMatch = tournamentLogic.moveAlongBracket(tournament.bracket, match, winner);
+				
+				// TODO: start new match
+				if (newMatch) {
+					
+				}
+			}
+		}*/
 	});
 	
 	socket.on('createTournament', function(name) {
@@ -305,10 +322,19 @@ io.on('connection', function(socket) {
 		// let everyone else know (so noone can join anymore)
 		socket.broadcast.emit('tournamentStarted', tournamentId);
 		
-		// create the bracket
+		// create and emit the bracket
+		tournament.bracket = tournamentLogic.generateBracket(tournament.players.length);
+		io.emit('tournamentStarted', tournament);
 		
 		// start the first games of the bracket
-		// TODO: refactor game creation and emitting from challengeAccepted to a separate function and call that here in a loop
+		var firstMatches = tournamentLogic.getStartingMatches(tournament.bracket);
+		firstMatches.forEach(match => {
+			var session = sessionsByUsername[tournament.players[match.players[0] - 1]];
+			var otherSession = sessionsByUsername[tournament.players[match.players[1] - 1]];
+			match.actualPlayers.push(session.username);
+			match.actualPlayers.push(otherSession.username);
+			startGame(session, otherSession);
+		});
 	});
 	
 	socket.on('endTournament', function(tournamentId) {
@@ -342,13 +368,35 @@ io.on('connection', function(socket) {
 		// remove challenge in current user's session
 		session.challengedBy = '';
 		
-		// the original challenger is player 1
-		var player1sName = otherSession.username;
-		
-		// the accepter is player 2
-		var player2sName = session.username;
-		
 		// start the game!
+		// the original challenger is player 1
+		// the accepter is player 2
+		startGame(session, otherSession, true);
+	});
+	
+	socket.on('challengeRejected', function(username) {
+		log('challenge rejected: ' + username, socket);
+		
+		var session = sessionsBySocketId[socket.id];
+		var otherSession = sessionsByUsername[username];
+		
+		// remove challenge in current user's session
+		session.challengedBy = '';
+		
+		// emit rejection to other user
+		socket.to(otherSession.socketId).emit('challengeRejected', username);
+	});
+	
+	socket.on('chatMessage', function(chatMessage) {
+		log('chatMessage: ' + chatMessage, socket);
+		io.emit('chatMessage', chatMessage);
+	});
+	
+	// shared code for starting a game and broadcasting that
+	function startGame(session, otherSession, player1IsOther) {
+		var player1sName = player1IsOther ? otherSession.username : session.username;
+		var player2sName = player1IsOther ? session.username : otherSession.username;
+		
 		log('game started: ' + player1sName + ' vs ' + player2sName, socket);
 		
 		// create the game
@@ -377,25 +425,7 @@ io.on('connection', function(socket) {
 		
 		// finally, send it to everyone
 		io.emit('gameStarted', JSON.stringify(game));
-	});
-	
-	socket.on('challengeRejected', function(username) {
-		log('challenge rejected: ' + username, socket);
-		
-		var session = sessionsBySocketId[socket.id];
-		var otherSession = sessionsByUsername[username];
-		
-		// remove challenge in current user's session
-		session.challengedBy = '';
-		
-		// emit rejection to other user
-		socket.to(otherSession.socketId).emit('challengeRejected', username);
-	});
-	
-	socket.on('chatMessage', function(chatMessage) {
-		log('chatMessage: ' + chatMessage, socket);
-		io.emit('chatMessage', chatMessage);
-	});
+	}
 });
 
 // exit logic
