@@ -168,7 +168,7 @@
 			impendingdoom: {
 				name: 'impendingdoom',
 				title: 'Towel of impending doom',
-				description: "This towel's fabric is so irritating that it does 1 damage to any hand it's thrown at.",
+				description: "This towel does 1 damage to any enemy hand it is thrown at.",
 				emblemIcon: "fab fa-hotjar",
 				descriptionInAction: "to receive one extra damage.",
 				dropOnEnemy: true,
@@ -179,7 +179,7 @@
 			unfathomabledarkness: {
 				name: 'unfathomabledarkness',
 				title: 'Towel of unfathomable darkness',
-				description: "This towel wraps around an enemy hand and thus renders it useless for 2 rounds.",
+				description: "This towel freezes an enemy hand for three rounds.",
 				emblemIcon: "fas fa-adjust",
 				descriptionInAction: "to be frozen for three rounds.",
 				dropOnEnemy: true,
@@ -191,14 +191,14 @@
 			disproportionatebludgeoning: {
 				name: 'disproportionatebludgeoning',
 				title: 'Towel of disproportionate bludgeoning',
-				description: "This towel is so heavy that when wrapped around a hand it deals extra damage. This only works when the hand does at least 1 damage.",
+				description: "This towel makes your hand do 3 extra damage. This only works when your hand does at least 1 damage by itself.",
 				emblemIcon: "fas fa-stop",
-				descriptionInAction: "to do 2 extra damage.",
+				descriptionInAction: "to do 3 extra damage.",
 				dropOnEnemy: false,
 				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
 					// 2 dmg to other, but only if the player did damage to the other
 					if (resultOfActions[thisPlayer].damageToOther > 0) {
-						resultOfActions[thisPlayer].damageToOther += 2;
+						resultOfActions[thisPlayer].damageToOther += 3;
 					}
 				}
 			},

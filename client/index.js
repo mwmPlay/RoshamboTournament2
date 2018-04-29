@@ -74,7 +74,8 @@ function log(message, socket) {
 				messageToUser: '',
 				promptMessage: '',
 				pickedUserName: '',
-				musicOn: true
+				musicOn: true,
+				playerChallenged: ''
 			},
 			showdownUI: {
 				enemyPlayerDamageTaken: 0,
@@ -623,6 +624,7 @@ function log(message, socket) {
 				return result;
 			},
 			challengeUser: function(username) {
+				this.ui.playerChallenged = username;
 				socket.emit('challengeUser', username);
 			},
 			sendChatMessage: function() {

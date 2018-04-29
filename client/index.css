@@ -612,7 +612,7 @@ svg.small {
     .hand[rotate="-10"]:hover {
       transform: rotate(-10deg) scale(1.05); }
   .hand[towelEffect="magnificentalleviation"] {
-    transform: scale(1.1); }
+    transform: scale(1.6); }
     .hand[towelEffect="magnificentalleviation"]:after {
       content: "";
       position: absolute;
@@ -620,7 +620,7 @@ svg.small {
       height: 100%;
       animation: positiveTowelEffect 8s infinite; }
   .hand[towelEffect="impendingdoom"], .hand[towelEffect="unfathomabledarkness"], .hand[towelEffect="disproportionatebludgeoning"] {
-    transform: scale(1.1); }
+    transform: scale(1.6); }
     .hand[towelEffect="impendingdoom"]:after, .hand[towelEffect="unfathomabledarkness"]:after, .hand[towelEffect="disproportionatebludgeoning"]:after {
       content: "";
       position: absolute;
@@ -1075,8 +1075,12 @@ svg.small {
       margin-top: 5px;
       margin-bottom: 0;
       display: flex; }
+      .information-pane .history ul li {
+        margin: 2px 0; }
       .information-pane .history ul li.selected {
         color: darkred; }
+        .information-pane .history ul li.selected:before {
+          content: '-'; }
       .information-pane .history ul li.disabled {
         pointer-events: none; }
     .information-pane .history .history-overview {
@@ -1122,8 +1126,12 @@ svg.small {
       margin-top: 5px;
       margin-bottom: 0;
       display: flex; }
+      .information-pane .chat ul li {
+        margin: 2px 0; }
       .information-pane .chat ul li.selected {
         color: darkred; }
+        .information-pane .chat ul li.selected:before {
+          content: '-'; }
       .information-pane .chat ul li.disabled {
         pointer-events: none; }
     .information-pane .chat ul {
@@ -1150,8 +1158,12 @@ svg.small {
       margin-top: 5px;
       margin-bottom: 0;
       display: flex; }
+      .information-pane .lobby ul li, .information-pane .games ul li {
+        margin: 2px 0; }
       .information-pane .lobby ul li.selected, .information-pane .games ul li.selected {
         color: darkred; }
+        .information-pane .lobby ul li.selected:before, .information-pane .games ul li.selected:before {
+          content: '-'; }
       .information-pane .lobby ul li.disabled, .information-pane .games ul li.disabled {
         pointer-events: none; }
     .information-pane .lobby ul, .information-pane .games ul {
@@ -1166,7 +1178,8 @@ svg.small {
         margin-left: 5px;
         transition: all 0.2s; }
         .information-pane .lobby li svg:hover, .information-pane .games li svg:hover {
-          color: darkred; }
+          color: darkred;
+          transform: scale(1.1); }
 
 /* -------------- THE button -------------- */
 .button {
@@ -1561,24 +1574,24 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
   background-size: 5px 10px; }
   .towel:hover {
     transform: scale(1.1); }
-  .towel:active {
+  .towel:hover {
     animation: glow 8s infinite; }
-  .towel:active, .towel.showInner {
+  .towel:hover, .towel.showInner {
     height: 120px; }
-    .towel:active .towel-start, .towel.showInner .towel-start {
+    .towel:hover .towel-start, .towel.showInner .towel-start {
       top: 0; }
-    .towel:active .towel-twirl-right, .towel.showInner .towel-twirl-right {
+    .towel:hover .towel-twirl-right, .towel.showInner .towel-twirl-right {
       right: 0;
       opacity: 0;
       transition: .1s; }
-    .towel:active .towel-twirl-left, .towel.showInner .towel-twirl-left {
+    .towel:hover .towel-twirl-left, .towel.showInner .towel-twirl-left {
       left: 0;
       opacity: 0;
       transition: .1s; }
-    .towel:active .emblem, .towel.showInner .emblem {
+    .towel:hover .emblem, .towel.showInner .emblem {
       opacity: 0;
       transition: .1s; }
-    .towel:active .explanation, .towel.showInner .explanation {
+    .towel:hover .explanation, .towel.showInner .explanation {
       opacity: 1;
       transition: .4s .6s; }
   .towel .explanation {

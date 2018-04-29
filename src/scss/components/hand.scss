@@ -35,7 +35,7 @@
     }
 
     &[towelEffect="magnificentalleviation"] {
-        transform: scale(1.1);
+        transform: scale(1.6);
 
         &:after {
             content: "";
@@ -49,7 +49,7 @@
     &[towelEffect="impendingdoom"],
     &[towelEffect="unfathomabledarkness"],
     &[towelEffect="disproportionatebludgeoning"] {
-        transform: scale(1.1);
+        transform: scale(1.6);
 
         &:after {
             content: "";

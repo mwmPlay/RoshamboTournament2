@@ -15,9 +15,17 @@
         margin-top: 5px;
         margin-bottom: 0;
         display: flex;
+
+        li {
+            margin: 2px 0;
+        }
 		
 		li.selected {
-			color: darkred;
+            color: darkred;
+            
+            &:before {
+                content: '-';
+            }
 		}
 		
 		li.disabled {
@@ -233,6 +241,7 @@
 
                 &:hover {
                     color: darkred;
+                    transform: scale(1.1);
                 }
             }
         }

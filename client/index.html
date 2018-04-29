@@ -20,6 +20,16 @@
 				</div>
 			</div>
 		</div>
+		<div class="popup" v-if="ui.playerChallenged !== ''">
+			<div class="prompt">
+				<div class="message">
+					<p class="specialText">{{ui.playerChallenged}} challenged. Please wait for a response.</p>
+				</div>
+				<div class="buttons">
+					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="ui.playerChallenged = ''">Okay</a>
+				</div>
+			</div>
+		</div>
 		<div class="popup" v-if="ui.promptMessage !== ''">
 			<div class="prompt">
 				<div class="message">
@@ -408,7 +418,7 @@
 			<div class="games" v-show="ui.playerUI === 'games'">
 				<ul>
 					<li v-bind:class="{ selected: gameId === '', disabled: thisUserIsPlaying }" @click="gameId = ''">
-						- watch nothing -
+						Don't spectate
 					</li>
 					<li v-for="game in games" v-bind:class="{ selected: gameId === game.id, disabled: thisUserIsPlaying }" @click="gameId = game.id">
 						{{game.player1.username}} vs {{game.player2.username}}
