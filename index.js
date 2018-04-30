@@ -242,7 +242,7 @@ io.on('connection', function(socket) {
 		socket.broadcast.emit('surrender', session.username);
 	});
 	
-	socket.on('endGame', function(gameId) {
+	socket.on('endGame', function(gameId, otherHasWon) {
 		log('endGame', socket);
 		
 		// reset gameId in both players' sessions
@@ -260,21 +260,23 @@ io.on('connection', function(socket) {
 		socket.broadcast.emit('gameEnded', gameId);
 		
 		// move winner and maybe also loser along in the bracket of the tournament, unless the ended game is the finals
-		/*for (tournamentId in tournaments) {
+		for (tournamentId in tournaments) {
 			var tournament = tournaments[tournamentId];
 			var match = tournamentLogic.findMatchByActualPlayerNames(tournament.bracket, session.username, otherSession.username);
 			
 			if (match) {
-				// TODO: determine winner
-				var winner = '';
-				var newMatch = tournamentLogic.moveAlongBracket(tournament.bracket, match, winner);
+				var winner = otherHasWon ? otherSession.username : session.username;
+				var nextMatch = tournamentLogic.moveAlongBracket(tournament.bracket, match.id, winner);
 				
-				// TODO: start new match
-				if (newMatch) {
-					
+				// start next match if possible
+				if (nextMatch) {
+					session = sessionsByUsername[nextMatch.player1Name];
+					otherSession = sessionsByUsername[nextMatch.player2Name];
+					startGame(session, otherSession);
+					break;
 				}
 			}
-		}*/
+		}
 	});
 	
 	socket.on('createTournament', function(name) {
@@ -329,10 +331,10 @@ io.on('connection', function(socket) {
 		// start the first games of the bracket
 		var firstMatches = tournamentLogic.getStartingMatches(tournament.bracket);
 		firstMatches.forEach(match => {
-			var session = sessionsByUsername[tournament.players[match.players[0] - 1]];
-			var otherSession = sessionsByUsername[tournament.players[match.players[1] - 1]];
-			match.actualPlayers.push(session.username);
-			match.actualPlayers.push(otherSession.username);
+			var session = sessionsByUsername[tournament.players[match.player1 - 1]];
+			var otherSession = sessionsByUsername[tournament.players[match.player2 - 1]];
+			match.player1Name = session.username;
+			match.player2Name = otherSession.username;
 			startGame(session, otherSession);
 		});
 	});

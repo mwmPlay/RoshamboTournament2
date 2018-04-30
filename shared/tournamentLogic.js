@@ -24,13 +24,15 @@
 				var match = {
 					id: matchId,
 					roundType: matchRoundType,
-					players: [],
-					actualPlayers: []
+					player1: '',
+					player2: '',
+					player1Name: '',
+					player2Name: ''
 				};
 				
 				// every match has 2 players
-				match.players.push(previousWinners.shift());
-				match.players.push(previousWinners.shift());
+				match.player1 = previousWinners.shift();
+				match.player2 = previousWinners.shift();
 				
 				// and 1 winner
 				currentWinners.push('winner_' + matchId);
@@ -53,17 +55,57 @@
 	exports.getStartingMatches = function(bracket) {
 		// first games are those with no winners in them, so first char of both players is not a 'w'
 		return bracket.filter(match => {
-			return match.players[0].charAt(0) !== 'w' && match.players[1].charAt(0) !== 'w';
+			return !matchPlayer1IsWinner(match) && !matchPlayer2IsWinner(match);
 		});
 	};
 	
 	// return the first match where the players' names match the supplied names
 	exports.findMatchByActualPlayerNames = function(bracket, playerName1, playerName2) {
 		return bracket.find(match => {
-			return (match.actualPlayers[0] === playerName1 && match.actualPlayers[1] === playerName2)
-				|| (match.actualPlayers[0] === playerName2 && match.actualPlayers[1] === playerName1);
+			return (match.player1Name === playerName1 && match.player2Name === playerName2)
+				|| (match.player1Name === playerName2 && match.player2Name === playerName1);
 		});
 	};
+	
+	// move the winner along the bracket, if both players of the next match are known, then return it
+	exports.moveAlongBracket = function(bracket, matchId, winner, players) {
+		var nextMatch = bracket.find(match => {
+			return match.player1 === 'winner_' + matchId || match.player2 === 'winner_' + matchId;;
+		});
+		
+		if (nextMatch) {
+			// try to get player 1
+			if (!matchPlayer1IsWinner(nextMatch)) {
+				// seeded player, get it
+				nextMatch.player1Name = players[nextMatch.player1 - 1];
+			} else if (match.player1 === 'winner_' + matchId) {
+				nextMatch.player1Name = winner;
+			}
+			
+			// try to get player 2
+			if (!matchPlayer2IsWinner(nextMatch)) {
+				// seeded player, get it
+				nextMatch.player2Name = players[nextMatch.player2 - 1];
+			} else if (match.player2 === 'winner_' + matchId) {
+				nextMatch.player2Name = winner;
+			}
+			
+			if (nextMatch.player1Name && nextMatch.player2Name) {
+				// match can be played, return it
+				return nextMatch;
+			}
+		}
+		
+		return null;
+	}
+	
+	function matchPlayer1IsWinner(match) {
+		return match.player1.charAt(0) === 'w';
+	}
+	
+	function matchPlayer2IsWinner(match) {
+		return match.player2.charAt(0) === 'w';
+	}
 	
 	function clone(object) {
 		return JSON.parse(JSON.stringify(object));

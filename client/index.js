@@ -423,7 +423,7 @@ function log(message, socket) {
 			},
 			endGame: function() {
 				// send to server to do the same there
-				socket.emit('endGame', this.gameId);
+				socket.emit('endGame', this.gameId, this.player1Lost);
 				
 				Vue.delete(app.games, this.gameId);
 				
