@@ -34,8 +34,10 @@
         }
     }
 
-    &[towelEffect="magnificentalleviation"] {
-        transform: scale(1.6);
+    &[towelEffect="magnificentalleviation"],
+    &[towelEffect="disproportionatebludgeoning"] {
+        transform: scale(1.2);
+        z-index: 1000;
 
         &:after {
             content: "";
@@ -45,11 +47,11 @@
             animation: positiveTowelEffect 8s infinite;
         }
     }
-
+ 
     &[towelEffect="impendingdoom"],
-    &[towelEffect="unfathomabledarkness"],
-    &[towelEffect="disproportionatebludgeoning"] {
-        transform: scale(1.6);
+    &[towelEffect="unfathomabledarkness"] {
+        transform: scale(1.2);
+        z-index: 1000;
 
         &:after {
             content: "";

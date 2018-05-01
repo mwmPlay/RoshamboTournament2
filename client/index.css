@@ -611,17 +611,19 @@ svg.small {
     transform: rotate(-10deg); }
     .hand[rotate="-10"]:hover {
       transform: rotate(-10deg) scale(1.05); }
-  .hand[towelEffect="magnificentalleviation"] {
-    transform: scale(1.6); }
-    .hand[towelEffect="magnificentalleviation"]:after {
+  .hand[towelEffect="magnificentalleviation"], .hand[towelEffect="disproportionatebludgeoning"] {
+    transform: scale(1.2);
+    z-index: 1000; }
+    .hand[towelEffect="magnificentalleviation"]:after, .hand[towelEffect="disproportionatebludgeoning"]:after {
       content: "";
       position: absolute;
       width: 100%;
       height: 100%;
       animation: positiveTowelEffect 8s infinite; }
-  .hand[towelEffect="impendingdoom"], .hand[towelEffect="unfathomabledarkness"], .hand[towelEffect="disproportionatebludgeoning"] {
-    transform: scale(1.6); }
-    .hand[towelEffect="impendingdoom"]:after, .hand[towelEffect="unfathomabledarkness"]:after, .hand[towelEffect="disproportionatebludgeoning"]:after {
+  .hand[towelEffect="impendingdoom"], .hand[towelEffect="unfathomabledarkness"] {
+    transform: scale(1.2);
+    z-index: 1000; }
+    .hand[towelEffect="impendingdoom"]:after, .hand[towelEffect="unfathomabledarkness"]:after {
       content: "";
       position: absolute;
       width: 100%;

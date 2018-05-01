@@ -165,7 +165,7 @@
 								</div>
 							</div>
 							<div id="myTowel">
-								<div class="towel showInner" v-if="mySelectedTowel != '' && showdownUI.enemyShowTowel !== 'none'" v-bind:type="mySelectedTowel.name">
+								<div class="towel showInner" v-if="showdownUI.selfShowTowel !== 'none'" v-bind:type="mySelectedTowel.name">
 									<div class="towel-twirl-left">
 			
 									</div>
@@ -228,7 +228,7 @@
 								</div>	
 							</div>
 							<div id="otherTowel">
-								<div class="towel showInner" v-if="otherSelectedTowel != '' && showdownUI.selfShowTowel !== 'none'" v-bind:type="otherSelectedTowel.name">
+								<div class="towel showInner" v-if="showdownUI.enemyShowTowel !== 'none'" v-bind:type="otherSelectedTowel.name">
 									<div class="towel-twirl-left">
 			
 									</div>

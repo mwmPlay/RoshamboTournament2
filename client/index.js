@@ -292,24 +292,20 @@ function log(message, socket) {
 				var myTowelPrototype = logic.staticData.towelPrototypes[this.showdownUI.selfShowTowel];
 
 				if(lastHand.otherTowelTarget === handName) {
-					if(player === 'self' && enemyTowelPrototype !== undefined && !enemyTowelPrototype.dropOnEnemy) {
-						return this.showdownUI.enemyShowTowel;
-					} else if(player === 'enemy' && myTowelPrototype !== undefined && !myTowelPrototype.dropOnEnemy) {
-						return this.showdownUI.enemyShowTowel;
-					} else {
-						return '';
-					}
-				} else if(lastHand.myTowelTarget === handName) {
 					if(player === 'self' && enemyTowelPrototype !== undefined && enemyTowelPrototype.dropOnEnemy) {
+						return this.showdownUI.enemyShowTowel;
+					} else if(player === 'enemy' && enemyTowelPrototype !== undefined && !enemyTowelPrototype.dropOnEnemy) {
+						return this.showdownUI.enemyShowTowel;
+					} 
+				} else if(lastHand.myTowelTarget === handName) {					
+					if(player === 'self' && myTowelPrototype !== undefined && !myTowelPrototype.dropOnEnemy) {
 						return this.showdownUI.selfShowTowel;
 					} else if(player === 'enemy' && myTowelPrototype !== undefined && myTowelPrototype.dropOnEnemy) {
 						return this.showdownUI.selfShowTowel;
-					} else {
-						return '';
-					}
-				} else {
-					return '';
+					} 
 				}
+					
+				return '';
 			},
 			showDown: function(playedHand, finalHand) {
 				if (playedHand.myHandName && playedHand.otherHandName) {
@@ -607,7 +603,7 @@ function log(message, socket) {
 				this.myTowel = '';
 				this.myTowelTarget = '';
 				
-				socket.emit('playHand', playedHandJson);
+				socket.emit('playHand', playedHandJson); 
 			},
 			userIsPlaying: function(username) {
 				var result = false;
@@ -830,6 +826,7 @@ function log(message, socket) {
 	});
 	
 	socket.on('challengeRejected', function(username) {
+		app.ui.playerChallenged = '';
 		app.ui.messageToUser = username + ' has rejected your challenge :(';
 	});
 	
@@ -843,6 +840,7 @@ function log(message, socket) {
 	});
 	
 	socket.on('gameStarted', function(gameJson) {
+		app.ui.playerChallenged = '';
 		log('gameStarted: ' + gameJson, socket);
 		var game = JSON.parse(gameJson);
 		
