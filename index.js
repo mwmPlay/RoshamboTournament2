@@ -106,7 +106,8 @@ io.on('connection', function(socket) {
 				socketId: socket.id,
 				challengedBy: '',
 				otherUsers: [],
-				gameId: ''
+				gameId: '',
+				tournamentId: ''
 			};
 			
 			for (var existingUsername in sessionsByUsername) {
@@ -280,7 +281,7 @@ io.on('connection', function(socket) {
 	});
 	
 	socket.on('createTournament', function(name) {
-		log('createTournament', socket);
+		log('createTournament: ' + name, socket);
 		
 		var session = sessionsBySocketId[socket.id];
 		
@@ -298,8 +299,8 @@ io.on('connection', function(socket) {
 		// add to the indexed list of tournaments
 		tournaments[tournamentId] = tournament;
 		
-		// let everyone else know
-		socket.broadcast.emit('tournamentCreated', tournament);
+		// let everyone know
+		io.emit('tournamentCreated', tournament);
 	});
 	
 	socket.on('joinTournament', function(tournamentId) {

@@ -75,7 +75,9 @@ function log(message, socket) {
 				promptMessage: '',
 				pickedUserName: '',
 				musicOn: true,
-				playerChallenged: ''
+				playerChallenged: '',
+				creatingTournament: false,
+				pickedTournamentName: ''
 			},
 			showdownUI: {
 				enemyPlayerDamageTaken: 0,
@@ -103,7 +105,9 @@ function log(message, socket) {
 			newMessages: 0,
 			chatMessage: '',
 			gameId: '',
-			games: {}
+			games: {},
+			tournamentId: '',
+			tournaments: {}
 		},
 		computed: {
 			handPrototypes: function() {
@@ -623,6 +627,11 @@ function log(message, socket) {
 				this.ui.playerChallenged = username;
 				socket.emit('challengeUser', username);
 			},
+			createTournament: function() {
+				this.ui.creatingTournament = false;
+				socket.emit('createTournament', this.ui.pickedTournamentName);
+				this.ui.pickedTournamentName = '';
+			},
 			sendChatMessage: function() {
 				if (this.chatMessage !== '') {
 					socket.emit('chatMessage', this.username + ': ' + this.chatMessage);
@@ -666,7 +675,12 @@ function log(message, socket) {
 					Vue.set(app.games, gameId, session.games[gameId]);
 				}
 				
+				for (tournamentId in session.tournaments) {
+					Vue.set(app.tournaments, tournamentId, session.tournaments[tournamentId]);
+				}
+				
 				this.gameId = session.gameId;
+				this.tournamentId = session.tournamentId;
 				this.challengedBy = session.challengedBy;
 			},
 			drawTowels: function() {
@@ -823,6 +837,11 @@ function log(message, socket) {
 	socket.on('challengedByUser', function(username) {
 		log('challenged by user: ' + username, socket);
 		app.challengedBy = username;
+	});
+	
+	socket.on('tournamentCreated', function(tournament) {
+		log('tournamentCreated: ' + JSON.stringify(tournament), socket);
+		Vue.set(app.tournaments, tournament.id, tournament);
 	});
 	
 	socket.on('challengeRejected', function(username) {

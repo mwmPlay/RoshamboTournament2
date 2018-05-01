@@ -54,6 +54,20 @@
 				</div>
 			</div>
 		</div>
+		<div class="popup" v-if="ui.creatingTournament">
+			<div class="prompt">
+				<div class="message">
+					<p class="specialText">Choose a name for your tournament:</p>
+				</div>
+				<div class="inputs">
+					<p class="specialText">Tournament name: {{ui.pickedTournamentName}}</p>
+					<input v-model="ui.pickedTournamentName" type="text" id="tournamentname" @keyup.enter="createTournament" />
+				</div>
+				<div class="buttons">
+					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="createTournament">Okay</a>
+				</div>
+			</div>
+		</div>
 		
 		<div id="playboard">
 			<div class="enemyplayerside">
@@ -339,7 +353,7 @@
 		<div class="information-pane">
 			<div class="toolbar">
 				<div class="controls">
-					<!-- <a href="#" data-icon="♚" type="button" v-if="!gameInProgress" class="button orange shield glossy">New Tournament</a> -->
+					<a href="#" data-icon="♚" type="button" v-if="tournamentId === ''" class="button orange shield glossy" @click="ui.creatingTournament = true">New Tournament</a>
 					<a href="#" data-icon="♚" type="button" v-if="thisUserIsPlaying && gameInProgress && !gameOver" class="button orange shield glossy" @click="surrender">
 						Surrender
 					</a>
