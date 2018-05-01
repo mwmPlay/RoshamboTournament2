@@ -840,7 +840,6 @@ function log(message, socket) {
 	});
 	
 	socket.on('gameStarted', function(gameJson) {
-		app.ui.playerChallenged = '';
 		log('gameStarted: ' + gameJson, socket);
 		var game = JSON.parse(gameJson);
 		
@@ -850,6 +849,9 @@ function log(message, socket) {
 		if (app.username === game.player1.username || app.username === game.player2.username) {
 			// I am one of the players, switch my channel to the match
 			app.gameId = game.id;
+			
+			// and clear any challenges I have remaining
+			app.ui.playerChallenged = '';
 			
 			// randomly pick from available towels
 			logic.repos.initialTowels.splice(0);
