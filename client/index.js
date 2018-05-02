@@ -93,6 +93,7 @@ function log(message, socket) {
 			surrendered: '',
 			username: '',
 			challengedBy: '',
+			tournamentChallengeId: '',
 			player1Name: '',
 			player2Name: '',
 			myDraggedTowel: '',
@@ -646,9 +647,17 @@ function log(message, socket) {
 				socket.emit('challengeRejected', this.challengedBy);
 				this.challengedBy = '';
 			},
+			acceptTournamentChallenge: function() {
+				this.tournamentId = this.tournamentChallengeId;
+				socket.emit('joinTournament', this.tournamentChallengeId);
+				this.tournamentChallengeId = '';
+			},
+			rejectTournamentChallenge: function() {
+				this.tournamentChallengeId = '';
+			},
 			userPickedAName: function(){
-				app.ui.promptMessage = '';
-				socket.emit('authenticate', app.ui.pickedUserName);
+				this.ui.promptMessage = '';
+				socket.emit('authenticate', this.ui.pickedUserName);
 			},
 			addHandToDeck: function(player, type){
 				var cardSound = new Audio('media/carddeal.wav');
@@ -842,6 +851,13 @@ function log(message, socket) {
 	socket.on('tournamentCreated', function(tournament) {
 		log('tournamentCreated: ' + JSON.stringify(tournament), socket);
 		Vue.set(app.tournaments, tournament.id, tournament);
+		
+		if (tournament.admin === app.username) {
+			// the creator / admin is one of the players
+			app.tournamentId = tournament.id;
+		} else {
+			app.tournamentChallengeId = tournament.id;
+		}
 	});
 	
 	socket.on('challengeRejected', function(username) {

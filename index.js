@@ -299,6 +299,9 @@ io.on('connection', function(socket) {
 		// add to the indexed list of tournaments
 		tournaments[tournamentId] = tournament;
 		
+		// the creator / admin is one of the players
+		session.tournamentId = tournamentId;
+		
 		// let everyone know
 		io.emit('tournamentCreated', tournament);
 	});
