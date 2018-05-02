@@ -247,7 +247,7 @@ function log(message, socket) {
 					app.playedHands.splice(0);
 					app.challengedBy = '';
 					
-					var player = this.player2Name === this.username ? 'player2' : 'player1';
+					var player = game.player2.username === this.username ? 'player2' : 'player1';
 					
 					if (this.thisUserIsPlaying) {
 						game[player].towels.forEach(function(towel) {
