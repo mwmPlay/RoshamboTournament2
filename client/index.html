@@ -74,7 +74,7 @@
 					<p class="specialText">{{tournaments[tournamentChallengeId].admin}} challenges you to the tournament {{tournaments[tournamentChallengeId].name}}</p>
 				</div>
 				<div class="buttons">
-					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="acceptTournamentChallenge()">Accept challenge</a>
+					<a href="#" data-icon="♚" type="button" class="button green shield glossy" v-if="tournamentChallengeId && !tournaments[tournamentChallengeId].started" @click="acceptTournamentChallenge()">Accept challenge</a>
 					<a href="#" data-icon="♚" type="button" class="button orange shield glossy" @click="rejectTournamentChallenge()">Reject challenge</a>
 				</div>
 			</div>
@@ -365,6 +365,8 @@
 			<div class="toolbar">
 				<div class="controls">
 					<a href="#" data-icon="♚" type="button" v-if="tournamentId === '' && !thisUserIsPlaying" class="button orange shield glossy" @click="ui.creatingTournament = true">New Tournament</a>
+					<a href="#" data-icon="♚" type="button" v-if="tournamentId !== '' && !thisUserIsPlaying && tournaments[tournamentId].admin === username && !tournaments[tournamentId].started && tournaments[tournamentId].players.length > 2" class="button orange shield glossy" @click="startTournament">Start Tournament</a>
+					<a href="#" data-icon="♚" type="button" v-if="tournamentId !== '' && !thisUserIsPlaying && tournaments[tournamentId].admin === username && tournaments[tournamentId].winner" class="button orange shield glossy" @click="endTournament">End Tournament</a>
 					<a href="#" data-icon="♚" type="button" v-if="thisUserIsPlaying && gameInProgress && !gameOver" class="button orange shield glossy" @click="surrender">
 						Surrender
 					</a>
@@ -468,6 +470,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 	<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
 	<script src="shared/logic.js"></script>
+	<script src="shared/tournamentLogic.js"></script>
 	<script src="index.js"></script>
 </body>
 </html>

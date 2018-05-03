@@ -258,7 +258,8 @@ io.on('connection', function(socket) {
 		delete games[gameId];
 		
 		// let everyone else know
-		socket.broadcast.emit('gameEnded', gameId);
+		var winner = otherHasWon ? otherSession.username : session.username;
+		socket.broadcast.emit('gameEnded', gameId, winner);
 		
 		// move winner and maybe also loser along in the bracket of the tournament, unless the ended game is the finals
 		for (tournamentId in tournaments) {
@@ -266,8 +267,7 @@ io.on('connection', function(socket) {
 			var match = tournamentLogic.findMatchByActualPlayerNames(tournament.bracket, session.username, otherSession.username);
 			
 			if (match) {
-				var winner = otherHasWon ? otherSession.username : session.username;
-				var nextMatch = tournamentLogic.moveAlongBracket(tournament.bracket, match.id, winner);
+				var nextMatch = tournamentLogic.moveAlongBracket(tournament, match.id, winner);
 				
 				// start next match if possible
 				if (nextMatch) {
@@ -275,6 +275,10 @@ io.on('connection', function(socket) {
 					otherSession = sessionsByUsername[nextMatch.player2Name];
 					startGame(session, otherSession);
 					break;
+				} else if (!tournamentLogic.findNextMatch(tournament.bracket, match.id)) {
+					// this was the final! Let everyone know the winner!
+					tournament.winner = winner;
+					io.emit('tournamentWon', tournamentId, winner);
 				}
 			}
 		}
@@ -293,7 +297,8 @@ io.on('connection', function(socket) {
 			admin: session.username,
 			players: [session.username],
 			started: false,
-			bracket: []
+			bracket: [],
+			winner: ''
 		};
 		
 		// add to the indexed list of tournaments
@@ -315,7 +320,7 @@ io.on('connection', function(socket) {
 		tournament.players.push(session.username);
 		
 		// let everyone else know
-		socket.broadcast.emit('joinedTournament', JSON.stringify({ tournamentId: tournamentId, username: session.username }));
+		socket.broadcast.emit('joinedTournament', { tournamentId: tournamentId, username: session.username });
 	});
 	
 	socket.on('startTournament', function(tournamentId) {
@@ -324,13 +329,7 @@ io.on('connection', function(socket) {
 		// flip the started bit, so noone can join anymore
 		var tournament = tournaments[tournamentId];
 		tournament.started = true;
-		
-		// let everyone else know (so noone can join anymore)
-		socket.broadcast.emit('tournamentStarted', tournamentId);
-		
-		// create and emit the bracket
 		tournament.bracket = tournamentLogic.generateBracket(tournament.players.length);
-		io.emit('tournamentStarted', tournament);
 		
 		// start the first games of the bracket
 		var firstMatches = tournamentLogic.getStartingMatches(tournament.bracket);
@@ -341,6 +340,9 @@ io.on('connection', function(socket) {
 			match.player2Name = otherSession.username;
 			startGame(session, otherSession);
 		});
+		
+		// let everyone know, so no more players can join and all know the bracket
+		io.emit('tournamentStarted', tournament);
 	});
 	
 	socket.on('endTournament', function(tournamentId) {

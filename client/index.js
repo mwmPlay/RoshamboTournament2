@@ -426,7 +426,7 @@ function log(message, socket) {
 				// send to server to do the same there
 				socket.emit('endGame', this.gameId, this.player1Lost);
 				
-				Vue.delete(app.games, this.gameId);
+				Vue.delete(this.games, this.gameId);
 				
 				// clear all game data
 				this.clearGameData();
@@ -648,12 +648,22 @@ function log(message, socket) {
 				this.challengedBy = '';
 			},
 			acceptTournamentChallenge: function() {
-				this.tournamentId = this.tournamentChallengeId;
 				socket.emit('joinTournament', this.tournamentChallengeId);
+				this.tournamentId = this.tournamentChallengeId;
 				this.tournamentChallengeId = '';
+				this.tournaments[this.tournamentId].players.push(this.username);
 			},
 			rejectTournamentChallenge: function() {
 				this.tournamentChallengeId = '';
+			},
+			startTournament: function() {
+				this.tournaments[this.tournamentId].started = true;
+				socket.emit('startTournament', this.tournamentId);
+			},
+			endTournament: function() {
+				Vue.delete(this.tournaments, this.tournamentId);
+				socket.emit('endTournament', this.tournamentId);
+				this.tournamentId = '';
 			},
 			userPickedAName: function(){
 				this.ui.promptMessage = '';
@@ -855,9 +865,36 @@ function log(message, socket) {
 		if (tournament.admin === app.username) {
 			// the creator / admin is one of the players
 			app.tournamentId = tournament.id;
-		} else {
+		} else if (app.tournamentId === '') {
+			// I am not an admin and am not in a tournament yet, challenge me
 			app.tournamentChallengeId = tournament.id;
 		}
+	});
+	
+	socket.on('joinedTournament', function(tournamentAndUserName) {
+		log('joinedTournament: ' + JSON.stringify(tournamentAndUserName), socket);
+		app.tournaments[tournamentAndUserName.tournamentId].players.push(tournamentAndUserName.username);
+	});
+	
+	socket.on('tournamentStarted', function(tournament) {
+		log('tournamentStarted: ' + JSON.stringify(tournament), socket);
+		Vue.set(app.tournaments, tournament.id, tournament);
+	});
+	
+	socket.on('tournamentWon', function(tournamentId, winner) {
+		log('tournamentWon: ' + tournamentId + ', winner: ' + winner, socket);
+		app.tournaments[tournamentId].winner = winner;
+		app.ui.messageToUser = winner + ' has won the tournament ' + app.tournaments[tournamentId].name + '!!!111 :D';
+	});
+	
+	socket.on('tournamentEnded', function(tournamentId) {
+		log('tournamentEnded: ' + tournamentId, socket);
+		
+		if (app.tournamentId === tournamentId) {
+			app.tournamentId = '';
+		}
+		
+		Vue.delete(app.tournaments, tournamentId);
 	});
 	
 	socket.on('challengeRejected', function(username) {
@@ -925,8 +962,14 @@ function log(message, socket) {
 		}
 	});
 	
-	socket.on('gameEnded', function(gameId) {
-		log('gameEnded', socket);
+	socket.on('gameEnded', function(gameId, winner) {
+		log('gameEnded: ' + gameId + ', winner: ' + winner, socket);
+		
+		if (app.tournamentId !== '') {
+			// move winner and maybe also loser along in the bracket of the tournament, unless the ended game is the finals
+			var match = tournamentLogic.findMatchByActualPlayerNames(app.tournaments[app.tournamentId].bracket, app.games[gameId].player1.username, app.games[gameId].player2.username);
+			tournamentLogic.moveAlongBracket(app.tournaments[app.tournamentId], match.id, winner);
+		}
 		
 		Vue.delete(app.games, gameId);
 		

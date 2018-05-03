@@ -67,26 +67,30 @@
 		});
 	};
 	
-	// move the winner along the bracket, if both players of the next match are known, then return it
-	exports.moveAlongBracket = function(bracket, matchId, winner, players) {
-		var nextMatch = bracket.find(match => {
+	exports.findNextMatch = function(bracket, matchId) {
+		return bracket.find(match => {
 			return match.player1 === 'winner_' + matchId || match.player2 === 'winner_' + matchId;;
 		});
+	};
+	
+	// move the winner along the bracket, if both players of the next match are known, then return it
+	exports.moveAlongBracket = function(tournament, matchId, winner) {
+		var nextMatch = this.findNextMatch(tournament.bracket, matchId);
 		
 		if (nextMatch) {
 			// try to get player 1
 			if (!matchPlayer1IsWinner(nextMatch)) {
 				// seeded player, get it
-				nextMatch.player1Name = players[nextMatch.player1 - 1];
-			} else if (match.player1 === 'winner_' + matchId) {
+				nextMatch.player1Name = tournament.players[nextMatch.player1 - 1];
+			} else if (nextMatch.player1 === 'winner_' + matchId) {
 				nextMatch.player1Name = winner;
 			}
 			
 			// try to get player 2
 			if (!matchPlayer2IsWinner(nextMatch)) {
 				// seeded player, get it
-				nextMatch.player2Name = players[nextMatch.player2 - 1];
-			} else if (match.player2 === 'winner_' + matchId) {
+				nextMatch.player2Name = tournament.players[nextMatch.player2 - 1];
+			} else if (nextMatch.player2 === 'winner_' + matchId) {
 				nextMatch.player2Name = winner;
 			}
 			
