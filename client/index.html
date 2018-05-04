@@ -16,6 +16,7 @@
 		<popup v-if="winMessage !== ''" :message="winMessage" :show-buttons="thisUserIsPlaying" button-text="End Game" @input-entered="endGame"></popup>
 		<popup v-if="ui.creatingTournament" message="Choose a name for your tournament:" v-model="ui.pickedTournamentName" input-text="Tournament name" button-text="Okay" @input-entered="createTournament"></popup>
 		<popup v-if="!gameInProgress && tournamentChallengeId" :message="tournaments[tournamentChallengeId].admin + ' challenges you to the tournament ' + tournaments[tournamentChallengeId].name" button-text="Accept challenge" @input-entered="acceptTournamentChallenge" cancel-button-text="Reject challenge" @input-canceled="rejectTournamentChallenge"></popup>
+		<popup v-if="!gameInProgress && challengedBy" :message="challengedBy + ' challenges you for a game'" button-text="Accept challenge" @input-entered="acceptChallenge" cancel-button-text="Reject challenge" @input-canceled="rejectChallenge"></popup>
 		
 		<div id="playboard">
 			<div class="enemyplayerside">
@@ -363,18 +364,6 @@
 						<span v-if="!thisUserIsPlaying && challengedBy !== otherUser.name && !userIsPlaying(otherUser.name)" @click="challengeUser(otherUser.name)" title="Challenge this player">
 							<i class="fas fa-crosshairs"></i>
 						</span>
-
-						<div class="popup" v-if="!gameInProgress && challengedBy === otherUser.name">
-							<div class="prompt">
-								<div class="message">
-									<p class="specialText">{{otherUser.name}} challenges you for a game</p>
-								</div>
-								<div class="buttons">
-									<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="acceptChallenge()">Accept challenge</a>
-									<a href="#" data-icon="♚" type="button" class="button orange shield glossy" @click="rejectChallenge()">Reject challenge</a>
-								</div>
-							</div>
-						</div>
 					</li>
 				</ul>
 			</div>
