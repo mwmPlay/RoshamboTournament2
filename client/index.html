@@ -30,20 +30,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="popup" v-if="ui.promptMessage !== ''">
-			<div class="prompt">
-				<div class="message">
-					<p class="specialText">{{ui.promptMessage}}</p>
-				</div>
-				<div class="inputs">
-					<p class="specialText">Your name is: {{ui.pickedUserName}}</p>
-					<input v-model="ui.pickedUserName" type="text" id="username" @keyup.enter="userPickedAName()" />
-				</div>
-				<div class="buttons">
-					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="userPickedAName()">Okay</a>
-				</div>
-			</div>
-		</div>
+		<popup v-if="ui.promptMessage !== ''" :message="ui.promptMessage" v-model="ui.pickedUserName" input-text="Your name is" @input-entered="userPickedAName"></popup>
 		<div class="popup" v-if="winMessage !== ''">
 			<div class="prompt">
 				<div class="message">
@@ -466,6 +453,22 @@
 		</div>
 	</div>
 	
+	<script type="text/x-template" id="popup-template">
+		<div class="popup">
+			<div class="prompt">
+				<div class="message">
+					<p class="specialText">{{message}}</p>
+				</div>
+				<div class="inputs">
+					<p class="specialText">{{inputText}}: {{value}}</p>
+					<input :value="value" @input="$emit('input', $event.target.value)" type="text" id="username" @keyup.enter="$emit('input-entered')" />
+				</div>
+				<div class="buttons">
+					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="$emit('input-entered')">Okay</a>
+				</div>
+			</div>
+		</div>
+	</script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 	<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>

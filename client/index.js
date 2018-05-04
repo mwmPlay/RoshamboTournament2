@@ -58,6 +58,11 @@ function log(message, socket) {
 	// init socket
 	var socket = io();
 	
+	Vue.component('popup', {
+		props: ['message', 'value', 'inputText'],
+		template: '#popup-template'
+	});
+	
 	var app = new Vue({
 		el: '#rps',
 		data: {
