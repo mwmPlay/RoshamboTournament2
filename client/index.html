@@ -10,62 +10,12 @@
 
 <body>
 	<div id="rps">
-		<div class="popup" v-if="ui.messageToUser !== ''">
-			<div class="prompt">
-				<div class="message">
-					<p class="specialText">{{ui.messageToUser}}</p>
-				</div>
-				<div class="buttons">
-					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="ui.messageToUser = ''">Okay</a>
-				</div>
-			</div>
-		</div>
-		<div class="popup" v-if="ui.playerChallenged !== ''">
-			<div class="prompt">
-				<div class="message">
-					<p class="specialText">{{ui.playerChallenged}} challenged. Please wait for a response.</p>
-				</div>
-				<div class="buttons">
-					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="ui.playerChallenged = ''">Okay</a>
-				</div>
-			</div>
-		</div>
-		<popup v-if="ui.promptMessage !== ''" :message="ui.promptMessage" v-model="ui.pickedUserName" input-text="Your name is" @input-entered="userPickedAName"></popup>
-		<div class="popup" v-if="winMessage !== ''">
-			<div class="prompt">
-				<div class="message">
-					<p class="specialText">{{winMessage}}</p>
-				</div>
-				<div class="buttons" v-if="thisUserIsPlaying">
-					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="endGame">End Game</a>
-				</div>
-			</div>
-		</div>
-		<div class="popup" v-if="ui.creatingTournament">
-			<div class="prompt">
-				<div class="message">
-					<p class="specialText">Choose a name for your tournament:</p>
-				</div>
-				<div class="inputs">
-					<p class="specialText">Tournament name: {{ui.pickedTournamentName}}</p>
-					<input v-model="ui.pickedTournamentName" type="text" id="tournamentname" @keyup.enter="createTournament" />
-				</div>
-				<div class="buttons">
-					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="createTournament">Okay</a>
-				</div>
-			</div>
-		</div>
-		<div class="popup" v-if="!gameInProgress && tournamentChallengeId">
-			<div class="prompt">
-				<div class="message">
-					<p class="specialText">{{tournaments[tournamentChallengeId].admin}} challenges you to the tournament {{tournaments[tournamentChallengeId].name}}</p>
-				</div>
-				<div class="buttons">
-					<a href="#" data-icon="♚" type="button" class="button green shield glossy" v-if="tournamentChallengeId && !tournaments[tournamentChallengeId].started" @click="acceptTournamentChallenge()">Accept challenge</a>
-					<a href="#" data-icon="♚" type="button" class="button orange shield glossy" @click="rejectTournamentChallenge()">Reject challenge</a>
-				</div>
-			</div>
-		</div>
+		<popup v-if="ui.messageToUser !== ''" :message="ui.messageToUser" button-text="Okay" @input-entered="ui.messageToUser = ''"></popup>
+		<popup v-if="ui.playerChallenged !== ''" :message="ui.playerChallenged + ' challenged. Please wait for a response.'" button-text="Okay" @input-entered="ui.playerChallenged = ''"></popup>
+		<popup v-if="ui.promptMessage !== ''" :message="ui.promptMessage" v-model="ui.pickedUserName" input-text="Your name is" button-text="Okay" @input-entered="userPickedAName"></popup>
+		<popup v-if="winMessage !== ''" :message="winMessage" :show-buttons="thisUserIsPlaying" button-text="End Game" @input-entered="endGame"></popup>
+		<popup v-if="ui.creatingTournament" message="Choose a name for your tournament:" v-model="ui.pickedTournamentName" input-text="Tournament name" button-text="Okay" @input-entered="createTournament"></popup>
+		<popup v-if="!gameInProgress && tournamentChallengeId" :message="tournaments[tournamentChallengeId].admin + ' challenges you to the tournament ' + tournaments[tournamentChallengeId].name" button-text="Accept challenge" @input-entered="acceptTournamentChallenge" cancel-button-text="Reject challenge" @input-canceled="rejectTournamentChallenge"></popup>
 		
 		<div id="playboard">
 			<div class="enemyplayerside">
@@ -459,12 +409,13 @@
 				<div class="message">
 					<p class="specialText">{{message}}</p>
 				</div>
-				<div class="inputs">
+				<div class="inputs" v-if="inputText">
 					<p class="specialText">{{inputText}}: {{value}}</p>
 					<input :value="value" @input="$emit('input', $event.target.value)" type="text" id="username" @keyup.enter="$emit('input-entered')" />
 				</div>
-				<div class="buttons">
-					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="$emit('input-entered')">Okay</a>
+				<div class="buttons" v-if="showButtons === undefined || showButtons">
+					<a href="#" data-icon="♚" type="button" class="button green shield glossy" @click="$emit('input-entered')">{{buttonText}}</a>
+					<a href="#" data-icon="♚" type="button" class="button orange shield glossy" v-if="cancelButtonText" @click="$emit('input-canceled')">{{cancelButtonText}}</a>
 				</div>
 			</div>
 		</div>

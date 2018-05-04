@@ -59,7 +59,7 @@ function log(message, socket) {
 	var socket = io();
 	
 	Vue.component('popup', {
-		props: ['message', 'value', 'inputText'],
+		props: ['message', 'value', 'inputText', 'showButtons', 'buttonText', 'cancelButtonText'],
 		template: '#popup-template'
 	});
 	
