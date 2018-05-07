@@ -128,7 +128,7 @@
 								</div>
 							</div>
 							<div id="myTowel">
-								<div class="towel showInner" v-if="showdownUI.selfShowTowel !== 'none'" v-bind:type="mySelectedTowel.name">
+								<div class="towel showInner" v-if="showdownUI.myShowTowel !== 'none'" v-bind:type="mySelectedTowel.name">
 									<div class="towel-twirl-left">
 			
 									</div>
@@ -158,8 +158,8 @@
 							Result of this hand:
 						</p>
 						<div class="showdown-box">
-							<p  class="specialText" v-if="otherHasChosen && otherHandName === '' && thisUserIsPlaying">The other player has chosen a hand, it will be shown once you choose your hand</p>
-							<p  class="specialText" v-else-if="otherHasChosen && otherHandName === '' && !thisUserIsPlaying">One player has chosen a hand, it will be shown once the other player has chosen as well</p>
+							<p  class="specialText" v-if="enemyHasChosen && enemyHandName === '' && thisUserIsPlaying">The enemy player has chosen a hand, it will be shown once you choose your hand</p>
+							<p  class="specialText" v-else-if="enemyHasChosen && enemyHandName === '' && !thisUserIsPlaying">One player has chosen a hand, it will be shown once the enemy player has chosen as well</p>
 							<p class="specialText" v-else id="handResult">
 								{{showdownUI.showdownMessage}}
 							</p>
@@ -169,10 +169,10 @@
 						<p class="specialText">
 							{{player2Name}} played:
 						</p>
-						<div id="otherHandName">
-							<div v-if="otherHandName != ''" v-bind:type="otherHandName" class="hand top">
+						<div id="enemyHandName">
+							<div v-if="enemyHandName != ''" v-bind:type="enemyHandName" class="hand top">
 								<div class="title-section">
-									<p class="specialText">{{otherHandName}}</p>
+									<p class="specialText">{{enemyHandName}}</p>
 								</div>
 								<div class="icon-section">
 									<div class="icon">
@@ -190,8 +190,8 @@
 									</div>
 								</div>	
 							</div>
-							<div id="otherTowel">
-								<div class="towel showInner" v-if="showdownUI.enemyShowTowel !== 'none'" v-bind:type="otherSelectedTowel.name">
+							<div id="enemyTowel">
+								<div class="towel showInner" v-if="showdownUI.enemyShowTowel !== 'none'" v-bind:type="enemySelectedTowel.name">
 									<div class="towel-twirl-left">
 			
 									</div>
@@ -202,14 +202,14 @@
 			
 									</div>
 									<div class="emblem">
-										<i v-bind:class="otherSelectedTowel.emblemIcon"></i>
+										<i v-bind:class="enemySelectedTowel.emblemIcon"></i>
 									</div>
 									<div class="explanation">
 										<h4>
-											{{otherSelectedTowel.title}}
+											{{enemySelectedTowel.title}}
 										</h4>
 										<p>
-											{{otherSelectedTowel.description}}
+											{{enemySelectedTowel.description}}
 										</p>
 									</div>
 								</div>
@@ -224,7 +224,7 @@
 					<div class="player-name">
 						<p v-if="!thisUserIsPlaying" class="specialText">{{player1Name}}</p>
 					</div>
-					<div v-bind:towelEffect="towelOnHand(hand.name, 'self')" v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:is-selected="selectedCard(hand.name)" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="(myHandName !== '' && otherHandName === '') || !thisUserIsPlaying" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand, false)" v-on:dragover="onDragOver($event, false, hand)">
+					<div v-bind:towelEffect="towelOnHand(hand.name, 'my')" v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:is-selected="selectedCard(hand.name)" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="(myHandName !== '' && enemyHandName === '') || !thisUserIsPlaying" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand, false)" v-on:dragover="onDragOver($event, false, hand)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -343,7 +343,7 @@
 				</p>
 				<div class="history-overview">
 					<p v-for="(playedHand, index) in playedHands">
-						Round {{index + 1}}: {{handResult(playedHand.myHandName, playedHand.otherHandName)}}<span v-if="playedHand.myTowel">, also {{player1Name}} used {{playedHand.myTowel}} on {{playedHand.myTowelTarget}}</span><span v-if="playedHand.otherTowel">, also {{player2Name}} used {{playedHand.otherTowel}} on {{playedHand.otherTowelTarget}}</span>
+						Round {{index + 1}}: {{handResult(playedHand.myHandName, playedHand.enemyHandName)}}<span v-if="playedHand.myTowel">, also {{player1Name}} used {{playedHand.myTowel}} on {{playedHand.myTowelTarget}}</span><span v-if="playedHand.enemyTowel">, also {{player2Name}} used {{playedHand.enemyTowel}} on {{playedHand.enemyTowelTarget}}</span>
 					</p>
 				</div>
 			</div>
@@ -352,9 +352,10 @@
 					<span v-bind:class="{ selected: ui.playerUI === 'lobby' }" @click="lobbySwitch('lobby')">Lobby</span> / 
 					<span v-bind:class="{ selected: ui.playerUI === 'games' }" @click="lobbySwitch('games')">Games</span> / 
 					<span v-bind:class="{ selected: ui.playerUI === 'flamebox' }" @click="lobbySwitch('flamebox')">
-						Flamebox: 
+						Flamebox
 						<span id="new-messages-counter" v-show="newMessages > 0">({{newMessages}})</span>
-					</span>
+					</span> / 
+					<span v-bind:class="{ selected: ui.playerUI === 'tournaments' }" @click="lobbySwitch('tournaments')">Tourneys</span> 
 				</p>
 			</div>
 			<div class="lobby" v-show="ui.playerUI === 'lobby'">
@@ -375,6 +376,15 @@
 					</li>
 					<li v-for="game in games" v-bind:class="{ selected: gameId === game.id, disabled: thisUserIsPlaying }" @click="gameId = game.id">
 						{{game.player1.username}} vs {{game.player2.username}}
+					</li>
+				</ul>
+			</div>
+
+			<div class="games" v-show="ui.playerUI === 'tournaments'">
+				<ul>
+					<li v-for="tournament in tournaments">
+						{{tournament.name}} ({{tournament.players.length}} players)
+						<i class="fas fa-align-justify"></i>
 					</li>
 				</ul>
 			</div>

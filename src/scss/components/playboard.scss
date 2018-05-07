@@ -12,7 +12,7 @@
 	height: 100%;
     display: flex;
 	flex-direction: row; 
-	background: url(https://i.pinimg.com/originals/81/d3/e0/81d3e0ab582cbf6725c13ccab7d90bca.jpg);
+	background: url('media/background.jpg');
     background-repeat: repeat-x;
 }
 
@@ -46,7 +46,7 @@
 		width: $hand-width;
 
 		#myHandName,
-		#otherHandName {
+		#enemyHandName {
 			height: $hand-height;
     		width: $hand-width;
 			border-radius: 8px;
@@ -121,6 +121,7 @@
 		radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
 	background-color:#366836;
 	border-radius: 10px;
+	display: flex;
 	@include deckStyling;
 
 	.player-name {
@@ -129,14 +130,20 @@
 		font-size: 16px;
 	}
 
-	> .hand {
+	.cards {
+		display: flex;
+		width: 100%;
+		height: 90%;
+	}
+
+	.hand {
 		top: 50px;
 
 		@for $i from 1 through 10 {
 			&:nth-of-type(#{$i}) {
 				left: 150 * ($i - 1) - 120 + px;
 			}
-		}
+		} 
 	}
 }
 

@@ -770,20 +770,6 @@ svg.small {
 .playingField .hand .health {
   background: #9a1c1c; }
 
-/* Temporary */
-.board-mid .card-text {
-  position: absolute;
-  top: -25px;
-  left: 17px;
-  font-size: 16px;
-  z-index: 9; }
-
-.board-mid .card-image {
-  position: absolute;
-  top: -45px;
-  left: -5px;
-  width: 60px; }
-
 .popup {
   position: absolute;
   left: 0;
@@ -828,7 +814,7 @@ svg.small {
   height: 100%;
   display: flex;
   flex-direction: row;
-  background: url(https://i.pinimg.com/originals/81/d3/e0/81d3e0ab582cbf6725c13ccab7d90bca.jpg);
+  background: url("media/background.jpg");
   background-repeat: repeat-x; }
 
 #playboard {
@@ -859,7 +845,7 @@ svg.small {
   .playingField > div {
     width: 140px; }
     .playingField > div #myHandName,
-    .playingField > div #otherHandName {
+    .playingField > div #enemyHandName {
       height: 200px;
       width: 140px;
       border-radius: 8px;
@@ -870,7 +856,7 @@ svg.small {
       position: relative;
       z-index: 4; }
       .playingField > div #myHandName:hover,
-      .playingField > div #otherHandName:hover {
+      .playingField > div #enemyHandName:hover {
         box-shadow: inset 0 0 10px #333; }
     .playingField > div .showdown-box {
       height: 200px;
@@ -913,6 +899,7 @@ svg.small {
   background-color: #366836;
   border-radius: 10px;
   display: flex;
+  display: flex;
   background-size: 16px 16px;
   align-items: center;
   justify-content: space-around;
@@ -922,27 +909,31 @@ svg.small {
     position: absolute;
     top: 15px;
     font-size: 16px; }
-  .handsdeck > .hand {
+  .handsdeck .cards {
+    display: flex;
+    width: 100%;
+    height: 90%; }
+  .handsdeck .hand {
     top: 50px; }
-    .handsdeck > .hand:nth-of-type(1) {
+    .handsdeck .hand:nth-of-type(1) {
       left: -120px; }
-    .handsdeck > .hand:nth-of-type(2) {
+    .handsdeck .hand:nth-of-type(2) {
       left: 30px; }
-    .handsdeck > .hand:nth-of-type(3) {
+    .handsdeck .hand:nth-of-type(3) {
       left: 180px; }
-    .handsdeck > .hand:nth-of-type(4) {
+    .handsdeck .hand:nth-of-type(4) {
       left: 330px; }
-    .handsdeck > .hand:nth-of-type(5) {
+    .handsdeck .hand:nth-of-type(5) {
       left: 480px; }
-    .handsdeck > .hand:nth-of-type(6) {
+    .handsdeck .hand:nth-of-type(6) {
       left: 630px; }
-    .handsdeck > .hand:nth-of-type(7) {
+    .handsdeck .hand:nth-of-type(7) {
       left: 780px; }
-    .handsdeck > .hand:nth-of-type(8) {
+    .handsdeck .hand:nth-of-type(8) {
       left: 930px; }
-    .handsdeck > .hand:nth-of-type(9) {
+    .handsdeck .hand:nth-of-type(9) {
       left: 1080px; }
-    .handsdeck > .hand:nth-of-type(10) {
+    .handsdeck .hand:nth-of-type(10) {
       left: 1230px; }
 
 .spelldeck {
@@ -1694,7 +1685,7 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
   top: 40px;
   left: -170px; }
 
-.playingField #otherTowel {
+.playingField #enemyTowel {
   z-index: 3;
   position: absolute;
   top: 40px;

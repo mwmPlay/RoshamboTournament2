@@ -172,7 +172,7 @@
 				emblemIcon: "fab fa-hotjar",
 				descriptionInAction: "to receive one extra damage.",
 				dropOnEnemy: true,
-				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
+				doAction: function(resultOfActions, thisPlayer, enemyPlayer) {
 					resultOfActions[thisPlayer].damageToMyTarget = 1;
 				}
 			},
@@ -183,7 +183,7 @@
 				emblemIcon: "fas fa-adjust",
 				descriptionInAction: "to be frozen for three rounds.",
 				dropOnEnemy: true,
-				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
+				doAction: function(resultOfActions, thisPlayer, enemyPlayer) {
 					// each round 2 freeze drops off, so 4 freeze is needed for 2 rounds
 					resultOfActions[thisPlayer].freezeToMyTarget = 4;
 				}
@@ -195,10 +195,10 @@
 				emblemIcon: "fas fa-stop",
 				descriptionInAction: "to do 3 extra damage.",
 				dropOnEnemy: false,
-				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
-					// 2 dmg to other, but only if the player did damage to the other
-					if (resultOfActions[thisPlayer].damageToOther > 0) {
-						resultOfActions[thisPlayer].damageToOther += 3;
+				doAction: function(resultOfActions, thisPlayer, enemyPlayer) {
+					// 2 dmg to enemy, but only if the player did damage to the enemy
+					if (resultOfActions[thisPlayer].damageToEnemy > 0) {
+						resultOfActions[thisPlayer].damageToEnemy += 3;
 					}
 				}
 			},
@@ -209,7 +209,7 @@
 				emblemIcon: "fas fa-heart",
 				descriptionInAction: "to be healed by 2 HP.",
 				dropOnEnemy: false,
-				doAction: function(resultOfActions, thisPlayer, otherPlayer) {
+				doAction: function(resultOfActions, thisPlayer, enemyPlayer) {
 					// +2 health
 					resultOfActions[thisPlayer].healingToMyTarget = 2;
 				}
@@ -227,15 +227,15 @@
 	};
 	
 	exports.savePlayedHandToHistory = function(playedHands, key, value) {
-		if (playedHands.length === 0 || (playedHands[playedHands.length - 1].myHandName !== '' && playedHands[playedHands.length - 1].otherHandName !== '')) {
+		if (playedHands.length === 0 || (playedHands[playedHands.length - 1].myHandName !== '' && playedHands[playedHands.length - 1].enemyHandName !== '')) {
 			playedHands.push({
 				myHandName: '',
-				otherHandName: '',
-				otherHasChosen: false,
+				enemyHandName: '',
+				enemyHasChosen: false,
 				myTowel: '',
 				myTowelTarget: '',
-				otherTowel: '',
-				otherTowelTarget: ''
+				enemyTowel: '',
+				enemyTowelTarget: ''
 			});
 		}
 		
@@ -279,6 +279,8 @@
 			if (hand.name === playedHandName) {
 				// add 1 freeze to the played hand
 				hand.freeze++;
+
+				if(hand.freeze === 2) hand.freeze = 4;
 			} else if (hand.name !== playedHandName && hand.freeze > 1) {
 				// subtract 2 freeze from hands that weren't played, unless they are at 1 freeze
 				hand.freeze -= 2;

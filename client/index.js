@@ -88,11 +88,11 @@ function log(message, socket) {
 				enemyPlayerDamageTaken: 0,
 				thisPlayerDamageTaken: 0,
 				enemyShowTowel: 'none',
-				selfShowTowel: 'none',
+				myShowTowel: 'none',
 				showdownMessage: ''
 			},
 			gameSettings: {
-				towelShowdownSpeed: 3000
+				towelShowdownSpeed: 2500
 			},
 			playedHands: [],
 			surrendered: '',
@@ -122,8 +122,8 @@ function log(message, socket) {
 			myHandName: function() {
 				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].myHandName : '';
 			},
-			otherHandName: function() {
-				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHandName : '';
+			enemyHandName: function() {
+				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].enemyHandName : '';
 			},
 			mySelectedTowel: function() {
 				if(this.playedHands.length > 0 && this.playedHands[this.playedHands.length - 1].myTowel) {
@@ -134,17 +134,17 @@ function log(message, socket) {
 				
 				return logic.staticData.towelPrototypes[towelName];
 			},
-			otherSelectedTowel: function() {
-				if(this.playedHands.length > 0 && this.playedHands[this.playedHands.length - 1].otherTowel) {
-					var towelName = this.playedHands[this.playedHands.length - 1].otherTowel;
+			enemySelectedTowel: function() {
+				if(this.playedHands.length > 0 && this.playedHands[this.playedHands.length - 1].enemyTowel) {
+					var towelName = this.playedHands[this.playedHands.length - 1].enemyTowel;
 				} else {
 					return '';
 				}
 				
 				return logic.staticData.towelPrototypes[towelName];
 			},
-			otherHasChosen: function() {
-				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].otherHasChosen : false;
+			enemyHasChosen: function() {
+				return this.playedHands.length > 0 ? this.playedHands[this.playedHands.length - 1].enemyHasChosen : false;
 			},
 			gameInProgress: function() {
 				return !(!this.player1Name || !this.player2Name);
@@ -299,39 +299,39 @@ function log(message, socket) {
 			towelOnHand: function(handName, player){
 				var lastHand = this.playedHands[this.playedHands.length - 1] || {};
 				var enemyTowelPrototype = logic.staticData.towelPrototypes[this.showdownUI.enemyShowTowel];
-				var myTowelPrototype = logic.staticData.towelPrototypes[this.showdownUI.selfShowTowel];
+				var myTowelPrototype = logic.staticData.towelPrototypes[this.showdownUI.myShowTowel];
 
-				if(lastHand.otherTowelTarget === handName) {
-					if(player === 'self' && enemyTowelPrototype !== undefined && enemyTowelPrototype.dropOnEnemy) {
+				if(lastHand.enemyTowelTarget === handName) {
+					if(player === 'my' && enemyTowelPrototype !== undefined && enemyTowelPrototype.dropOnEnemy) {
 						return this.showdownUI.enemyShowTowel;
 					} else if(player === 'enemy' && enemyTowelPrototype !== undefined && !enemyTowelPrototype.dropOnEnemy) {
 						return this.showdownUI.enemyShowTowel;
 					} 
 				} else if(lastHand.myTowelTarget === handName) {					
-					if(player === 'self' && myTowelPrototype !== undefined && !myTowelPrototype.dropOnEnemy) {
-						return this.showdownUI.selfShowTowel;
+					if(player === 'my' && myTowelPrototype !== undefined && !myTowelPrototype.dropOnEnemy) {
+						return this.showdownUI.myShowTowel;
 					} else if(player === 'enemy' && myTowelPrototype !== undefined && myTowelPrototype.dropOnEnemy) {
-						return this.showdownUI.selfShowTowel;
+						return this.showdownUI.myShowTowel;
 					} 
 				}
 					
 				return '';
 			},
 			showDown: function(playedHand, finalHand) {
-				if (playedHand.myHandName && playedHand.otherHandName) {
+				if (playedHand.myHandName && playedHand.enemyHandName) {
 					var myHandPrototype = this.handPrototypes[playedHand.myHandName];
-					var otherHandPrototype = this.handPrototypes[playedHand.otherHandName];
+					var enemyHandPrototype = this.handPrototypes[playedHand.enemyHandName];
 					var myHand = this.thisPlayer.hands.find(function (hand) { return hand.name === playedHand.myHandName });
-					var otherHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.otherHandName });
+					var enemyHand = this.enemyPlayer.hands.find(function (hand) { return hand.name === playedHand.enemyHandName });
 					var resultOfActions = {
-						myself: {
-							damageToOther: 0,
+						my: {
+							damageToEnemy: 0,
 							healingToMyTarget: 0,
 							damageToMyTarget: 0,
 							freezeToMyTarget: 0
 						},
-						other: {
-							damageToOther: 0,
+						enemy: {
+							damageToEnemy: 0,
 							healingToMyTarget: 0,
 							damageToMyTarget: 0,
 							freezeToMyTarget: 0
@@ -339,14 +339,14 @@ function log(message, socket) {
 					};
 					
 					// calculate regular card damage
-					if (playedHand.myHandName !== playedHand.otherHandName) {
-						resultOfActions.myself.damageToOther = myHandPrototype.result[playedHand.otherHandName].damage;
-						resultOfActions.other.damageToOther = otherHandPrototype.result[playedHand.myHandName].damage;
+					if (playedHand.myHandName !== playedHand.enemyHandName) {
+						resultOfActions.my.damageToEnemy = myHandPrototype.result[playedHand.enemyHandName].damage;
+						resultOfActions.enemy.damageToEnemy = enemyHandPrototype.result[playedHand.myHandName].damage;
 					}
 					
 					// do my towel
 					if (playedHand.myTowel && playedHand.myTowelTarget) {
-						logic.staticData.towelPrototypes[playedHand.myTowel].doAction(resultOfActions, 'myself', 'other');
+						logic.staticData.towelPrototypes[playedHand.myTowel].doAction(resultOfActions, 'my', 'enemy');
 						
 						// remove towel after use
 						var towelIndex = this.thisPlayer.towels.findIndex(function(towel) {
@@ -355,34 +355,34 @@ function log(message, socket) {
 						this.thisPlayer.towels.splice(towelIndex, 1);
 					}
 					
-					// do other towel
-					if (playedHand.otherTowel && playedHand.otherTowelTarget) {
-						logic.staticData.towelPrototypes[playedHand.otherTowel].doAction(resultOfActions, 'other', 'myself');
+					// do enemy towel
+					if (playedHand.enemyTowel && playedHand.enemyTowelTarget) {
+						logic.staticData.towelPrototypes[playedHand.enemyTowel].doAction(resultOfActions, 'enemy', 'my');
 						
 						// remove towel after use
-						if (playedHand.otherTowel) {
+						if (playedHand.enemyTowel) {
 							this.enemyPlayer.towels.splice(0, 1);
 						}
 					}
 					
 					// now that the result of all actions is known, do damage
-					myHand.health -= resultOfActions.other.damageToOther;
-					otherHand.health -= resultOfActions.myself.damageToOther;
+					myHand.health -= resultOfActions.enemy.damageToenemy;
+					enemyHand.health -= resultOfActions.my.damageToenemy;
 					
 					// and handle freezing and defrosting
 					logic.freezeAndDefrostHands(this.thisPlayer.hands, playedHand.myHandName);
-					logic.freezeAndDefrostHands(this.enemyPlayer.hands, playedHand.otherHandName);
+					logic.freezeAndDefrostHands(this.enemyPlayer.hands, playedHand.enemyHandName);
 					
-					// perform other results
-					for (var player in { myself: '', other: '' }) {
+					// perform enemy results
+					for (var player in { my: '', enemy: '' }) {
 						if (resultOfActions[player].healingToMyTarget > 0 || resultOfActions[player].damageToMyTarget > 0 || resultOfActions[player].freezeToMyTarget > 0) {
-							var towelTarget = player === 'myself' ? playedHand.myTowelTarget : playedHand.otherTowelTarget;
-							var towelName = player === 'myself' ? playedHand.myTowel : playedHand.otherTowel;
+							var towelTarget = player === 'my' ? playedHand.myTowelTarget : playedHand.enemyTowelTarget;
+							var towelName = player === 'my' ? playedHand.myTowel : playedHand.enemyTowel;
 							var dropOnEnemy = logic.staticData.towelPrototypes[towelName].dropOnEnemy;
-							var playerTarget = (dropOnEnemy && player === 'myself') || (!dropOnEnemy && player === 'other') ? this.enemyPlayer : this.thisPlayer;
+							var playerTarget = (dropOnEnemy && player === 'my') || (!dropOnEnemy && player === 'enemy') ? this.enemyPlayer : this.thisPlayer;
 							var targetHand = playerTarget.hands.find(function (hand) { return hand.name === towelTarget });
 							var targetHandPrototype = this.handPrototypes[towelTarget];
-							
+
 							if (resultOfActions[player].healingToMyTarget > 0 && targetHand.health > 0) {
 								// do not heal above proto's health and can't heal the dead
 								targetHand.health = targetHand.health > targetHandPrototype.health - resultOfActions[player].healingToMyTarget ? targetHandPrototype.health : targetHand.health + resultOfActions[player].healingToMyTarget;
@@ -400,19 +400,19 @@ function log(message, socket) {
 					if(finalHand) {
 						var lastHand = this.playedHands[this.playedHands.length - 1];
 
-						app.showdownUI.enemyPlayerDamageTaken = -resultOfActions.myself.damageToOther;
-						app.showdownUI.thisPlayerDamageTaken = -resultOfActions.other.damageToOther;
-						app.showdownUI.showdownMessage = app.handResult(lastHand.otherHandName, lastHand.myHandName);
+						app.showdownUI.enemyPlayerDamageTaken = -resultOfActions.my.damageToenemy;
+						app.showdownUI.thisPlayerDamageTaken = -resultOfActions.enemy.damageToenemy;
+						app.showdownUI.showdownMessage = app.handResult(lastHand.enemyHandName, lastHand.myHandName);
 						
-						var winningHandName = resultOfActions.other.damageToOther > resultOfActions.myself.damageToOther ? otherHandPrototype.name : myHandPrototype.name;
+						var winningHandName = resultOfActions.enemy.damageToenemy > resultOfActions.my.damageToenemy ? enemyHandPrototype.name : myHandPrototype.name;
 						soundEffects[winningHandName].play();
 						
-						if (lastHand.otherTowel) {
+						if (lastHand.enemyTowel) {
 							setTimeout(function() {
-								var towelPrototype = logic.staticData.towelPrototypes[lastHand.otherTowel];
-								app.showdownUI.showdownMessage = app.player2Name + ' uses ' + lastHand.otherTowel + ' causing ' + lastHand.otherTowelTarget + ' ' + towelPrototype.descriptionInAction;
-								app.showdownUI.enemyShowTowel = lastHand.otherTowel;
-								soundEffects[lastHand.otherTowel].play();
+								var towelPrototype = logic.staticData.towelPrototypes[lastHand.enemyTowel];
+								app.showdownUI.showdownMessage = app.player2Name + ' uses ' + lastHand.enemyTowel + ' causing ' + lastHand.enemyTowelTarget + ' ' + towelPrototype.descriptionInAction;
+								app.showdownUI.enemyShowTowel = lastHand.enemyTowel;
+								soundEffects[lastHand.enemyTowel].play();
 							}, app.gameSettings.towelShowdownSpeed);
 						}
 						
@@ -420,7 +420,7 @@ function log(message, socket) {
 							setTimeout(function() {
 								var towelPrototype = logic.staticData.towelPrototypes[lastHand.myTowel];
 								app.showdownUI.showdownMessage = app.player1Name + ' uses ' + lastHand.myTowel + ' causing ' + lastHand.myTowelTarget + ' ' + towelPrototype.descriptionInAction;
-								app.showdownUI.selfShowTowel = lastHand.myTowel;
+								app.showdownUI.myShowTowel = lastHand.myTowel;
 								soundEffects[lastHand.myTowel].play();
 							}, app.gameSettings.towelShowdownSpeed * 2);
 						}
@@ -473,7 +473,7 @@ function log(message, socket) {
 				this.showdownUI.enemyPlayerDamageTaken = 0;
 				this.showdownUI.thisPlayerDamageTaken = 0;
 				this.showdownUI.enemyShowTowel = 'none';
-				this.showdownUI.selfShowTowel = 'none';
+				this.showdownUI.myShowTowel = 'none';
 				this.showdownUI.showdownMessage = '';
 			},
 			randomRotationDegree: function() {
@@ -566,30 +566,30 @@ function log(message, socket) {
 			handButtonTooltip: function (hand) {
 				var tooltip = '';
 				
-				for (var otherHandName in hand.result) {
-					tooltip += this.handResult(hand.name, otherHandName) + '\n';
+				for (var enemyHandName in hand.result) {
+					tooltip += this.handResult(hand.name, enemyHandName) + '\n';
 				}
 				
 				return tooltip;
 			},
-			handResult: function (myHandName, otherHandName) {
-				if (myHandName && otherHandName) {
+			handResult: function (myHandName, enemyHandName) {
+				if (myHandName && enemyHandName) {
 					var resultText;
 					var resultVerb;
 					
-					if (myHandName === otherHandName) {
+					if (myHandName === enemyHandName) {
 						var isPlural = myHandName.slice(-1) === 's';
 						
 						resultText = (isPlural ? 'are' : 'is') + ' the same as';
 						resultVerb = 'draw' + (isPlural ? '' : 's');
 					} else {
 						var hand = this.handPrototypes[myHandName];
-						var result = hand.result[otherHandName];
+						var result = hand.result[enemyHandName];
 						resultText = result.text;
 						resultVerb = (result.win ? 'win' : 'lose') + (myHandName.slice(-1) === 's' ? '' : 's');
 					}
 					
-					return myHandName + ' ' + resultText + ' ' + otherHandName + ' and ' + resultVerb;
+					return myHandName + ' ' + resultText + ' ' + enemyHandName + ' and ' + resultVerb;
 				} else {
 					return '';
 				}
@@ -722,14 +722,14 @@ function log(message, socket) {
 						app.addTowelToDeck('thisPlayer', logic.repos.initialTowels[i]);
 					}
 				} else {
-					// otherwise draw mock towels
+					// enemywise draw mock towels
 					logic.addMockTowels(this.thisPlayer.towels);
 				}
 				
 				// draw mock towels for the enemy
 				logic.addMockTowels(this.enemyPlayer.towels);
 			},
-			// TODO: we need to separate the drawn hands from the actual hands? otherwise a delay causes all kinds of issues
+			// TODO: we need to separate the drawn hands from the actual hands? enemywise a delay causes all kinds of issues
 			drawHands: function(immediate){
 				var i = 3;
 				var dealCardInterval = 300;
@@ -739,7 +739,7 @@ function log(message, socket) {
 				for (var handKey in this.handPrototypes) {
 					if (immediate) {
 						app.addHandToDeck('enemyPlayer', handKey);
-					} else {
+					} /*else {
 						setTimeout(function(handKey) {
 							app.addHandToDeck('enemyPlayer', handKey);
 						},
@@ -747,13 +747,13 @@ function log(message, socket) {
 						handKey);
 						
 						i++;
-					}
+					}*/
 				}
 				
 				for (var handKey in this.handPrototypes) {
 					if (immediate) {
 						app.addHandToDeck('thisPlayer', handKey);
-					} else {
+					} /*else {
 						setTimeout(function(handKey) {
 							app.addHandToDeck('thisPlayer', handKey);
 						}, 
@@ -761,7 +761,7 @@ function log(message, socket) {
 						handKey);
 						
 						i++;
-					}
+					}*/
 				}
 			}
 		}
@@ -772,52 +772,52 @@ function log(message, socket) {
 	});
 	
 	socket.on('handChosen', function(playerName) {
-		log('hand was chosen, but not yet played by other: ' + playerName, socket);
+		log('hand was chosen, but not yet played by enemy: ' + playerName, socket);
 		
-		// find the game id and the other player
-		var otherPlayer;
+		// find the game id and the enemy player
+		var enemyPlayer;
 		var gameId;
 		for (gameId in app.games) {
 			var game = app.games[gameId];
 			
 			if (game.player1.username === playerName) {
-				otherPlayer = game.player2;
+				enemyPlayer = game.player2;
 				break;
 			} else if (game.player2.username === playerName) {
-				otherPlayer = game.player1;
+				enemyPlayer = game.player1;
 				break;
 			}
 		}
 		
-		logic.savePlayedHandToHistory(otherPlayer.playedHands, 'otherHasChosen', true);
+		logic.savePlayedHandToHistory(enemyPlayer.playedHands, 'enemyHasChosen', true);
 		
 		if (app.gameId === gameId && app.player2Name === playerName) {
 			// I am watching or playing this game and the player is my 'opponent', update me
-			logic.savePlayedHandToHistory(app.playedHands, 'otherHasChosen', true);
+			logic.savePlayedHandToHistory(app.playedHands, 'enemyHasChosen', true);
 		}
 	});
 	
 	socket.on('playHand', function(playedHandJson) {
-		log('hand was played by other: ' + playedHandJson, socket);
+		log('hand was played by enemy: ' + playedHandJson, socket);
 		var playedHand = JSON.parse(playedHandJson);
 		
 		var game = app.games[playedHand.gameId];
 		var whoPlayed = game.player1.username === playedHand.username ? 'player1' : 'player2';
-		var otherPlayer = whoPlayed === 'player1' ? 'player2' : 'player1';
+		var enemyPlayer = whoPlayed === 'player1' ? 'player2' : 'player1';
 		
 		logic.savePlayedHandToHistory(game[whoPlayed].playedHands, 'myTowel', playedHand.myTowel);
 		logic.savePlayedHandToHistory(game[whoPlayed].playedHands, 'myTowelTarget', playedHand.myTowelTarget);
 		logic.savePlayedHandToHistory(game[whoPlayed].playedHands, 'myHandName', playedHand.myHandName);
-		logic.savePlayedHandToHistory(game[otherPlayer].playedHands, 'otherTowel', playedHand.myTowel);
-		logic.savePlayedHandToHistory(game[otherPlayer].playedHands, 'otherTowelTarget', playedHand.myTowelTarget);
-		logic.savePlayedHandToHistory(game[otherPlayer].playedHands, 'otherHandName', playedHand.myHandName);
+		logic.savePlayedHandToHistory(game[enemyPlayer].playedHands, 'enemyTowel', playedHand.myTowel);
+		logic.savePlayedHandToHistory(game[enemyPlayer].playedHands, 'enemyTowelTarget', playedHand.myTowelTarget);
+		logic.savePlayedHandToHistory(game[enemyPlayer].playedHands, 'enemyHandName', playedHand.myHandName);
 		
 		if (app.gameId === playedHand.gameId) {
 			if (playedHand.username === app.player2Name) {
 				// save hand if it is from my opponent to me (this is also when I am a spectator and the hand is from player 2)
-				logic.savePlayedHandToHistory(app.playedHands, 'otherTowel', playedHand.myTowel);
-				logic.savePlayedHandToHistory(app.playedHands, 'otherTowelTarget', playedHand.myTowelTarget);
-				logic.savePlayedHandToHistory(app.playedHands, 'otherHandName', playedHand.myHandName);
+				logic.savePlayedHandToHistory(app.playedHands, 'enemyTowel', playedHand.myTowel);
+				logic.savePlayedHandToHistory(app.playedHands, 'enemyTowelTarget', playedHand.myTowelTarget);
+				logic.savePlayedHandToHistory(app.playedHands, 'enemyHandName', playedHand.myHandName);
 			} else if (!app.thisUserIsPlaying) {
 				// or if I am a spectator of the match (and the hand is from player 1)
 				logic.savePlayedHandToHistory(app.playedHands, 'myTowel', playedHand.myTowel);
