@@ -782,6 +782,8 @@ svg.small {
   display: flex;
   align-items: center;
   justify-content: center; }
+  .popup.large .prompt {
+    width: 1200px; }
   .popup .prompt {
     transform: scale(0);
     border: 4px solid #086e9e;
@@ -870,17 +872,17 @@ svg.small {
     padding: 0 20px; }
     .playingField .resultShowdown p {
       text-align: center; }
-  .playingField .thisPlayerShowdown > p {
+  .playingField .myShowdown > p {
     text-align: center;
     margin-top: 10px;
     margin-bottom: 10px; }
-  .playingField .enemyPlayerShowdown > p {
+  .playingField .enemyShowdown > p {
     text-align: center;
     margin-top: 10px;
     margin-bottom: 10px; }
 
-.enemyplayerside,
-.thisplayerside {
+.enemyside,
+.myside {
   height: 280px;
   justify-content: space-between;
   display: flex; }
@@ -1002,14 +1004,14 @@ svg.small {
       .information-pane .player-info .player-container .userName,
       .information-pane .player-info .player-container .avatar {
         transform: rotate(3deg); }
-    .information-pane .player-info .enemyplayer-container {
+    .information-pane .player-info .enemy-container {
       width: calc(50% - 5px);
       padding: 10px;
       margin: 14px 2px; }
-      .information-pane .player-info .enemyplayer-container .avatar {
+      .information-pane .player-info .enemy-container .avatar {
         right: -5px; }
-      .information-pane .player-info .enemyplayer-container .userName,
-      .information-pane .player-info .enemyplayer-container .avatar {
+      .information-pane .player-info .enemy-container .userName,
+      .information-pane .player-info .enemy-container .avatar {
         transform: rotate(-3deg); }
     .information-pane .player-info .score-container {
       display: flex;
@@ -1690,5 +1692,24 @@ Thanks to David Hund for some help - http://valuedstandards.com/static/test/butt
   position: absolute;
   top: 40px;
   left: 150px; }
+
+.bracket {
+  display: flex; }
+  .bracket .players {
+    flex: 150px 0 0; }
+  .bracket .tourney-rounds {
+    flex: 100% 0 1;
+    display: flex; }
+  .bracket .match {
+    width: 20px;
+    height: 20px;
+    background: red;
+    margin: 20px; }
+  .bracket .round {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center; }
 
 /*# sourceMappingURL=index.css.map */

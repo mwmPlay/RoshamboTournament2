@@ -10,6 +10,8 @@
 
 <body>
 	<div id="rps">
+		<popup v-if="ui.selectedBracket !== ''" :message="'Bracket of tournament:' + ui.selectedBracket" class="large" :tournament="selectedTournament" button-text="Okay" @input-entered="ui.selectedBracket = ''"></popup>
+		
 		<popup v-if="ui.messageToUser !== ''" :message="ui.messageToUser" button-text="Okay" @input-entered="ui.messageToUser = ''"></popup>
 		<popup v-if="ui.playerChallenged !== ''" :message="ui.playerChallenged + ' challenged. Please wait for a response.'" button-text="Okay" @input-entered="ui.playerChallenged = ''"></popup>
 		<popup v-if="ui.promptMessage !== ''" :message="ui.promptMessage" v-model="ui.pickedUserName" input-text="Your name is" button-text="Okay" @input-entered="userPickedAName"></popup>
@@ -19,12 +21,12 @@
 		<popup v-if="!gameInProgress && challengedBy" :message="challengedBy + ' challenges you for a game'" button-text="Accept challenge" @input-entered="acceptChallenge" cancel-button-text="Reject challenge" @input-canceled="rejectChallenge"></popup>
 		
 		<div id="playboard">
-			<div class="enemyplayerside">
+			<div class="enemyside">
 				<div class="handsdeck">
 					<div class="player-name">
 						<p v-if="!thisUserIsPlaying" class="specialText">{{player2Name}}</p>
 					</div>
-					<div v-bind:towelEffect="towelOnHand(hand.name, 'enemy')" v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:rotate="hand.rotation" v-if="hand.health > 0 && !gameOver" class="hand top" v-for="hand in enemyPlayer.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand, true)" v-on:dragover="onDragOver($event, true, hand)">
+					<div v-bind:towelEffect="towelOnHand(hand.name, 'enemy')" v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:rotate="hand.rotation" v-if="hand.health > 0 && !gameOver" class="hand top" v-for="hand in enemy.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand, true)" v-on:dragover="onDragOver($event, true, hand)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -73,7 +75,7 @@
 					</div>
 				</div>
 				<div class="spelldeck">
-					<div class="towel" v-if="!gameOver" v-for="towel in enemyPlayer.towels" v-bind:type="towel.name">
+					<div class="towel" v-if="!gameOver" v-for="towel in enemy.towels" v-bind:type="towel.name">
 						<div class="towel-twirl-left">
 
 						</div>
@@ -99,7 +101,7 @@
 			</div>
 			<div class="board-mid">
 				<div class="playingField">
-					<div class="thisPlayerShowdown">
+					<div class="myShowdown">
 						<p class="specialText" v-if="thisUserIsPlaying">
 							You played:
 						</p>
@@ -122,7 +124,7 @@
 											
 										</div>
 										<p class="specialText">
-											{{showdownUI.thisPlayerDamageTaken}}
+											{{showdownUI.myDamageTaken}}
 										</p>
 									</div>
 								</div>
@@ -165,7 +167,7 @@
 							</p>
 						</div>
 					</div>
-					<div class="enemyPlayerShowdown">
+					<div class="enemyShowdown">
 						<p class="specialText">
 							{{player2Name}} played:
 						</p>
@@ -185,7 +187,7 @@
 											
 										</div>
 										<p class="specialText">
-											{{showdownUI.enemyPlayerDamageTaken}}
+											{{showdownUI.enemyDamageTaken}}
 										</p>
 									</div>
 								</div>	
@@ -219,12 +221,12 @@
 				</div>
 			</div>
 
-			<div class="thisplayerside">
+			<div class="myside">
 				<div class="handsdeck">
 					<div class="player-name">
 						<p v-if="!thisUserIsPlaying" class="specialText">{{player1Name}}</p>
 					</div>
-					<div v-bind:towelEffect="towelOnHand(hand.name, 'my')" v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:is-selected="selectedCard(hand.name)" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="(myHandName !== '' && enemyHandName === '') || !thisUserIsPlaying" @click="playHand(hand.name)" v-for="hand in thisPlayer.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand, false)" v-on:dragover="onDragOver($event, false, hand)">
+					<div v-bind:towelEffect="towelOnHand(hand.name, 'my')" v-bind:type="hand.name" v-bind:appearance="hand.appearance" v-bind:is-frozen="hand.freeze > 1" v-bind:is-selected="selectedCard(hand.name)" v-if="hand.health > 0 && !gameOver" class="hand bottom" v-bind:rotate="hand.rotation" v-bind:id="'handButton_'+hand.name" v-bind:disabled="(myHandName !== '' && enemyHandName === '') || !thisUserIsPlaying" @click="playHand(hand.name)" v-for="hand in my.hands" v-on:drop.prevent="onDrop($event, hand)" v-on:dragleave="onDragLeave(hand, false)" v-on:dragover="onDragOver($event, false, hand)">
 						<div class="title-section">
 							<p class="specialText">{{hand.name}}</p>
 						</div>
@@ -274,7 +276,7 @@
 					</div>
 				</div>
 				<div class="spelldeck">
-					<div class="towel" v-if="!gameOver" v-for="(towel, towelIndex) in thisPlayer.towels" v-bind:type="towel.name"  v-bind:id="'towel'+towelIndex" v-bind:draggable="thisUserIsPlaying" v-on:dragstart="onDragStart"  v-on:dragend="onDragEnd">
+					<div class="towel" v-if="!gameOver" v-for="(towel, towelIndex) in my.towels" v-bind:type="towel.name"  v-bind:id="'towel'+towelIndex" v-bind:draggable="thisUserIsPlaying" v-on:dragstart="onDragStart"  v-on:dragend="onDragEnd">
 						<div class="towel-twirl-left">
 
 						</div>
@@ -327,7 +329,7 @@
 				<div class="versus specialText">
 					VS
 				</div>
-				<div class="enemyplayer-container">
+				<div class="enemy-container">
 					<div class="avatar">
 						
 					</div>
@@ -384,7 +386,9 @@
 				<ul>
 					<li v-for="tournament in tournaments">
 						{{tournament.name}} ({{tournament.players.length}} players)
-						<i class="fas fa-align-justify"></i>
+						<span @click="ui.selectedBracket = tournament.name">
+							<i class="fas fa-align-justify"></i>
+						</span>
 					</li>
 				</ul>
 			</div>
@@ -408,6 +412,36 @@
 				<div class="message">
 					<p class="specialText">{{message}}</p>
 				</div>
+				<div class="bracket" v-if="tournament">
+					<div class="players">
+						<p>Players</p>
+						<ul>
+							<li v-for="player in tournament.players">{{player}}</li>
+						</ul>
+					</div>
+					<div class="tourney-rounds">
+						<div class="round round1">
+							<div class="match">
+							</div>
+							<div class="match">
+							</div>
+							<div class="match">
+							</div>
+							<div class="match">
+							</div>
+						</div>
+						<div class="round round2">
+							<div class="match">
+							</div>
+							<div class="match">
+							</div>
+						</div>
+						<div class="round round3">
+							<div class="match">
+							</div>
+						</div>
+					</div>
+				</div>
 				<div class="inputs" v-if="inputText">
 					<p class="specialText">{{inputText}}: {{value}}</p>
 					<input :value="value" @input="$emit('input', $event.target.value)" type="text" id="username" @keyup.enter="$emit('input-entered')" />
@@ -419,6 +453,7 @@
 			</div>
 		</div>
 	</script>
+
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 	<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>

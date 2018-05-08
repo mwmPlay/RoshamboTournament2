@@ -172,8 +172,8 @@
 				emblemIcon: "fab fa-hotjar",
 				descriptionInAction: "to receive one extra damage.",
 				dropOnEnemy: true,
-				doAction: function(resultOfActions, thisPlayer, enemyPlayer) {
-					resultOfActions[thisPlayer].damageToMyTarget = 1;
+				doAction: function(resultOfActions, my, enemy) {
+					resultOfActions[my].damageToMyTarget = 1;
 				}
 			},
 			unfathomabledarkness: {
@@ -183,9 +183,9 @@
 				emblemIcon: "fas fa-adjust",
 				descriptionInAction: "to be frozen for three rounds.",
 				dropOnEnemy: true,
-				doAction: function(resultOfActions, thisPlayer, enemyPlayer) {
+				doAction: function(resultOfActions, my, enemy) {
 					// each round 2 freeze drops off, so 4 freeze is needed for 2 rounds
-					resultOfActions[thisPlayer].freezeToMyTarget = 4;
+					resultOfActions[my].freezeToMyTarget = 4;
 				}
 			},
 			disproportionatebludgeoning: {
@@ -195,10 +195,10 @@
 				emblemIcon: "fas fa-stop",
 				descriptionInAction: "to do 3 extra damage.",
 				dropOnEnemy: false,
-				doAction: function(resultOfActions, thisPlayer, enemyPlayer) {
+				doAction: function(resultOfActions, my, enemy) {
 					// 2 dmg to enemy, but only if the player did damage to the enemy
-					if (resultOfActions[thisPlayer].damageToEnemy > 0) {
-						resultOfActions[thisPlayer].damageToEnemy += 3;
+					if (resultOfActions[my].damageToEnemy > 0) {
+						resultOfActions[my].damageToEnemy += 3;
 					}
 				}
 			},
@@ -209,9 +209,9 @@
 				emblemIcon: "fas fa-heart",
 				descriptionInAction: "to be healed by 2 HP.",
 				dropOnEnemy: false,
-				doAction: function(resultOfActions, thisPlayer, enemyPlayer) {
+				doAction: function(resultOfActions, my, enemy) {
 					// +2 health
-					resultOfActions[thisPlayer].healingToMyTarget = 2;
+					resultOfActions[my].healingToMyTarget = 2;
 				}
 			}
 		}

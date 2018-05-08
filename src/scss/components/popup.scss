@@ -9,6 +9,12 @@
     transition: background 2s; 
     @include flexCenter;
 
+    &.large {
+        .prompt {
+            width: 1200px;
+        }
+    }
+
     .prompt {
         transform: scale(0);
         border: 4px solid #086e9e;
